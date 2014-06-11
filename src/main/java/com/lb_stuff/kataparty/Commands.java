@@ -17,6 +17,7 @@ public class Commands implements CommandExecutor, TabCompleter
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args)
 	{
+		List<String> ret = new ArrayList<>();
 		if(sender instanceof Player)
 		{
 			Player player = (Player)sender;
@@ -25,23 +26,43 @@ public class Commands implements CommandExecutor, TabCompleter
 			{
 				case "kpjoin":
 				{
-					//
+					for(KataParty.Party p : inst.parties)
+					{
+						if(p.visible && p.name.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+						{
+							ret.add(p.name);
+						}
+					}
 				} break;
 				case "kpclose":
-				{
-					//
-				} break;
 				case "kpadmin":
 				{
-					//
+					for(KataParty.Party p : inst.parties)
+					{
+						if(p.name.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+						{
+							ret.add(p.name);
+						}
+					}
 				} break;
 				case "kptp":
 				{
-					//
+					KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+					if(m != null)
+					{
+						for(KataParty.Party.Member o : m.getParty().members)
+						{
+							String name = inst.getServer().getPlayer(o.uuid).getName();
+							if(o.tp && name.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+							{
+								ret.add(name);
+							}
+						}
+					}
 				} break;
 			}
 		}
-		return null;
+		return ret;
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
@@ -58,7 +79,14 @@ public class Commands implements CommandExecutor, TabCompleter
 				} break;
 				case "kpcreate":
 				{
-					//
+					if(args.length == 1)
+					{
+						KataParty.Party p;
+						inst.parties.add(p = inst.new Party(args[0]));
+						p.add(player, KataParty.Rank.OWNER);
+						//
+						return true;
+					}
 				} break;
 				case "kplist":
 				{
