@@ -239,7 +239,7 @@ public class KataParty extends JavaPlugin implements Listener
 		{
 			if(p.visible || player.hasPermission("KataParty.seehidden"))
 			{
-				ItemStack s = new ItemStack(Material.NAME_TAG, p.members.size());
+				ItemStack s = new ItemStack(p.visible? Material.NAME_TAG : Material.PAPER, p.members.size());
 				ItemMeta m = s.getItemMeta();
 				m.setDisplayName(p.name);
 				int online = 0;
@@ -254,6 +254,10 @@ public class KataParty extends JavaPlugin implements Listener
 				final boolean same = (p == findMember(player.getUniqueId()).getParty());
 				m.setLore(new ArrayList<String>(){
 				{
+					if(!p.visible)
+					{
+						add("(invisible)");
+					}
 					add(online_+"/"+p.members.size()+" members online");
 					if(!same)
 					{
