@@ -144,7 +144,6 @@ public class KataParty extends JavaPlugin implements Listener
 			if(inv == null)
 			{
 				inv = Bukkit.createInventory(null, 4*9, name+" Shared Inventory");
-				inv.setMaxStackSize(48);
 			}
 		}
 
