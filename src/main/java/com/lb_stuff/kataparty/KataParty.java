@@ -11,10 +11,11 @@ import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 import org.bukkit.configuration.*;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Bukkit;
 
 import java.util.*;
-import java.io.*;
 import java.util.logging.Level;
+import java.io.*;
 
 public class KataParty extends JavaPlugin implements Listener
 {
@@ -25,9 +26,29 @@ public class KataParty extends JavaPlugin implements Listener
 		if(f.exists())
 		{
 			YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
-			for(Object o : conf.getList("parties", new ArrayList<Object>()))
+			ConfigurationSection cs = conf.getConfigurationSection("parties");
+			for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 			{
-				//
+				ConfigurationSection ps = (ConfigurationSection)e.getValue();
+				Party p = new Party(e.getKey());
+				parties.add(p);
+				p.tp = ps.getBoolean("tp");
+				p.visible = ps.getBoolean("visible");
+				if(!ps.isBoolean("inventory"))
+				{
+					List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
+					p.enableInventory();
+					for(int i = 0; i < items.size() && i < p.inv.getSize(); ++i)
+					{
+						p.inv.setItem(i, items.get(i));
+					}
+				}
+				for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
+				{
+					ConfigurationSection ms = (ConfigurationSection)me.getValue();
+					Party.Member m = p.add(UUID.fromString(me.getKey()), Rank.valueOf(ms.getString("rank")));
+					m.tp = ms.getBoolean("tp");
+				}
 			}
 		}
 		Commands c = new Commands(this);
@@ -90,6 +111,14 @@ public class KataParty extends JavaPlugin implements Listener
 		MODERATOR,
 		MEMBER
 	}
+	public static enum GuiType
+	{
+		NONE,
+		CREATE,
+		LIST,
+		MANAGE,
+		TP,
+	}
 	public class Party
 	{
 		public final String name;
@@ -103,9 +132,20 @@ public class KataParty extends JavaPlugin implements Listener
 			name = pname;
 		}
 
-		public void add(Player p, Rank r)
+		public Member add(UUID uuid, Rank r)
 		{
-			members.add(new Member(p, r));
+			Member m;
+			members.add(m = new Member(uuid, r));
+			return m;
+		}
+
+		public void enableInventory()
+		{
+			if(inv == null)
+			{
+				inv = Bukkit.createInventory(null, 4*9, name+" Shared Inventory");
+				inv.setMaxStackSize(48);
+			}
 		}
 
 		public KataParty getPlugin()
@@ -118,10 +158,12 @@ public class KataParty extends JavaPlugin implements Listener
 			public final UUID uuid;
 			public final Rank rank;
 			public boolean tp = true;
+			public Inventory gui = null;
+			GuiType gt = GuiType.NONE;
 
-			public Member(Player p, Rank r)
+			public Member(UUID id, Rank r)
 			{
-				uuid = p.getUniqueId();
+				uuid = id;
 				rank = r;
 			}
 
@@ -139,7 +181,7 @@ public class KataParty extends JavaPlugin implements Listener
 		{
 			for(Party.Member m : p.members)
 			{
-				if(m.uuid == uuid)
+				if(m.uuid.equals(uuid))
 				{
 					return m;
 				}
@@ -161,11 +203,8 @@ public class KataParty extends JavaPlugin implements Listener
 	@EventHandler
 	public void OnInvDrag(InventoryDragEvent e)
 	{
-		if(false)
-		{
-			//
-		}
-		else
+		Party.Member m = findMember(e.getWhoClicked().getUniqueId());
+		if(m != null && m.gui == e.getInventory())
 		{
 			e.setCancelled(true);
 		}

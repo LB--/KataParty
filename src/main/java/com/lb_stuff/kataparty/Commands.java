@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty;
 
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.*;
 
 import java.util.*;
 
@@ -83,7 +84,7 @@ public class Commands implements CommandExecutor, TabCompleter
 					{
 						KataParty.Party p;
 						inst.parties.add(p = inst.new Party(args[0]));
-						p.add(player, KataParty.Rank.OWNER);
+						p.add(player.getUniqueId(), KataParty.Rank.OWNER);
 						//
 						return true;
 					}
@@ -122,7 +123,27 @@ public class Commands implements CommandExecutor, TabCompleter
 				} break;
 				case "kpshare":
 				{
-					//
+					if(args.length == 0)
+					{
+						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						if(m != null)
+						{
+							Inventory i = m.getParty().inv;
+							if(i != null)
+							{
+								player.openInventory(i);
+							}
+							else
+							{
+								sender.sendMessage("Shared Inventory is disabled for this KataParty");
+							}
+						}
+						else
+						{
+							sender.sendMessage("You are not in any KataParty!");
+						}
+						return true;
+					}
 				} break;
 			}
 		}
