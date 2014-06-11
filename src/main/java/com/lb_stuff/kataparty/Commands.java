@@ -84,30 +84,46 @@ public class Commands implements CommandExecutor, TabCompleter
 					{
 						KataParty.Party p;
 						inst.parties.add(p = inst.new Party(args[0]));
-						p.add(player.getUniqueId(), KataParty.Rank.OWNER);
+						p.add(player.getUniqueId(), KataParty.Rank.ADMIN);
 						//
+						inst.updateList();
 						return true;
 					}
 				} break;
 				case "kplist":
 				{
-					//
+					if(args.length == 0)
+					{
+						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						if(m != null)
+						{
+							inst.updateList();
+							m.gt = KataParty.GuiType.LIST;
+							m.gui = inst.plist;
+							player.openInventory(m.gui);
+						}
+						return true;
+					}
 				} break;
 				case "kpjoin":
 				{
 					//
+					inst.updateList();
 				} break;
 				case "kpleave":
 				{
 					//
+					inst.updateList();
 				} break;
 				case "kpdisband":
 				{
 					//
+					inst.updateList();
 				} break;
 				case "kpclose":
 				{
 					//
+					inst.updateList();
 				} break;
 				case "kpmanage":
 				{

@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 import org.bukkit.configuration.*;
@@ -22,6 +23,7 @@ public class KataParty extends JavaPlugin implements Listener
 	@Override
 	public void onEnable()
 	{
+		plist = Bukkit.createInventory(null, 9*6, "List of KataParties");
 		File f = new File("plugins/KataParty/parties.yaml");
 		if(f.exists())
 		{
@@ -51,6 +53,7 @@ public class KataParty extends JavaPlugin implements Listener
 				}
 			}
 		}
+		updateList();
 		Commands c = new Commands(this);
 		getCommand("kataparty").setExecutor(c);
 		getCommand("kpcreate").setExecutor(c);
@@ -106,7 +109,6 @@ public class KataParty extends JavaPlugin implements Listener
 
 	public static enum Rank
 	{
-		OWNER,
 		ADMIN,
 		MODERATOR,
 		MEMBER
@@ -125,7 +127,7 @@ public class KataParty extends JavaPlugin implements Listener
 		public boolean tp = true;
 		public boolean visible = true;
 		public Inventory inv = null;
-		public List<Member> members = new ArrayList<>();
+		public Set<Member> members = new HashSet<>();
 
 		public Party(String pname)
 		{
@@ -135,8 +137,40 @@ public class KataParty extends JavaPlugin implements Listener
 		public Member add(UUID uuid, Rank r)
 		{
 			Member m;
+			while((m = findMember(uuid)) != null)
+			{
+				m.getParty().remove(uuid);
+			}
 			members.add(m = new Member(uuid, r));
+			for(Member mi : members)
+			{
+				Player p = getServer().getPlayer(mi.uuid);
+				if(p != null)
+				{
+					p.sendMessage(getServer().getPlayer(uuid).getName()+" has joined your KataParty");
+				}
+			}
 			return m;
+		}
+		public void remove(UUID uuid)
+		{
+			for(Iterator<Member> it = members.iterator(); it.hasNext(); )
+			{
+				Member m = it.next();
+				if(m.uuid.equals(uuid))
+				{
+					it.remove();
+					break;
+				}
+			}
+			for(Member m : members)
+			{
+				Player p = getServer().getPlayer(m.uuid);
+				if(p != null)
+				{
+					p.sendMessage(getServer().getOfflinePlayer(uuid).getName()+" has left your KataParty");
+				}
+			}
 		}
 
 		public void enableInventory()
@@ -174,7 +208,7 @@ public class KataParty extends JavaPlugin implements Listener
 	}
 
 	public Set<Party> parties = new HashSet<>();
-	Party.Member findMember(UUID uuid)
+	public Party.Member findMember(UUID uuid)
 	{
 		for(Party p : parties)
 		{
@@ -188,22 +222,89 @@ public class KataParty extends JavaPlugin implements Listener
 		}
 		return null;
 	}
+	public Party findParty(String name)
+	{
+		for(Party p : parties)
+		{
+			if(p.name.equals(name))
+			{
+				return p;
+			}
+		}
+		return null;
+	}
+
+	Inventory plist = null;
+	public void updateList()
+	{
+		plist.clear();
+		for(final Party p : parties)
+		{
+			if(p.visible)
+			{
+				ItemStack s = new ItemStack(Material.NAME_TAG, p.members.size());
+				ItemMeta m = s.getItemMeta();
+				m.setDisplayName(p.name);
+				int online = 0;
+				for(Party.Member mem : p.members)
+				{
+					if(getServer().getPlayer(mem.uuid) != null)
+					{
+						++online;
+					}
+				}
+				final int online_ = online;
+				m.setLore(new ArrayList<String>(){
+				{
+					add(online_+"/"+p.members.size()+" members online");
+					add("Left click to join (you will leave your current party)");
+					add("Right click for more options");
+				}});
+				s.setItemMeta(m);
+				plist.addItem(s);
+			}
+		}
+	}
 
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e)
 	{
-		//
+		Party.Member m = findMember(e.getWhoClicked().getUniqueId());
+		if(m != null && m.gui.equals(e.getInventory()))
+		{
+			e.setCancelled(true);
+			ClickType click = e.getClick();
+			Party p = findParty(e.getCurrentItem().getItemMeta().getDisplayName());
+			if(click.equals(ClickType.LEFT))
+			{
+				if(m.getParty() != p)
+				{
+					p.add(m.uuid, Rank.MEMBER);
+					e.getView().close();
+				}
+			}
+			else if(click.equals(ClickType.RIGHT))
+			{
+				//
+			}
+			//
+		}
 	}
 	@EventHandler
 	public void onInvClose(InventoryCloseEvent e)
 	{
-		//
+		Party.Member m = findMember(e.getPlayer().getUniqueId());
+		if(m != null)
+		{
+			m.gt = GuiType.NONE;
+			m.gui = null;
+		}
 	}
 	@EventHandler
 	public void OnInvDrag(InventoryDragEvent e)
 	{
 		Party.Member m = findMember(e.getWhoClicked().getUniqueId());
-		if(m != null && m.gui == e.getInventory())
+		if(m != null && m.gui.equals(e.getInventory()))
 		{
 			e.setCancelled(true);
 		}
@@ -216,7 +317,15 @@ public class KataParty extends JavaPlugin implements Listener
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
-		//
+		Party.Member m = findMember(e.getPlayer().getUniqueId());
+		if(m != null)
+		{
+			e.getPlayer().sendMessage("You are in KataParty "+m.getParty().name);
+		}
+		else
+		{
+			e.getPlayer().sendMessage("You are not in a KataParty");
+		}
 	}
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent e)
