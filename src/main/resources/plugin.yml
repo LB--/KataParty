@@ -1,0 +1,58 @@
+
+name: "KataParty"
+main: com.lb_stuff.kataparty.KataParty
+version: 1.0.0
+author: "Nicholas \"LB\" Braden"
+description: "A party chat plugin made for Katatunka"
+
+commands:
+  kpcreate:
+    description: "Create a KataParty"
+    usage: "/kpcreate <KataParty-name>"
+    permission: KataParty.create
+    permission-message: "You don't have the KataParty.create permisson :("
+  kplist:
+    description: "Show a list of available KataParties"
+    usage: "/kplist"
+    permission: KataParty.list
+    permission-message: "You don't have the KataParty.list permission :\\"
+  kpjoin:
+    description: "Join a KataParty by name"
+    usage: "/kpjoin <KataParty-name>"
+    permission: KataParty.join
+    permission-message: "You don't have the KataParty.join permission :'("
+  kpleave:
+    description: "Leave the KataParty you are in"
+    usage: "/kpleave"
+    permission: KataParty.join
+    permission-message: "You don't have the KataParty.join permission (required to leave)"
+  kpdisband:
+    description: "Disband your KataParty if you have permission to"
+    usage: "/kpdisband"
+    permission: KataParty.disband
+    permission-message: "You don't have the KataParty.disband permission >:)"
+  kpclose:
+    description: "Force a KataParty to close (for admins)"
+    usage: "/kpclose <KataParty-name>"
+    permission: KataParty.close
+    permission-message: "You don't have the KataParty.close permission >:("
+  kpmanage:
+    description: "Manage your KataParty and its members"
+    usage: "/kpmanage"
+    permission: KataParty.create
+    permission-message: "You don't have the KataParty.create permission :("
+  kpadmin:
+    description: "Manage a specific KataParty and its members (for admins)"
+    usage: "/kpadmin <KataParty-name>"
+    permission: KataParty.admin
+    permission-message: "You don't have the KataParty.admin permission >:\\"
+  kptp:
+    description: "Teleport to someone in your KataParty"
+    usage: "/kptp"
+    permission: KataParty.teleport
+    permission-message: "You don't have the KataParty.teleport permission..."
+  kpshare:
+    description: "Open the shared inventory for your KataParty"
+    usage: "/kpshare"
+    permission: KataParty.inventory
+    permission-message: "You don't have the KataParty.inventory permission..."
