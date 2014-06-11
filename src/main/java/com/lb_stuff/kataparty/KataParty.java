@@ -23,7 +23,6 @@ public class KataParty extends JavaPlugin implements Listener
 	@Override
 	public void onEnable()
 	{
-		plist = Bukkit.createInventory(null, 9*6, "List of KataParties");
 		File f = new File("plugins/KataParty/parties.yaml");
 		if(f.exists())
 		{
@@ -53,7 +52,6 @@ public class KataParty extends JavaPlugin implements Listener
 				}
 			}
 		}
-		updateList();
 		Commands c = new Commands(this);
 		getCommand("kataparty").setExecutor(c);
 		getCommand("kpcreate").setExecutor(c);
@@ -234,13 +232,12 @@ public class KataParty extends JavaPlugin implements Listener
 		return null;
 	}
 
-	Inventory plist = null;
-	public void updateList()
+	public Inventory partyList(Player player)
 	{
-		plist.clear();
+		Inventory plist = Bukkit.createInventory(null, 9*6, "List of KataParties");
 		for(final Party p : parties)
 		{
-			if(p.visible)
+			if(p.visible || player.hasPermission("KataParty.seehidden"))
 			{
 				ItemStack s = new ItemStack(Material.NAME_TAG, p.members.size());
 				ItemMeta m = s.getItemMeta();
@@ -254,16 +251,25 @@ public class KataParty extends JavaPlugin implements Listener
 					}
 				}
 				final int online_ = online;
+				final boolean same = (p == findMember(player.getUniqueId()).getParty());
 				m.setLore(new ArrayList<String>(){
 				{
 					add(online_+"/"+p.members.size()+" members online");
-					add("Left click to join (you will leave your current party)");
+					if(!same)
+					{
+						add("Left click to join (you will leave your current KataParty)");
+					}
+					else
+					{
+						add("You are in this KataParty");
+					}
 					add("Right click for more options");
 				}});
 				s.setItemMeta(m);
 				plist.addItem(s);
 			}
 		}
+		return plist;
 	}
 
 	@EventHandler
