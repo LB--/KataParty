@@ -9,17 +9,29 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.*;
 import java.io.*;
-import org.bukkit.event.block.Action;
 
 public class KataParty extends JavaPlugin implements Listener
 {
 	@Override
 	public void onEnable()
 	{
+		File f = new File("plugins/KataParty");
+		f.mkdir();
+		f = new File("plugins/KataParty/parties.yaml");
+		if(f.exists())
+		{
+			YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
+			for(Object o : conf.getList("parties", new ArrayList<Object>()))
+			{
+				//
+			}
+		}
 		Commands c = new Commands(this);
+		getCommand("kataparty").setExecutor(c);
 		getCommand("kpcreate").setExecutor(c);
 		getCommand("kplist").setExecutor(c);
 		getCommand("kpjoin").setExecutor(c);
@@ -46,7 +58,7 @@ public class KataParty extends JavaPlugin implements Listener
 		}
 	}
 
-	private Set<Party.Member> members = new HashSet<>();
+	private Set<Party> parties = new HashSet<>();
 
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e)

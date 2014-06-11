@@ -6,6 +6,9 @@ author: "Nicholas \"LB\" Braden"
 description: "A party chat plugin made for Katatunka"
 
 commands:
+  kataparty:
+    description: "Display info about KataParty"
+    usage: "/kataparty"
   kpcreate:
     description: "Create a KataParty"
     usage: "/kpcreate <KataParty-name>"
@@ -39,8 +42,8 @@ commands:
   kpmanage:
     description: "Manage your KataParty and its members"
     usage: "/kpmanage"
-    permission: KataParty.create
-    permission-message: "You don't have the KataParty.create permission :("
+    permission: KataParty.manage
+    permission-message: "You don't have the KataParty.manage permission :("
   kpadmin:
     description: "Manage a specific KataParty and its members (for admins)"
     usage: "/kpadmin <KataParty-name>"
@@ -49,10 +52,80 @@ commands:
   kptp:
     description: "Teleport to someone in your KataParty"
     usage: "/kptp"
-    permission: KataParty.teleport
-    permission-message: "You don't have the KataParty.teleport permission..."
+    permission: KataParty.teleport.do
+    permission-message: "You don't have the KataParty.teleport.do permission..."
   kpshare:
     description: "Open the shared inventory for your KataParty"
     usage: "/kpshare"
-    permission: KataParty.inventory
-    permission-message: "You don't have the KataParty.inventory permission..."
+    permission: KataParty.inventory.use
+    permission-message: "You don't have the KataParty.inventory.use permission..."
+
+permissions:
+  KataParty.*:
+    description: "Gives access to all KataParty permissions (for admins)"
+    children:
+      KataParty.create: true
+      KataParty.hide: true
+      KataParty.seehidden: true
+      KataParty.list: true
+      KataParty.join: true
+      KataParty.disband: true
+      KataParty.close: true
+      KataParty.manage: true
+      KataParty.admin: true
+      KataParty.teleport.*: true
+      KataParty.inventory.*: true
+    default: op
+  KataParty.teleport.*:
+    description: "Gives access to all teleportation features"
+    children:
+      KataParty.teleport.do: true
+      KataParty.teleport.disallow: true
+      KataParty.teleport.disable: true
+  KataParty.inventory.*:
+    description: "Gives access to all inventory features"
+    children:
+      KataParty.inventory.use: true
+      KataParty.inventory.enable: true
+  KataParty.create:
+    description: "Allows creation of a KataParty"
+    default: true
+  KataParty.hide:
+    description: "Allows for hiding KataParties from the list"
+    default: op
+  KataParty.seehidden:
+    description: "Allows for seeing hidden KataParties in the list"
+    default: op
+  KataParty.list:
+    description: "Allows viewing a list of KataParties"
+    default: true
+  KataParty.join:
+    description: "Allows joining a KataParty"
+    default: true
+  KataParty.disband:
+    description: "Allows closing of a KataParty by party admin"
+    default: true
+  KataParty.close:
+    description: "Allows closing of a KataParty bypassing party rank"
+    default: op
+  KataParty.manage:
+    description: "Allows management of a KataParty (features based on party rank)"
+    default: true
+  KataParty.admin:
+    description: "Allows management of a KataParty bypassing party rank"
+    default: op
+  KataParty.teleport.do:
+    description: "Allows teleporting to a willing KataParty member"
+    default: true
+  KataParty.teleport.disallow:
+    description: "Allows preventing other KataParty members from teleporting to you"
+    default: true
+  KataParty.teleport.disable:
+    description: "Allows disabling teleportaion for an entire KataParty (based on party rank or KataParty.admin)"
+    default: true
+  KataParty.inventory.use:
+    description: "Allows access to the shared KataParty inventory"
+    default: true
+  KataParty.inventory.enable:
+    description: "Allows enabling/disabling the shared KataParty inventory"
+    default: op

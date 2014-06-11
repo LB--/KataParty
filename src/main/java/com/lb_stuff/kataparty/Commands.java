@@ -1,11 +1,11 @@
 package com.lb_stuff.kataparty;
 
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.Command;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
-public class Commands implements CommandExecutor
+import java.util.*;
+
+public class Commands implements CommandExecutor, TabCompleter
 {
 	private KataParty inst;
 
@@ -15,13 +15,47 @@ public class Commands implements CommandExecutor
 	}
 
 	@Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args)
+	{
+		if(sender instanceof Player)
+		{
+			Player player = (Player)sender;
+			String cmdname = cmd.getName().toLowerCase();
+			switch(cmdname)
+			{
+				case "kpjoin":
+				{
+					//
+				} break;
+				case "kpclose":
+				{
+					//
+				} break;
+				case "kpadmin":
+				{
+					//
+				} break;
+				case "kptp":
+				{
+					//
+				} break;
+			}
+		}
+		return null;
+	}
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		if(sender instanceof Player)
 		{
+			Player player = (Player)sender;
 			String cmdname = cmd.getName().toLowerCase();
 			switch(cmdname)
 			{
+				case "kataparty":
+				{
+					//
+				} break;
 				case "kpcreate":
 				{
 					//
