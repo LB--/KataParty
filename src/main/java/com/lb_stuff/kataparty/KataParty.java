@@ -6,10 +6,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.*;
 import org.bukkit.Material;
-import org.bukkit.material.MaterialData;
 import org.bukkit.configuration.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.Bukkit;
@@ -116,7 +116,6 @@ public class KataParty extends JavaPlugin implements Listener
 	}
 	public static enum GuiType
 	{
-		NONE,
 		CREATE,
 		LIST,
 		MANAGE,
@@ -382,17 +381,23 @@ public class KataParty extends JavaPlugin implements Listener
 
 		final Party.Member mt = findMember(player.getUniqueId());
 		boolean is_member = false;
+		boolean is_admin = false;
+		boolean is_partyAdmin = false;
+		boolean is_partyMod = false;
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
+			is_partyAdmin = (mt.rank == Rank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.rank == Rank.MODERATOR);
 		}
-		final boolean isMember = is_member;
-		boolean is_admin = false;
-		if((mt != null && mt.getParty() != party) || player.hasPermission("KataParty.admin"))
+		if(player.hasPermission("KataParty.admin"))
 		{
 			is_admin = true;
 		}
+		final boolean isMember = is_member;
 		final boolean isAdmin = is_admin;
+		final boolean isPartyAdmin = is_partyAdmin;
+		final boolean isPartyMod = is_partyMod;
 
 		ItemStack i = new ItemStack(Material.NAME_TAG);
 		ItemMeta m = i.getItemMeta();
@@ -402,21 +407,49 @@ public class KataParty extends JavaPlugin implements Listener
 			if(isMember)
 			{
 				add("Your rank: "+mt.rank);
+				add("Click to leave this KataParty");
 			}
-			add("Click to leave this party");
+			else
+			{
+				add("You are not a member of this KataParty");
+			}
+			if(isAdmin)
+			{
+				add("You are managing this KataParty as a server admin");
+			}
 		}});
 		i.setItemMeta(m);
 		inv.setItem(0, i);
 
-		int online = 0;
+		int online = 0, mods = 0, onmods = 0, admins = 0, onadmins = 0;
 		for(Party.Member mem : party.members)
 		{
+			if(mem.rank.equals(Rank.MODERATOR))
+			{
+				++mods;
+			}
+			else if(mem.rank.equals(Rank.ADMIN))
+			{
+				++admins;
+			}
 			if(getServer().getPlayer(mem.uuid) != null)
 			{
 				++online;
+				if(mem.rank.equals(Rank.MODERATOR))
+				{
+					++onmods;
+				}
+				else if(mem.rank.equals(Rank.ADMIN))
+				{
+					++onadmins;
+				}
 			}
 		}
 		final int online_ = online;
+		final int mods_ = mods;
+		final int onmods_ = onmods;
+		final int admins_ = admins;
+		final int onadmins_ = onadmins;
 
 		i = new ItemStack(Material.SKULL_ITEM, party.members.size(), (short)3);
 		m = i.getItemMeta();
@@ -424,6 +457,8 @@ public class KataParty extends JavaPlugin implements Listener
 		m.setLore(new ArrayList<String>(){
 		{
 			add(online_+"/"+party.members.size()+" online");
+			add(onmods_+"/"+mods_+" moderators online");
+			add(onadmins_+"/"+admins_+" admins online");
 		}});
 		i.setItemMeta(m);
 		inv.setItem(1, i);
@@ -433,7 +468,7 @@ public class KataParty extends JavaPlugin implements Listener
 		m.setDisplayName("Teleportation "+(party.tp? "enabled" : "disabled"));
 		m.setLore(new ArrayList<String>(){
 		{
-			if(isAdmin || (player.hasPermission("KataParty.teleport.disable") && (mt.rank == Rank.MODERATOR || mt.rank == Rank.ADMIN)))
+			if(isAdmin || (player.hasPermission("KataParty.teleport.disable") && isPartyMod))
 			{
 				add("Click to change");
 			}
@@ -450,7 +485,7 @@ public class KataParty extends JavaPlugin implements Listener
 		m.setDisplayName("PvP "+(party.pvp? "enabled" : "disabled"));
 		m.setLore(new ArrayList<String>(){
 		{
-			if(isAdmin || (mt.rank == Rank.MODERATOR || mt.rank == Rank.ADMIN))
+			if(isAdmin || isPartyMod)
 			{
 				add("Click to change");
 			}
@@ -467,7 +502,7 @@ public class KataParty extends JavaPlugin implements Listener
 		m.setDisplayName("Shared inventory "+(party.inv != null? "enabled" : "disabled"));
 		m.setLore(new ArrayList<String>(){
 		{
-			if(isAdmin || (player.hasPermission("KataParty.inventory.enable") && (mt.rank == Rank.MODERATOR || mt.rank == Rank.ADMIN)))
+			if(isAdmin || (player.hasPermission("KataParty.inventory.enable") && isPartyMod))
 			{
 				add("Click to change");
 			}
@@ -484,7 +519,7 @@ public class KataParty extends JavaPlugin implements Listener
 		m.setDisplayName("Will"+(party.visible? "" : " not")+" be visible in list");
 		m.setLore(new ArrayList<String>(){
 		{
-			if(isAdmin || (player.hasPermission("KataParty.hide") && mt.rank == Rank.ADMIN))
+			if(isAdmin || (player.hasPermission("KataParty.hide") && isPartyAdmin))
 			{
 				add("Click to change");
 			}
@@ -501,7 +536,7 @@ public class KataParty extends JavaPlugin implements Listener
 		m.setDisplayName("Teleport all players to yourself");
 		m.setLore(new ArrayList<String>(){
 		{
-			if(isAdmin || (player.hasPermission("KataParty.teleport.do") && mt.rank == Rank.ADMIN))
+			if(isAdmin || (player.hasPermission("KataParty.teleport.do") && isPartyAdmin))
 			{
 				add("Click to use");
 			}
@@ -517,7 +552,7 @@ public class KataParty extends JavaPlugin implements Listener
 		{
 			i = new ItemStack(Material.EYE_OF_ENDER, (mt.tp? 2 : 1));
 			m = i.getItemMeta();
-			m.setDisplayName("Members are "+(mt.tp? "" : "not")+" allowed to teleport to you");
+			m.setDisplayName("Members are"+(mt.tp? "" : " not")+" allowed to teleport to you");
 			m.setLore(new ArrayList<String>(){
 			{
 				if(player.hasPermission("KataParty.teleport.disallow"))
@@ -537,6 +572,16 @@ public class KataParty extends JavaPlugin implements Listener
 
 		return inv;
 	}
+	public Inventory partyMembers(final Party party, final Player player)
+	{
+		Inventory inv = Bukkit.createInventory(null, 9*6, "Manage "+party.name+" members");
+
+		//
+
+		guis.put(player, GuiType.MEMBERS);
+
+		return inv;
+	}
 	public Inventory partyTeleport(final Player player)
 	{
 		Inventory inv = Bukkit.createInventory(null, 9*6, "Members in your KataParty");
@@ -552,25 +597,11 @@ public class KataParty extends JavaPlugin implements Listener
 			final OfflinePlayer offp = getServer().getOfflinePlayer(mem.uuid);
 			final Player onp = offp.getPlayer();
 			ItemStack i = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
-			if(!offp.isOnline())
-			{
-				i.setDurability((short)2); //zombie
-			}
-			else
-			{
-				if(onp.isDead())
-				{
-					i.setDurability((short)0); //skeleton
-				}
-				if(!mem.tp)
-				{
-					i.setDurability((short)4); //creeper
-				}
-			}
 			ItemMeta im = i.getItemMeta();
 			im.setDisplayName(offp.getName());
 			im.setLore(new ArrayList<String>(){
 			{
+				add("Rank: "+mem.rank);
 				add("Online: "+offp.isOnline());
 				add("Allows TP: "+mem.tp);
 				if(offp.isOnline())
@@ -578,6 +609,7 @@ public class KataParty extends JavaPlugin implements Listener
 					add("Alive: "+!onp.isDead());
 				}
 			}});
+			((SkullMeta)im).setOwner(mem.uuid.toString()); //not correct way to do this, just a hacky workaround
 			i.setItemMeta(im);
 			inv.addItem(i);
 		}
@@ -594,133 +626,269 @@ public class KataParty extends JavaPlugin implements Listener
 		{
 			return;
 		}
-		if(guis.get(e.getWhoClicked()).equals(GuiType.LIST))
+		e.setCancelled(true);
+		switch(guis.get(e.getWhoClicked()))
 		{
-			e.setCancelled(true);
-			ClickType click = e.getClick();
-			Party p = findParty(e.getCurrentItem().getItemMeta().getDisplayName());
-			if(p != null)
+			case CREATE:
 			{
-				if(click.equals(ClickType.LEFT))
+				switch(e.getSlot())
 				{
-					p.add(e.getWhoClicked().getUniqueId(), Rank.MEMBER);
+					case 0: //create
+					{
+						String name = e.getCurrentItem().getItemMeta().getDisplayName();
+						if(findParty(name) != null)
+						{
+							e.getWhoClicked().openInventory(Bukkit.createInventory(null, 9*1, "Name taken: "+name));
+							break;
+						}
+						Party p = new Party(name);
+						p.add(e.getWhoClicked().getUniqueId(), Rank.ADMIN);
+						p.tp = (e.getInventory().getItem(2).getAmount() != 1);
+						p.pvp = (e.getInventory().getItem(3).getAmount() != 1);
+						if(e.getInventory().getItem(4).getAmount() != 1)
+						{
+							p.enableInventory();
+						}
+						p.visible = (e.getInventory().getItem(5).getAmount() != 1);
+						parties.add(p);
+						e.getWhoClicked().closeInventory();
+					} break;
+					case 2: //toggle TP
+					{
+						if(e.getWhoClicked().hasPermission("KataParty.teleport.disable"))
+						{
+							ItemStack i = e.getCurrentItem();
+							ItemMeta d = i.getItemMeta();
+							if(i.getAmount() != 1)
+							{
+								i.setAmount(1);
+								d.setDisplayName("Teleportation disabled");
+							}
+							else
+							{
+								i.setAmount(2);
+								d.setDisplayName("Teleportation enabled");
+							}
+							i.setItemMeta(d);
+						}
+					} break;
+					case 3: //toggle PvP
+					{
+						ItemStack i = e.getCurrentItem();
+						ItemMeta d = i.getItemMeta();
+						if(i.getAmount() != 1)
+						{
+							i.setAmount(1);
+							i.setType(Material.STONE_SWORD);
+							d.setDisplayName("PvP disabled");
+						}
+						else
+						{
+							i.setAmount(2);
+							i.setType(Material.GOLD_SWORD);
+							d.setDisplayName("PvP enabled");
+						}
+						i.setItemMeta(d);
+					} break;
+					case 4: //toggle shared inventory
+					{
+						if(e.getWhoClicked().hasPermission("KataParty.inventory.enable"))
+						{
+							ItemStack i = e.getCurrentItem();
+							ItemMeta d = i.getItemMeta();
+							if(i.getAmount() != 1)
+							{
+								i.setAmount(1);
+								d.setDisplayName("Shared inventory disabled");
+							}
+							else
+							{
+								i.setAmount(2);
+								d.setDisplayName("Shared inventory enabled");
+							}
+							i.setItemMeta(d);
+						}
+					} break;
+					case 5: //toggle visibility
+					{
+						if(e.getWhoClicked().hasPermission("KataParty.hide"))
+						{
+							ItemStack i = e.getCurrentItem();
+							ItemMeta d = i.getItemMeta();
+							if(i.getAmount() != 1)
+							{
+								i.setAmount(1);
+								i.setType(Material.PUMPKIN);
+								d.setDisplayName("Will not be visible in list");
+							}
+							else
+							{
+								i.setAmount(2);
+								i.setType(Material.JACK_O_LANTERN);
+								d.setDisplayName("Will be visible in list");
+							}
+							i.setItemMeta(d);
+						}
+					} break;
+					default: break;
+				}
+			} break;
+			case LIST:
+			{
+				ClickType click = e.getClick();
+				Party p = findParty(e.getCurrentItem().getItemMeta().getDisplayName());
+				if(p != null)
+				{
+					switch(click)
+					{
+						case LEFT:
+						{
+							p.add(e.getWhoClicked().getUniqueId(), Rank.MEMBER);
+							e.getView().close();
+						} break;
+						case RIGHT:
+						{
+							//
+						} break;
+						default: break;
+					}
+				}
+				else
+				{
 					e.getView().close();
 				}
-				else if(click.equals(ClickType.RIGHT))
+				//
+			} break;
+			case MANAGE:
+			{
+				HumanEntity he = e.getWhoClicked();
+				Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
+				if(party == null)
 				{
-					//
+					e.getView().close();
+					return;
 				}
-			}
-			else
+
+				final Party.Member mt = findMember(he.getUniqueId());
+				boolean is_member = false;
+				boolean is_admin = false;
+				boolean is_partyAdmin = false;
+				boolean is_partyMod = false;
+				if(mt != null && mt.getParty() == party)
+				{
+					is_member = true;
+					is_partyAdmin = (mt.rank == Rank.ADMIN);
+					is_partyMod = (is_partyAdmin || mt.rank == Rank.MODERATOR);
+				}
+				if(he.hasPermission("KataParty.admin"))
+				{
+					is_admin = true;
+				}
+				final boolean isMember = is_member;
+				final boolean isAdmin = is_admin;
+				final boolean isPartyAdmin = is_partyAdmin;
+				final boolean isPartyMod = is_partyMod;
+
+				switch(e.getSlot())
+				{
+					case 0: //leave
+					{
+						if(isMember)
+						{
+							party.remove(mt.uuid);
+							e.getView().close();
+						}
+					} break;
+					case 1: //manage members
+					{
+						//
+					} break;
+					case 2: //toggle TP
+					{
+						if(isAdmin || (he.hasPermission("KataParty.teleport.disable") && isPartyMod))
+						{
+							party.tp = !party.tp;
+							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+						}
+					} break;
+					case 3: //toggle PvP
+					{
+						if(isAdmin || isPartyMod)
+						{
+							party.pvp = !party.pvp;
+							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+						}
+					} break;
+					case 4: //toggle shared inventory
+					{
+						if(isAdmin || (he.hasPermission("KataParty.inventory.enable") && isPartyMod))
+						{
+							if(party.inv == null)
+							{
+								party.enableInventory();
+							}
+							else
+							{
+								party.disableInventory((Player)he);
+							}
+							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+						}
+					} break;
+					case 5: //toggle visibility
+					{
+						if(isAdmin || (he.hasPermission("KataParty.hide") && isPartyAdmin))
+						{
+							party.visible = !party.visible;
+							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+						}
+					} break;
+					case 10: //TP all to self
+					{
+						if(isAdmin || (he.hasPermission("KataParty.teleport.do") && isPartyAdmin))
+						{
+							for(Party.Member mem : party.members)
+							{
+								if(!mem.uuid.equals(he.getUniqueId()) && mem.tp)
+								{
+									OfflinePlayer offp = getServer().getOfflinePlayer(mem.uuid);
+									if(offp.isOnline())
+									{
+										Player onp = offp.getPlayer();
+										onp.setNoDamageTicks(20*5); //inulnerable for 5 seconds
+										onp.teleport(he);
+										onp.sendMessage("You were teleported to "+he.getName());
+									}
+								}
+							}
+							e.getView().close();
+						}
+					} break;
+					case 11: //toggle self TP
+					{
+						if(isMember && he.hasPermission("KataParty.teleport.disallow"))
+						{
+							mt.tp = !mt.tp;
+							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+						}
+					} break;
+					default: break;
+				}
+			} break;
+			case MEMBERS:
 			{
-				e.getView().close();
-			}
-			//
-		}
-		else if(guis.get(e.getWhoClicked()).equals(GuiType.CREATE))
-		{
-			e.setCancelled(true);
-			switch(e.getSlot())
+				//
+			} break;
+			case TP:
 			{
-				case 0: //create
+				UUID uuid = UUID.fromString(((SkullMeta)e.getCurrentItem().getItemMeta()).getOwner()); //hacky work around
+				OfflinePlayer target = getServer().getOfflinePlayer(uuid);
+				if(target.isOnline() && findMember(uuid).tp)
 				{
-					String name = e.getCurrentItem().getItemMeta().getDisplayName();
-					if(findParty(name) != null)
-					{
-						e.getWhoClicked().openInventory(Bukkit.createInventory(null, 9*1, "Name taken: "+name));
-						break;
-					}
-					Party p = new Party(name);
-					p.add(e.getWhoClicked().getUniqueId(), Rank.ADMIN);
-					p.tp = (e.getInventory().getItem(2).getAmount() != 1);
-					p.pvp = (e.getInventory().getItem(3).getAmount() != 1);
-					if(e.getInventory().getItem(4).getAmount() != 1)
-					{
-						p.enableInventory();
-					}
-					p.visible = (e.getInventory().getItem(5).getAmount() != 1);
-					parties.add(p);
-					e.getWhoClicked().closeInventory();
-				} break;
-				case 2: //toggle TP
-				{
-					if(e.getWhoClicked().hasPermission("KataParty.teleport.disable"))
-					{
-						ItemStack i = e.getCurrentItem();
-						ItemMeta d = i.getItemMeta();
-						if(i.getAmount() != 1)
-						{
-							i.setAmount(1);
-							d.setDisplayName("Teleportation disabled");
-						}
-						else
-						{
-							i.setAmount(2);
-							d.setDisplayName("Teleportation enabled");
-						}
-						i.setItemMeta(d);
-					}
-				} break;
-				case 3: //toggle PvP
-				{
-					ItemStack i = e.getCurrentItem();
-					ItemMeta d = i.getItemMeta();
-					if(i.getAmount() != 1)
-					{
-						i.setAmount(1);
-						i.setType(Material.STONE_SWORD);
-						d.setDisplayName("PvP disabled");
-					}
-					else
-					{
-						i.setAmount(2);
-						i.setType(Material.GOLD_SWORD);
-						d.setDisplayName("PvP enabled");
-					}
-					i.setItemMeta(d);
-				} break;
-				case 4: //toggle shared inventory
-				{
-					if(e.getWhoClicked().hasPermission("KataParty.inventory.enable"))
-					{
-						ItemStack i = e.getCurrentItem();
-						ItemMeta d = i.getItemMeta();
-						if(i.getAmount() != 1)
-						{
-							i.setAmount(1);
-							d.setDisplayName("Shared inventory disabled");
-						}
-						else
-						{
-							i.setAmount(2);
-							d.setDisplayName("Shared inventory enabled");
-						}
-						i.setItemMeta(d);
-					}
-				} break;
-				case 5: //toggle visibility
-				{
-					if(e.getWhoClicked().hasPermission("KataParty.hide"))
-					{
-						ItemStack i = e.getCurrentItem();
-						ItemMeta d = i.getItemMeta();
-						if(i.getAmount() != 1)
-						{
-							i.setAmount(1);
-							i.setType(Material.PUMPKIN);
-							d.setDisplayName("Will not be visible in list");
-						}
-						else
-						{
-							i.setAmount(2);
-							i.setType(Material.JACK_O_LANTERN);
-							d.setDisplayName("Will be visible in list");
-						}
-						i.setItemMeta(d);
-					}
-				} break;
-				default: break;
-			}
+					e.getWhoClicked().teleport(target.getPlayer());
+					e.getView().close();
+				}
+			} break;
+			default: break;
 		}
 	}
 	@EventHandler
