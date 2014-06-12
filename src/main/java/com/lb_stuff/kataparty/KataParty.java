@@ -582,6 +582,8 @@ public class KataParty extends JavaPlugin implements Listener
 			inv.addItem(i);
 		}
 
+		guis.put(player, GuiType.TP);
+
 		return inv;
 	}
 
