@@ -82,10 +82,14 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 1)
 					{
-						KataParty.Party p;
-						inst.parties.add(p = inst.new Party(args[0]));
-						p.add(player.getUniqueId(), KataParty.Rank.ADMIN);
-						//
+						if(inst.findParty(args[0]) != null)
+						{
+							sender.sendMessage("There is already a KataParty named "+args[0]);
+						}
+						else
+						{
+							player.openInventory(inst.partyCreate(player, args[0]));
+						}
 						return true;
 					}
 				} break;
@@ -93,31 +97,98 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 0)
 					{
-						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
-						if(m != null)
-						{
-							m.gt = KataParty.GuiType.LIST;
-							m.gui = inst.partyList(player);
-							player.openInventory(m.gui);
-						}
+						inst.guis.put(player, KataParty.GuiType.LIST);
+						player.openInventory(inst.partyList(player));
 						return true;
 					}
 				} break;
 				case "kpjoin":
 				{
-					//
+					if(args.length == 1)
+					{
+						KataParty.Party p = inst.findParty(args[0]);
+						if(p == null)
+						{
+							sender.sendMessage("No KataParty named "+args[0]);
+						}
+						else
+						{
+							p.add(player.getUniqueId(), KataParty.Rank.MEMBER);
+						}
+						return true;
+					}
 				} break;
 				case "kpleave":
 				{
-					//
+					if(args.length == 0)
+					{
+						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						if(m == null)
+						{
+							sender.sendMessage("You are not in any KataParty");
+						}
+						else
+						{
+							m.getParty().remove(m.uuid);
+							sender.sendMessage("You left your KataParty");
+						}
+						return true;
+					}
 				} break;
 				case "kpdisband":
 				{
-					//
+					if(args.length == 0)
+					{
+						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						if(m == null)
+						{
+							sender.sendMessage("You are not in any KataParty");
+						}
+						else if(m.rank == KataParty.Rank.ADMIN)
+						{
+							KataParty.Party p = m.getParty();
+							inst.parties.remove(p);
+							for(KataParty.Party.Member mem : p.members)
+							{
+								Player plr = inst.getServer().getPlayer(mem.uuid);
+								if(plr != null)
+								{
+									plr.sendMessage("Your KataParty was disbanded");
+								}
+							}
+							p.disableInventory(player);
+						}
+						else
+						{
+							sender.sendMessage("You do not have permission to disband your KataParty");
+						}
+						return true;
+					}
 				} break;
 				case "kpclose":
 				{
-					//
+					if(args.length == 1)
+					{
+						KataParty.Party p = inst.findParty(args[0]);
+						if(p == null)
+						{
+							sender.sendMessage("No KataParty named "+args[0]);
+						}
+						else
+						{
+							inst.parties.remove(p);
+							for(KataParty.Party.Member m : p.members)
+							{
+								Player plr = inst.getServer().getPlayer(m.uuid);
+								if(plr != null)
+								{
+									plr.sendMessage("Your KataParty was closed");
+								}
+							}
+							p.disableInventory(player);
+						}
+						return true;
+					}
 				} break;
 				case "kpmanage":
 				{
