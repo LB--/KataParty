@@ -70,7 +70,6 @@ permissions:
       KataParty.list: true
       KataParty.join: true
       KataParty.disband: true
-      KataParty.close: true
       KataParty.manage: true
       KataParty.admin: true
       KataParty.teleport.*: true
@@ -105,9 +104,6 @@ permissions:
   KataParty.disband:
     description: "Allows closing of a KataParty by party admin"
     default: true
-  KataParty.close:
-    description: "Allows closing of a KataParty bypassing party rank"
-    default: op
   KataParty.manage:
     description: "Allows management of a KataParty (features based on party rank)"
     default: true

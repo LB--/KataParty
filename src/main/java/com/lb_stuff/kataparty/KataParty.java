@@ -118,7 +118,9 @@ public class KataParty extends JavaPlugin implements Listener
 	{
 		CREATE,
 		LIST,
+		toMANAGE,
 		MANAGE,
+		toMEMBERS,
 		MEMBERS,
 		TP,
 	}
@@ -174,6 +176,18 @@ public class KataParty extends JavaPlugin implements Listener
 				}
 			}
 		}
+		public Member memberByName(String name)
+		{
+			for(Member m : members)
+			{
+				OfflinePlayer offp = getServer().getOfflinePlayer(m.uuid);
+				if(offp.getName().equalsIgnoreCase(name))
+				{
+					return m;
+				}
+			}
+			return null;
+		}
 
 		public void enableInventory()
 		{
@@ -204,7 +218,7 @@ public class KataParty extends JavaPlugin implements Listener
 		public class Member
 		{
 			public final UUID uuid;
-			public final Rank rank;
+			public Rank rank;
 			public boolean tp = true;
 
 			public Member(UUID id, Rank r)
@@ -239,7 +253,7 @@ public class KataParty extends JavaPlugin implements Listener
 	{
 		for(Party p : parties)
 		{
-			if(p.name.toLowerCase().equals(name.toLowerCase()))
+			if(p.name.equalsIgnoreCase(name))
 			{
 				return p;
 			}
@@ -328,7 +342,7 @@ public class KataParty extends JavaPlugin implements Listener
 
 		return inv;
 	}
-	public Inventory partyList(Player player)
+	public Inventory partyList(final Player player)
 	{
 		Inventory plist = Bukkit.createInventory(null, 9*6, "List of KataParties");
 		for(final Party p : parties)
@@ -367,7 +381,10 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						add("You are in this KataParty");
 					}
-					add("Right click for more options");
+					if(player.hasPermission("KataParty.admin"))
+					{
+						add("Right click to administrate");
+					}
 				}});
 				s.setItemMeta(m);
 				plist.addItem(s);
@@ -531,6 +548,26 @@ public class KataParty extends JavaPlugin implements Listener
 		i.setItemMeta(m);
 		inv.setItem(5, i);
 
+		if(isAdmin || (isMember && isPartyAdmin))
+		{
+			i = new ItemStack(Material.TNT);
+			m = i.getItemMeta();
+			m.setDisplayName(isMember? "Disband your KataParty" : "Close this KataParty");
+			m.setLore(new ArrayList<String>(){
+			{
+				if(isAdmin || (player.hasPermission("KataParty.disband") && isPartyAdmin))
+				{
+					add("Click to use");
+				}
+				else
+				{
+					add("You cannot use this");
+				}
+			}});
+			i.setItemMeta(m);
+			inv.setItem(9, i);
+		}
+
 		i = new ItemStack(Material.ENDER_PORTAL_FRAME);
 		m = i.getItemMeta();
 		m.setDisplayName("Teleport all players to yourself");
@@ -576,7 +613,91 @@ public class KataParty extends JavaPlugin implements Listener
 	{
 		Inventory inv = Bukkit.createInventory(null, 9*6, "Manage "+party.name+" members");
 
-		//
+		final Party.Member mt = findMember(player.getUniqueId());
+		boolean is_member = false;
+		boolean is_admin = false;
+		boolean is_partyAdmin = false;
+		boolean is_partyMod = false;
+		if(mt != null && mt.getParty() == party)
+		{
+			is_member = true;
+			is_partyAdmin = (mt.rank == Rank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.rank == Rank.MODERATOR);
+		}
+		if(player.hasPermission("KataParty.admin"))
+		{
+			is_admin = true;
+		}
+		final boolean isMember = is_member;
+		final boolean isAdmin = is_admin;
+		final boolean isPartyAdmin = is_partyAdmin;
+		final boolean isPartyMod = is_partyMod;
+
+		for(final Party.Member m : party.members)
+		{
+			ItemStack i = new ItemStack(Material.NAME_TAG);
+			ItemMeta im = i.getItemMeta();
+			im.setDisplayName(party.name);
+			im.setLore(new ArrayList<String>(){
+			{
+				add("Click to return to management");
+			}});
+			i.setItemMeta(im);
+			inv.addItem(i);
+
+			final OfflinePlayer offp = getServer().getOfflinePlayer(m.uuid);
+			final Player onp = offp.getPlayer();
+			i = new ItemStack(Material.SKULL_ITEM, (m.rank.equals(Rank.MODERATOR)? 2 : (m.rank.equals(Rank.ADMIN)? 3 : 1)), (short)3);
+			im = i.getItemMeta();
+			im.setDisplayName(offp.getName());
+			im.setLore(new ArrayList<String>(){
+			{
+				if(m.uuid.equals(player.getUniqueId()))
+				{
+					add("(that's you!)");
+				}
+				add("Rank: "+m.rank);
+				switch(m.rank)
+				{
+					case MEMBER:
+					{
+						if(isAdmin || (isMember && isPartyAdmin))
+						{
+							add("Left click to promote to moderator");
+						}
+						if(isAdmin || (isMember && isPartyMod))
+						{
+							add("Right click to kick");
+						}
+					} break;
+					case MODERATOR:
+					{
+						if(isAdmin || (isMember && isPartyAdmin))
+						{
+							add("Left click to promote to admin");
+							add("Right click to demote to member");
+						}
+					} break;
+					case ADMIN:
+					{
+						if(isAdmin || (isMember && isPartyAdmin))
+						{
+							add("Right click to demote to moderator");
+						}
+					} break;
+					default: break;
+				}
+				add("Online: "+offp.isOnline());
+				add("Allows TP: "+m.tp);
+				if(offp.isOnline())
+				{
+					add("Alive: "+!onp.isDead());
+				}
+			}});
+			((SkullMeta)im).setOwner(offp.getName());
+			i.setItemMeta(im);
+			inv.addItem(i);
+		}
 
 		guis.put(player, GuiType.MEMBERS);
 
@@ -587,6 +708,16 @@ public class KataParty extends JavaPlugin implements Listener
 		Inventory inv = Bukkit.createInventory(null, 9*6, "Members in your KataParty");
 
 		Party.Member m = findMember(player.getUniqueId());
+		if(m == null)
+		{
+			return null;
+		}
+
+		ItemStack i = new ItemStack(Material.NAME_TAG);
+		ItemMeta im = i.getItemMeta();
+		im.setDisplayName(m.getParty().name);
+		i.setItemMeta(im);
+		inv.addItem(i);
 
 		for(final Party.Member mem : m.getParty().members)
 		{
@@ -596,8 +727,8 @@ public class KataParty extends JavaPlugin implements Listener
 			}
 			final OfflinePlayer offp = getServer().getOfflinePlayer(mem.uuid);
 			final Player onp = offp.getPlayer();
-			ItemStack i = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
-			ItemMeta im = i.getItemMeta();
+			i = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
+			im = i.getItemMeta();
 			im.setDisplayName(offp.getName());
 			im.setLore(new ArrayList<String>(){
 			{
@@ -609,7 +740,7 @@ public class KataParty extends JavaPlugin implements Listener
 					add("Alive: "+!onp.isDead());
 				}
 			}});
-			((SkullMeta)im).setOwner(mem.uuid.toString()); //not correct way to do this, just a hacky workaround
+			((SkullMeta)im).setOwner(offp.getName());
 			i.setItemMeta(im);
 			inv.addItem(i);
 		}
@@ -735,30 +866,36 @@ public class KataParty extends JavaPlugin implements Listener
 			} break;
 			case LIST:
 			{
-				ClickType click = e.getClick();
 				Party p = findParty(e.getCurrentItem().getItemMeta().getDisplayName());
+				HumanEntity he = e.getWhoClicked();
 				if(p != null)
 				{
-					switch(click)
+					switch(e.getClick())
 					{
 						case LEFT:
 						{
-							p.add(e.getWhoClicked().getUniqueId(), Rank.MEMBER);
+							p.add(he.getUniqueId(), Rank.MEMBER);
 							e.getView().close();
 						} break;
 						case RIGHT:
 						{
-							//
+							if(he.hasPermission("KataParty.admin"))
+							{
+								Inventory inv = partyManage(p, (Player)he);
+								guis.put((Player)he, GuiType.toMANAGE);
+								he.openInventory(inv);
+							}
 						} break;
 						default: break;
 					}
 				}
 				else
 				{
-					e.getView().close();
+					e.getView().getTopInventory().setContents(partyList((Player)he).getContents());
 				}
 				//
 			} break;
+			case toMANAGE:
 			case MANAGE:
 			{
 				HumanEntity he = e.getWhoClicked();
@@ -801,7 +938,9 @@ public class KataParty extends JavaPlugin implements Listener
 					} break;
 					case 1: //manage members
 					{
-						//
+						Inventory inv = partyMembers(party, (Player)he);
+						guis.put((Player)he, GuiType.toMEMBERS);
+						he.openInventory(inv);
 					} break;
 					case 2: //toggle TP
 					{
@@ -842,6 +981,26 @@ public class KataParty extends JavaPlugin implements Listener
 							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
 						}
 					} break;
+					case 9: //disband/close
+					{
+						if(isAdmin || (he.hasPermission("KataParty.disband") && isPartyAdmin))
+						{
+							parties.remove(party);
+							for(Party.Member mem : party.members)
+							{
+								Player plr = getServer().getPlayer(mem.uuid);
+								if(plr != null)
+								{
+									plr.sendMessage("Your KataParty was "+(isMember? "disbanded" : "closed"));
+								}
+							}
+							if(party.inv != null)
+							{
+								party.disableInventory((Player)he);
+							}
+							e.getView().close();
+						}
+					} break;
 					case 10: //TP all to self
 					{
 						if(isAdmin || (he.hasPermission("KataParty.teleport.do") && isPartyAdmin))
@@ -874,18 +1033,135 @@ public class KataParty extends JavaPlugin implements Listener
 					default: break;
 				}
 			} break;
+			case toMEMBERS:
 			case MEMBERS:
 			{
-				//
+				HumanEntity he = e.getWhoClicked();
+				Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
+				if(party == null)
+				{
+					e.getView().close();
+					return;
+				}
+				if(e.getSlot() != 0)
+				{
+					Party.Member target = party.memberByName(e.getCurrentItem().getItemMeta().getDisplayName());
+					if(target == null || target.getParty() != party)
+					{
+						e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+						return;
+					}
+
+					final Party.Member mt = findMember(he.getUniqueId());
+					boolean is_member = false;
+					boolean is_admin = false;
+					boolean is_partyAdmin = false;
+					boolean is_partyMod = false;
+					if(mt != null && mt.getParty() == party)
+					{
+						is_member = true;
+						is_partyAdmin = (mt.rank == Rank.ADMIN);
+						is_partyMod = (is_partyAdmin || mt.rank == Rank.MODERATOR);
+					}
+					if(he.hasPermission("KataParty.admin"))
+					{
+						is_admin = true;
+					}
+					final boolean isMember = is_member;
+					final boolean isAdmin = is_admin;
+					final boolean isPartyAdmin = is_partyAdmin;
+					final boolean isPartyMod = is_partyMod;
+
+					switch(e.getClick())
+					{
+						case LEFT:
+						{
+							switch(target.rank)
+							{
+								case MEMBER:
+								{
+									if(isAdmin || (isMember && isPartyAdmin))
+									{
+										target.rank = Rank.MODERATOR;
+										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+									}
+								} break;
+								case MODERATOR:
+								{
+									if(isAdmin || (isMember && isPartyAdmin))
+									{
+										target.rank = Rank.ADMIN;
+										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+									}
+								} break;
+								default: break;
+							}
+						} break;
+						case RIGHT:
+						{
+							switch(target.rank)
+							{
+								case MEMBER:
+								{
+									if(isAdmin || (isMember && isPartyMod))
+									{
+										party.remove(target.uuid);
+										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+									}
+								} break;
+								case MODERATOR:
+								{
+									if(isAdmin || (isMember && isPartyAdmin))
+									{
+										target.rank = Rank.MEMBER;
+										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+									}
+								} break;
+								case ADMIN:
+								{
+									if(isAdmin || (isMember && isPartyAdmin))
+									{
+										target.rank = Rank.MODERATOR;
+										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+									}
+								} break;
+								default: break;
+							}
+						} break;
+						default: break;
+					}
+				}
+				else
+				{
+					Inventory inv = partyManage(party, (Player)he);
+					guis.put((Player)he, GuiType.toMANAGE);
+					he.openInventory(inv);
+				}
 			} break;
 			case TP:
 			{
-				UUID uuid = UUID.fromString(((SkullMeta)e.getCurrentItem().getItemMeta()).getOwner()); //hacky work around
-				OfflinePlayer target = getServer().getOfflinePlayer(uuid);
-				if(target.isOnline() && findMember(uuid).tp)
+				if(e.getSlot() != 0)
 				{
-					e.getWhoClicked().teleport(target.getPlayer());
-					e.getView().close();
+					Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
+					if(party == null)
+					{
+						e.getView().close();
+						return;
+					}
+					HumanEntity he = e.getWhoClicked();
+					Party.Member m = party.memberByName(e.getCurrentItem().getItemMeta().getDisplayName());
+					if(m == null || m.getParty() != party)
+					{
+						e.getView().getTopInventory().setContents(partyTeleport((Player)he).getContents());
+						return;
+					}
+
+					OfflinePlayer target = getServer().getOfflinePlayer(m.uuid);
+					if(target.isOnline() && m.tp)
+					{
+						he.teleport(target.getPlayer());
+						e.getView().close();
+					}
 				}
 			} break;
 			default: break;
@@ -896,7 +1172,16 @@ public class KataParty extends JavaPlugin implements Listener
 	{
 		if(guis.containsKey(e.getPlayer()))
 		{
-			guis.remove(e.getPlayer());
+			switch(guis.get(e.getPlayer()))
+			{
+				case toMANAGE:
+				case toMEMBERS:
+					break;
+				default:
+				{
+					guis.remove(e.getPlayer());
+				} break;
+			}
 		}
 	}
 	@EventHandler
