@@ -17,6 +17,7 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.io.*;
 
 public class KataParty extends JavaPlugin implements Listener
@@ -146,6 +147,7 @@ public class KataParty extends JavaPlugin implements Listener
 				m.getParty().remove(uuid);
 			}
 			members.add(m = new Member(uuid, r));
+			partiers.add(uuid);
 			for(Member mi : members)
 			{
 				Player p = getServer().getPlayer(mi.uuid);
@@ -164,6 +166,7 @@ public class KataParty extends JavaPlugin implements Listener
 				if(m.uuid.equals(uuid))
 				{
 					it.remove();
+					partiers.remove(uuid);
 					break;
 				}
 			}
@@ -233,6 +236,8 @@ public class KataParty extends JavaPlugin implements Listener
 			}
 		}
 	}
+
+	public ConcurrentSkipListSet<UUID> partiers = new ConcurrentSkipListSet<UUID>();
 
 	public Set<Party> parties = new HashSet<>();
 	public Party.Member findMember(UUID uuid)
@@ -1195,7 +1200,23 @@ public class KataParty extends JavaPlugin implements Listener
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent e)
 	{
-		//
+		if(!e.isCancelled())
+		{
+			boolean proc = false;
+			for(Player p : e.getRecipients())
+			{
+				if(partiers.contains(p.getUniqueId()))
+				{
+					proc = true;
+					break;
+				}
+			}
+			if(proc || partiers.contains(e.getPlayer().getUniqueId()))
+			{
+				e.setCancelled(true);
+				getServer().getScheduler().scheduleSyncDelayedTask(this, new FilterPartyChat(e));
+			}
+		}
 	}
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
@@ -1214,5 +1235,21 @@ public class KataParty extends JavaPlugin implements Listener
 	public void onPlayerLeave(PlayerQuitEvent e)
 	{
 		guis.remove(e.getPlayer());
+	}
+
+	private class FilterPartyChat implements Runnable
+	{
+		private AsyncPlayerChatEvent e;
+
+		private FilterPartyChat(AsyncPlayerChatEvent event)
+		{
+			e = event;
+		}
+
+		@Override
+		public void run()
+		{
+			getLogger().info("########## FilterPartyChat");
+		}
 	}
 }
