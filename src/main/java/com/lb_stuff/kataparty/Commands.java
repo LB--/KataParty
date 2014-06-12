@@ -192,15 +192,50 @@ public class Commands implements CommandExecutor, TabCompleter
 				} break;
 				case "kpmanage":
 				{
-					//
+					if(args.length == 0)
+					{
+						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						if(m == null)
+						{
+							sender.sendMessage("You are not in any KataParty!");
+						}
+						else
+						{
+							player.openInventory(inst.partyManage(m.getParty(), player));
+						}
+						return true;
+					}
 				} break;
 				case "kpadmin":
 				{
-					//
+					if(args.length == 1)
+					{
+						KataParty.Party p = inst.findParty(args[0]);
+						if(p == null)
+						{
+							sender.sendMessage("No KataParty named "+args[0]);
+						}
+						else
+						{
+							player.openInventory(inst.partyManage(p, player));
+						}
+						return true;
+					}
 				} break;
 				case "kptp":
 				{
-					//
+					if(args.length == 0)
+					{
+						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						if(!m.getParty().tp)
+						{
+							sender.sendMessage("Your KataParty does not allow teleportations");
+						}
+						else
+						{
+							player.openInventory(inst.partyTeleport(player));
+						}
+					}
 				} break;
 				case "kpshare":
 				{

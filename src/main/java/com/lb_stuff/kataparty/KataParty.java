@@ -13,6 +13,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.configuration.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -119,6 +120,7 @@ public class KataParty extends JavaPlugin implements Listener
 		CREATE,
 		LIST,
 		MANAGE,
+		MEMBERS,
 		TP,
 	}
 	public class Party
@@ -373,6 +375,214 @@ public class KataParty extends JavaPlugin implements Listener
 			}
 		}
 		return plist;
+	}
+	public Inventory partyManage(final Party party, final Player player)
+	{
+		Inventory inv = Bukkit.createInventory(null, 9*2, party.name+" Settings");
+
+		final Party.Member mt = findMember(player.getUniqueId());
+		boolean is_member = false;
+		if(mt != null && mt.getParty() == party)
+		{
+			is_member = true;
+		}
+		final boolean isMember = is_member;
+		boolean is_admin = false;
+		if((mt != null && mt.getParty() != party) || player.hasPermission("KataParty.admin"))
+		{
+			is_admin = true;
+		}
+		final boolean isAdmin = is_admin;
+
+		ItemStack i = new ItemStack(Material.NAME_TAG);
+		ItemMeta m = i.getItemMeta();
+		m.setDisplayName(party.name);
+		m.setLore(new ArrayList<String>(){
+		{
+			if(isMember)
+			{
+				add("Your rank: "+mt.rank);
+			}
+			add("Click to leave this party");
+		}});
+		i.setItemMeta(m);
+		inv.setItem(0, i);
+
+		int online = 0;
+		for(Party.Member mem : party.members)
+		{
+			if(getServer().getPlayer(mem.uuid) != null)
+			{
+				++online;
+			}
+		}
+		final int online_ = online;
+
+		i = new ItemStack(Material.SKULL_ITEM, party.members.size(), (short)3);
+		m = i.getItemMeta();
+		m.setDisplayName("Members (submenu)");
+		m.setLore(new ArrayList<String>(){
+		{
+			add(online_+"/"+party.members.size()+" online");
+		}});
+		i.setItemMeta(m);
+		inv.setItem(1, i);
+
+		i = new ItemStack(Material.ENDER_PEARL, (party.tp? 2 : 1));
+		m = i.getItemMeta();
+		m.setDisplayName("Teleportation "+(party.tp? "enabled" : "disabled"));
+		m.setLore(new ArrayList<String>(){
+		{
+			if(isAdmin || (player.hasPermission("KataParty.teleport.disable") && (mt.rank == Rank.MODERATOR || mt.rank == Rank.ADMIN)))
+			{
+				add("Click to change");
+			}
+			else
+			{
+				add("You cannot change this");
+			}
+		}});
+		i.setItemMeta(m);
+		inv.setItem(2, i);
+
+		i = new ItemStack((party.pvp? Material.GOLD_SWORD : Material.STONE_SWORD), (party.pvp? 2 : 1));
+		m = i.getItemMeta();
+		m.setDisplayName("PvP "+(party.pvp? "enabled" : "disabled"));
+		m.setLore(new ArrayList<String>(){
+		{
+			if(isAdmin || (mt.rank == Rank.MODERATOR || mt.rank == Rank.ADMIN))
+			{
+				add("Click to change");
+			}
+			else
+			{
+				add("You cannot change this");
+			}
+		}});
+		i.setItemMeta(m);
+		inv.setItem(3, i);
+
+		i = new ItemStack(Material.ENDER_CHEST, (party.inv != null? 2 : 1));
+		m = i.getItemMeta();
+		m.setDisplayName("Shared inventory "+(party.inv != null? "enabled" : "disabled"));
+		m.setLore(new ArrayList<String>(){
+		{
+			if(isAdmin || (player.hasPermission("KataParty.inventory.enable") && (mt.rank == Rank.MODERATOR || mt.rank == Rank.ADMIN)))
+			{
+				add("Click to change");
+			}
+			else
+			{
+				add("You cannot change this");
+			}
+		}});
+		i.setItemMeta(m);
+		inv.setItem(4, i);
+
+		i = new ItemStack((party.visible? Material.JACK_O_LANTERN : Material.PUMPKIN), (party.visible? 2 : 1));
+		m = i.getItemMeta();
+		m.setDisplayName("Will"+(party.visible? "" : " not")+" be visible in list");
+		m.setLore(new ArrayList<String>(){
+		{
+			if(isAdmin || (player.hasPermission("KataParty.hide") && mt.rank == Rank.ADMIN))
+			{
+				add("Click to change");
+			}
+			else
+			{
+				add("You cannot change this");
+			}
+		}});
+		i.setItemMeta(m);
+		inv.setItem(5, i);
+
+		i = new ItemStack(Material.ENDER_PORTAL_FRAME);
+		m = i.getItemMeta();
+		m.setDisplayName("Teleport all players to yourself");
+		m.setLore(new ArrayList<String>(){
+		{
+			if(isAdmin || (player.hasPermission("KataParty.teleport.do") && mt.rank == Rank.ADMIN))
+			{
+				add("Click to use");
+			}
+			else
+			{
+				add("You cannot use this");
+			}
+		}});
+		i.setItemMeta(m);
+		inv.setItem(10, i);
+
+		if(isMember)
+		{
+			i = new ItemStack(Material.EYE_OF_ENDER, (mt.tp? 2 : 1));
+			m = i.getItemMeta();
+			m.setDisplayName("Members are "+(mt.tp? "" : "not")+" allowed to teleport to you");
+			m.setLore(new ArrayList<String>(){
+			{
+				if(player.hasPermission("KataParty.teleport.disallow"))
+				{
+					add("Click to change");
+				}
+				else
+				{
+					add("You cannot change this");
+				}
+			}});
+			i.setItemMeta(m);
+			inv.setItem(11, i);
+		}
+
+		guis.put(player, GuiType.MANAGE);
+
+		return inv;
+	}
+	public Inventory partyTeleport(final Player player)
+	{
+		Inventory inv = Bukkit.createInventory(null, 9*6, "Members in your KataParty");
+
+		Party.Member m = findMember(player.getUniqueId());
+
+		for(final Party.Member mem : m.getParty().members)
+		{
+			if(mem.uuid.equals(player.getUniqueId()))
+			{
+				continue;
+			}
+			final OfflinePlayer offp = getServer().getOfflinePlayer(mem.uuid);
+			final Player onp = offp.getPlayer();
+			ItemStack i = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
+			if(!offp.isOnline())
+			{
+				i.setDurability((short)2); //zombie
+			}
+			else
+			{
+				if(onp.isDead())
+				{
+					i.setDurability((short)0); //skeleton
+				}
+				if(!mem.tp)
+				{
+					i.setDurability((short)4); //creeper
+				}
+			}
+			ItemMeta im = i.getItemMeta();
+			im.setDisplayName(offp.getName());
+			im.setLore(new ArrayList<String>(){
+			{
+				add("Online: "+offp.isOnline());
+				add("Allows TP: "+mem.tp);
+				if(offp.isOnline())
+				{
+					add("Alive: "+!onp.isDead());
+				}
+			}});
+			i.setItemMeta(im);
+			inv.addItem(i);
+		}
+
+		return inv;
 	}
 
 	@EventHandler
