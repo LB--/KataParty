@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
+import org.bukkit.event.EventPriority;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.*;
@@ -17,7 +18,7 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.io.*;
 
 public class KataParty extends JavaPlugin implements Listener
@@ -147,7 +148,7 @@ public class KataParty extends JavaPlugin implements Listener
 				m.getParty().remove(uuid);
 			}
 			members.add(m = new Member(uuid, r));
-			partiers.add(uuid);
+			partiers.put(uuid, name);
 			for(Member mi : members)
 			{
 				Player p = getServer().getPlayer(mi.uuid);
@@ -237,7 +238,7 @@ public class KataParty extends JavaPlugin implements Listener
 		}
 	}
 
-	public ConcurrentSkipListSet<UUID> partiers = new ConcurrentSkipListSet<UUID>();
+	public ConcurrentSkipListMap<UUID, String> partiers = new ConcurrentSkipListMap<UUID, String>();
 
 	public Set<Party> parties = new HashSet<>();
 	public Party.Member findMember(UUID uuid)
@@ -1197,24 +1198,43 @@ public class KataParty extends JavaPlugin implements Listener
 			e.setCancelled(true);
 		}
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent e)
 	{
 		if(!e.isCancelled())
 		{
-			boolean proc = false;
-			for(Player p : e.getRecipients())
+			e.setCancelled(true);
+			String msg = e.getMessage();
+			String fmt = e.getFormat();
+			Player source = e.getPlayer();
+			Set<Player> targets = e.getRecipients();
+			String spn = partiers.get(source.getUniqueId());
+			boolean forceglobal = msg.startsWith("!");
+			for(Player p : targets)
 			{
-				if(partiers.contains(p.getUniqueId()))
+				String pn = partiers.get(p.getUniqueId());
+				if(pn != null)
 				{
-					proc = true;
-					break;
+					if(spn != null)
+					{
+						if(forceglobal)
+						{
+							p.sendMessage(String.format(fmt, source.getName(), "§7§o"+msg.substring(1)));
+						}
+						else if(pn.equals(spn))
+						{
+							p.sendMessage(String.format("§l{%3$s}§r"+fmt, source.getName(), msg, spn));
+						}
+					}
+					else
+					{
+						p.sendMessage(String.format(fmt, source.getName(), "§7§o"+msg));
+					}
 				}
-			}
-			if(proc || partiers.contains(e.getPlayer().getUniqueId()))
-			{
-				e.setCancelled(true);
-				getServer().getScheduler().scheduleSyncDelayedTask(this, new FilterPartyChat(e));
+				else if(spn == null)
+				{
+					p.sendMessage(String.format(fmt, source.getName(), msg));
+				}
 			}
 		}
 	}
@@ -1235,21 +1255,5 @@ public class KataParty extends JavaPlugin implements Listener
 	public void onPlayerLeave(PlayerQuitEvent e)
 	{
 		guis.remove(e.getPlayer());
-	}
-
-	private class FilterPartyChat implements Runnable
-	{
-		private AsyncPlayerChatEvent e;
-
-		private FilterPartyChat(AsyncPlayerChatEvent event)
-		{
-			e = event;
-		}
-
-		@Override
-		public void run()
-		{
-			getLogger().info("########## FilterPartyChat");
-		}
 	}
 }
