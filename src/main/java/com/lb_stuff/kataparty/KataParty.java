@@ -5,9 +5,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.event.EventPriority;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.Material;
@@ -1255,5 +1256,61 @@ public class KataParty extends JavaPlugin implements Listener
 	public void onPlayerLeave(PlayerQuitEvent e)
 	{
 		guis.remove(e.getPlayer());
+	}
+	@EventHandler
+	public void onDamage(EntityDamageByEntityEvent e)
+	{
+		Party.Member a = findMember(e.getDamager().getUniqueId());
+		Party.Member b = findMember(e.getEntity().getUniqueId());
+		if(a != null && !a.getParty().pvp)
+		{
+			if(b != null && a.getParty() == b.getParty())
+			{
+				e.setCancelled(true); //member attacks member
+			}
+			else if(e.getEntity() instanceof Wolf)
+			{
+				AnimalTamer owner = ((Wolf)e.getEntity()).getOwner();
+				if(owner != null)
+				{
+					b = findMember(owner.getUniqueId());
+					if(a != b && a.getParty() == b.getParty())
+					{
+						e.setCancelled(true); //member attacks wolf of member
+					}
+				}
+			}
+		}
+		else if(b != null && !b.getParty().pvp && e.getDamager() instanceof Wolf)
+		{
+			Wolf w = (Wolf)e.getDamager();
+			AnimalTamer owner = w.getOwner();
+			if(owner != null)
+			{
+				a = findMember(owner.getUniqueId());
+				if(a != null && a.getParty() == b.getParty())
+				{
+					e.setCancelled(true); //member's wolf attacks member
+					w.setTarget(null);
+				}
+			}
+		}
+	}
+	@EventHandler
+	public void onTarget(EntityTargetEvent e)
+	{
+		if(e.getEntity() instanceof Wolf && (e.getReason() == TargetReason.TARGET_ATTACKED_OWNER || e.getReason() == TargetReason.OWNER_ATTACKED_TARGET))
+		{
+			AnimalTamer owner = ((Wolf)e.getEntity()).getOwner();
+			if(owner != null)
+			{
+				Party.Member a = findMember(owner.getUniqueId());
+				Party.Member b = findMember(e.getTarget().getUniqueId());
+				if(a != null && b != null && a.getParty() == b.getParty() && !a.getParty().pvp)
+				{
+					e.setCancelled(true); //member's wolf targets member
+				}
+			}
+		}
 	}
 }
