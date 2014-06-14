@@ -3,6 +3,8 @@ package com.lb_stuff.kataparty;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.*;
 
@@ -76,7 +78,13 @@ public class Commands implements CommandExecutor, TabCompleter
 			{
 				case "kataparty":
 				{
-					//
+					if(args.length == 0)
+					{
+						PluginDescriptionFile d = inst.getDescription();
+						sender.sendMessage(d.getName()+" "+d.getVersion()+" by "+d.getAuthors().get(0));
+						sender.sendMessage("For help, use /help "+d.getName()+" [page-#]");
+						return true;
+					}
 				} break;
 				case "kpcreate":
 				{
