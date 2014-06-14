@@ -16,6 +16,7 @@ import org.bukkit.configuration.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -1258,7 +1259,7 @@ public class KataParty extends JavaPlugin implements Listener
 		guis.remove(e.getPlayer());
 	}
 	@EventHandler
-	public void onDamage(EntityDamageByEntityEvent e)
+	public void onDamageBy(EntityDamageByEntityEvent e)
 	{
 		Party.Member a = findMember(e.getDamager().getUniqueId());
 		Party.Member b = findMember(e.getEntity().getUniqueId());
@@ -1312,5 +1313,28 @@ public class KataParty extends JavaPlugin implements Listener
 				}
 			}
 		}
+	}
+	@EventHandler
+	public void onSplash(PotionSplashEvent e)
+	{
+		ProjectileSource ps = e.getPotion().getShooter();
+		if(ps instanceof Player)
+		{
+			Party.Member thrower = findMember(((Player)ps).getUniqueId());
+			if(thrower != null)
+			{
+				//
+			}
+		}
+	}
+	@EventHandler
+	public void onDamage(EntityDamageEvent e)
+	{
+		//
+	}
+	@EventHandler
+	public void onHeal(EntityRegainHealthEvent e)
+	{
+		//
 	}
 }
