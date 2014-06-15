@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
@@ -28,7 +29,7 @@ public class KataParty extends JavaPlugin implements Listener
 	@Override
 	public void onEnable()
 	{
-		File f = new File("plugins/KataParty/parties.yaml");
+		File f = new File("plugins/KataParty/parties.yml");
 		if(f.exists())
 		{
 			YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
@@ -77,7 +78,7 @@ public class KataParty extends JavaPlugin implements Listener
 	{
 		File f = new File("plugins/KataParty");
 		f.mkdir();
-		f = new File("plugins/KataParty/parties.yaml");
+		f = new File("plugins/KataParty/parties.yml");
 		YamlConfiguration conf = new YamlConfiguration();
 		ConfigurationSection cp = conf.createSection("parties");
 		for(Party p : parties)
@@ -124,13 +125,15 @@ public class KataParty extends JavaPlugin implements Listener
 		LIST,
 		toMANAGE,
 		MANAGE,
+		toRENAME,
+		RENAME,
 		toMEMBERS,
 		MEMBERS,
 		TP,
 	}
 	public class Party
 	{
-		public final String name;
+		public String name;
 		public boolean tp = true;
 		public boolean pvp = false;
 		public boolean visible = true;
@@ -140,6 +143,18 @@ public class KataParty extends JavaPlugin implements Listener
 		public Party(String pname)
 		{
 			name = pname;
+		}
+
+		public void rename(String n)
+		{
+			for(Map.Entry<UUID, String> e : partiers.entrySet())
+			{
+				if(e.getValue().equals(name))
+				{
+					e.setValue(n);
+				}
+			}
+			name = n;
 		}
 
 		public Member add(UUID uuid, Rank r)
@@ -432,11 +447,15 @@ public class KataParty extends JavaPlugin implements Listener
 			if(isMember)
 			{
 				add("Your rank: "+mt.rank);
-				add("Click to leave this KataParty");
+				add("Left click to leave this KataParty");
 			}
 			else
 			{
 				add("You are not a member of this KataParty");
+			}
+			if(isAdmin || isPartyAdmin)
+			{
+				add("Right click to rename this KataParty");
 			}
 			if(isAdmin)
 			{
@@ -614,6 +633,24 @@ public class KataParty extends JavaPlugin implements Listener
 		}
 
 		guis.put(player, GuiType.MANAGE);
+
+		return inv;
+	}
+	public Inventory partyRename(final Party party, final Player player)
+	{
+		Inventory inv = Bukkit.createInventory(null, InventoryType.ANVIL, "Rename Party");
+
+		ItemStack i = new ItemStack(Material.NAME_TAG);
+		ItemMeta im = i.getItemMeta();
+		im.setDisplayName(party.name);
+		im.setLore(new ArrayList<String>(){
+		{
+			add("Party name must be unique and not contain spaces");
+		}});
+		i.setItemMeta(im);
+		inv.setItem(0, i);
+
+		guis.put(player, GuiType.RENAME);
 
 		return inv;
 	}
@@ -936,12 +973,18 @@ public class KataParty extends JavaPlugin implements Listener
 
 				switch(e.getSlot())
 				{
-					case 0: //leave
+					case 0: //leave/rename
 					{
-						if(isMember)
+						if(isMember && e.isLeftClick())
 						{
 							party.remove(mt.uuid);
 							e.getView().close();
+						}
+						else if(e.isRightClick() && (isAdmin || isPartyAdmin))
+						{
+							Inventory inv = partyRename(party, (Player)he);
+							guis.put((Player)he, GuiType.toRENAME);
+							he.openInventory(inv);
 						}
 					} break;
 					case 1: //manage members
@@ -1039,6 +1082,35 @@ public class KataParty extends JavaPlugin implements Listener
 						}
 					} break;
 					default: break;
+				}
+			} break;
+			case toRENAME:
+			case RENAME:
+			{
+				HumanEntity he = e.getWhoClicked();
+				Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
+				if(party == null)
+				{
+					e.getView().close();
+					return;
+				}
+
+				if(!e.getSlotType().equals(SlotType.RESULT))
+				{
+					e.setCancelled(true);
+				}
+				else
+				{
+					String name = e.getCurrentItem().getItemMeta().getDisplayName();
+					if(findParty(name) != null)
+					{
+						e.setCancelled(true);
+					}
+					else
+					{
+						party.rename(name);
+						e.getView().close();
+					}
 				}
 			} break;
 			case toMEMBERS:
@@ -1183,6 +1255,7 @@ public class KataParty extends JavaPlugin implements Listener
 			switch(guis.get(e.getPlayer()))
 			{
 				case toMANAGE:
+				case toRENAME:
 				case toMEMBERS:
 					break;
 				default:

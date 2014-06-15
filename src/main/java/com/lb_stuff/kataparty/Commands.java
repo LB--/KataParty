@@ -81,7 +81,7 @@ public class Commands implements CommandExecutor, TabCompleter
 					if(args.length == 0)
 					{
 						PluginDescriptionFile d = inst.getDescription();
-						sender.sendMessage(d.getName()+" "+d.getVersion()+" by "+d.getAuthors().get(0));
+						sender.sendMessage(d.getName()+" v"+d.getVersion()+" by "+d.getAuthors().get(0));
 						sender.sendMessage("For help, use /help "+d.getName()+" [page-#]");
 						return true;
 					}
