@@ -1108,6 +1108,7 @@ public class KataParty extends JavaPlugin implements Listener
 					}
 					else
 					{
+						e.setCancelled(true);
 						party.rename(name);
 						e.getView().close();
 					}
