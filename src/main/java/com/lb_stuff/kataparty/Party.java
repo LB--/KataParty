@@ -187,6 +187,7 @@ public class Party implements Iterable<Party.Member>
 					p.getWorld().dropItem(p.getLocation(), i).setPickupDelay(0);
 				}
 			}
+			inv = null;
 			informMembers("Shared Inventory has been §ndisabled§r for your KataParty");
 		}
 	}

@@ -858,6 +858,7 @@ public class KataParty extends JavaPlugin implements Listener
 						{
 							Inventory inv = partyRename(party, (Player)he);
 							guis.put(he.getUniqueId(), GuiType.toRENAME);
+							e.getView().close(); //temporary until Bukkit supports opening Anvil inventories
 							he.openInventory(inv);
 						}
 					} break;
@@ -1198,11 +1199,11 @@ public class KataParty extends JavaPlugin implements Listener
 		Party.Member m = findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
-			e.getPlayer().sendMessage("You are in KataParty "+m.getParty().getName());
+			e.getPlayer().sendMessage("[KataParty] You are in KataParty §n"+m.getParty().getName()+"§r");
 		}
 		else
 		{
-			e.getPlayer().sendMessage("You are not in a KataParty");
+			e.getPlayer().sendMessage("[KataParty] You are §nnot§r in a KataParty");
 		}
 	}
 	@EventHandler
