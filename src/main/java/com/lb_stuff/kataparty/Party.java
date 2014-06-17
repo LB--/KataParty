@@ -54,6 +54,30 @@ public class Party implements Iterable<Party.Member>
 		name = n;
 	}
 
+	@Override
+	public int hashCode()
+	{
+		return name.hashCode();
+	}
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj == null)
+		{
+			return false;
+		}
+		if(getClass() != obj.getClass())
+		{
+			return false;
+		}
+		final Party other = (Party)obj;
+		if(!Objects.equals(this.name, other.name))
+		{
+			return false;
+		}
+		return true;
+	}
+
 	public Member addMember(UUID uuid)
 	{
 		Member m;

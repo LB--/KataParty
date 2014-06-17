@@ -235,6 +235,110 @@ public class KataParty extends JavaPlugin implements Listener
 
 		return inv;
 	}
+	public void partyCreate(InventoryClickEvent e)
+	{
+		switch(e.getSlot())
+		{
+			case 0: //create
+			{
+				String name = e.getCurrentItem().getItemMeta().getDisplayName();
+				if(findParty(name) != null)
+				{
+					e.getWhoClicked().openInventory(Bukkit.createInventory(null, 9*1, "Name taken: "+name));
+					break;
+				}
+				Party p = new Party(this, name);
+				p.addMember(e.getWhoClicked().getUniqueId()).setRank(Party.Rank.ADMIN);
+				p.setTp(e.getInventory().getItem(2).getAmount() != 1);
+				p.setPvp(e.getInventory().getItem(3).getAmount() != 1);
+				if(e.getInventory().getItem(4).getAmount() != 1)
+				{
+					p.enableInventory();
+				}
+				p.setVisible(e.getInventory().getItem(5).getAmount() != 1);
+				parties.add(p);
+				e.getWhoClicked().closeInventory();
+			} break;
+			case 2: //toggle TP
+			{
+				if(e.getWhoClicked().hasPermission("KataParty.teleport.disable"))
+				{
+					ItemStack i = e.getCurrentItem();
+					ItemMeta d = i.getItemMeta();
+					if(i.getAmount() != 1)
+					{
+						i.setAmount(1);
+						d.setDisplayName("Teleportation disabled");
+					}
+					else
+					{
+						i.setAmount(2);
+						d.setDisplayName("Teleportation enabled");
+					}
+					i.setItemMeta(d);
+				}
+			} break;
+			case 3: //toggle PvP
+			{
+				ItemStack i = e.getCurrentItem();
+				ItemMeta d = i.getItemMeta();
+				if(i.getAmount() != 1)
+				{
+					i.setAmount(1);
+					i.setType(Material.STONE_SWORD);
+					d.setDisplayName("PvP disabled");
+				}
+				else
+				{
+					i.setAmount(2);
+					i.setType(Material.GOLD_SWORD);
+					d.setDisplayName("PvP enabled");
+				}
+				i.setItemMeta(d);
+			} break;
+			case 4: //toggle shared inventory
+			{
+				if(e.getWhoClicked().hasPermission("KataParty.inventory.enable"))
+				{
+					ItemStack i = e.getCurrentItem();
+					ItemMeta d = i.getItemMeta();
+					if(i.getAmount() != 1)
+					{
+						i.setAmount(1);
+						d.setDisplayName("Shared inventory disabled");
+					}
+					else
+					{
+						i.setAmount(2);
+						d.setDisplayName("Shared inventory enabled");
+					}
+					i.setItemMeta(d);
+				}
+			} break;
+			case 5: //toggle visibility
+			{
+				if(e.getWhoClicked().hasPermission("KataParty.hide"))
+				{
+					ItemStack i = e.getCurrentItem();
+					ItemMeta d = i.getItemMeta();
+					if(i.getAmount() != 1)
+					{
+						i.setAmount(1);
+						i.setType(Material.PUMPKIN);
+						d.setDisplayName("Will not be visible in list");
+					}
+					else
+					{
+						i.setAmount(2);
+						i.setType(Material.JACK_O_LANTERN);
+						d.setDisplayName("Will be visible in list");
+					}
+					i.setItemMeta(d);
+				}
+			} break;
+			default: break;
+		}
+	}
 	public Inventory partyList(final Player player)
 	{
 		Inventory inv = Bukkit.createInventory(null, 9*6, "List of KataParties");
@@ -287,6 +391,40 @@ public class KataParty extends JavaPlugin implements Listener
 		guis.put(player.getUniqueId(), GuiType.LIST);
 
 		return inv;
+	}
+	public void partyList(InventoryClickEvent e)
+	{
+		if(e.getCurrentItem() == null)
+		{
+			return;
+		}
+		Party p = findParty(e.getCurrentItem().getItemMeta().getDisplayName());
+		HumanEntity he = e.getWhoClicked();
+		if(p != null)
+		{
+			switch(e.getClick())
+			{
+				case LEFT:
+				{
+					p.addMember(he.getUniqueId());
+					e.getView().close();
+				} break;
+				case RIGHT:
+				{
+					if(he.hasPermission("KataParty.admin"))
+					{
+						Inventory inv = partyManage(p, (Player)he);
+						guis.put(he.getUniqueId(), GuiType.toMANAGE);
+						he.openInventory(inv);
+					}
+				} break;
+				default: break;
+			}
+		}
+		else
+		{
+			e.getView().getTopInventory().setContents(partyList((Player)he).getContents());
+		}
 	}
 	public Inventory partyManage(final Party party, final Player player)
 	{
@@ -509,6 +647,150 @@ public class KataParty extends JavaPlugin implements Listener
 
 		return inv;
 	}
+	public void partyManage(InventoryClickEvent e)
+	{
+		HumanEntity he = e.getWhoClicked();
+		Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
+		if(party == null)
+		{
+			e.getView().close();
+			return;
+		}
+
+		final Party.Member mt = findMember(he.getUniqueId());
+		boolean is_member = false;
+		boolean is_admin = false;
+		boolean is_partyAdmin = false;
+		boolean is_partyMod = false;
+		if(mt != null && mt.getParty() == party)
+		{
+			is_member = true;
+			is_partyAdmin = (mt.getRank() == Party.Rank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == Party.Rank.MODERATOR);
+		}
+		if(he.hasPermission("KataParty.admin"))
+		{
+			is_admin = true;
+		}
+		final boolean isMember = is_member;
+		final boolean isAdmin = is_admin;
+		final boolean isPartyAdmin = is_partyAdmin;
+		final boolean isPartyMod = is_partyMod;
+
+		switch(e.getSlot())
+		{
+			case 0: //leave/rename
+			{
+				if(isMember && e.isLeftClick())
+				{
+					party.removeMember(mt.getUuid());
+					e.getView().close();
+				}
+				else if(e.isRightClick() && (isAdmin || isPartyAdmin))
+				{
+					Inventory inv = partyRename(party, (Player)he);
+					guis.put(he.getUniqueId(), GuiType.toRENAME);
+					e.getView().close(); //temporary until Bukkit supports opening Anvil inventories
+					he.openInventory(inv);
+				}
+			} break;
+			case 1: //manage members
+			{
+				Inventory inv = partyMembers(party, (Player)he);
+				guis.put(he.getUniqueId(), GuiType.toMEMBERS);
+				he.openInventory(inv);
+			} break;
+			case 2: //toggle TP
+			{
+				if(isAdmin || (he.hasPermission("KataParty.teleport.disable") && isPartyMod))
+				{
+					party.setTp(!party.canTp());
+					e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+				}
+			} break;
+			case 3: //toggle PvP
+			{
+				if(isAdmin || isPartyMod)
+				{
+					party.setPvp(!party.canPvp());
+					e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+				}
+			} break;
+			case 4: //toggle shared inventory
+			{
+				if(isAdmin || (he.hasPermission("KataParty.inventory.enable") && isPartyMod))
+				{
+					if(party.getInventory() == null)
+					{
+						party.enableInventory();
+					}
+					else
+					{
+						party.disableInventory((Player)he);
+					}
+					e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+				}
+			} break;
+			case 5: //toggle visibility
+			{
+				if(isAdmin || (he.hasPermission("KataParty.hide") && isPartyAdmin))
+				{
+					party.setVisible(!party.isVisible());
+					e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+				}
+			} break;
+			case 9: //disband/close
+			{
+				if(isAdmin || (he.hasPermission("KataParty.disband") && isPartyAdmin))
+				{
+					parties.remove(party);
+					for(Party.Member mem : party)
+					{
+						Player plr = getServer().getPlayer(mem.getUuid());
+						if(plr != null)
+						{
+							plr.sendMessage("Your KataParty was "+(isMember? "disbanded" : "closed"));
+						}
+					}
+					if(party.getInventory() != null)
+					{
+						party.disableInventory((Player)he);
+					}
+					e.getView().close();
+				}
+			} break;
+			case 10: //TP all to self
+			{
+				if(isAdmin || (he.hasPermission("KataParty.teleport.do") && isPartyAdmin))
+				{
+					for(Party.Member mem : party)
+					{
+						if(!mem.getUuid().equals(he.getUniqueId()) && mem.canTp())
+						{
+							OfflinePlayer offp = getServer().getOfflinePlayer(mem.getUuid());
+							if(offp.isOnline())
+							{
+								Player onp = offp.getPlayer();
+								onp.setNoDamageTicks(20*5); //inulnerable for 5 seconds
+								onp.teleport(he);
+								onp.sendMessage("You were teleported to "+he.getName());
+							}
+						}
+					}
+					e.getView().close();
+				}
+			} break;
+			case 11: //toggle self TP
+			{
+				if(isMember && he.hasPermission("KataParty.teleport.disallow"))
+				{
+					mt.setTp( ! mt.canTp());
+					e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
+				}
+			} break;
+			default: break;
+		}
+	}
 	public Inventory partyRename(final Party party, final Player player)
 	{
 		Inventory inv = Bukkit.createInventory(null, InventoryType.ANVIL, "Rename Party");
@@ -526,6 +808,38 @@ public class KataParty extends JavaPlugin implements Listener
 		guis.put(player.getUniqueId(), GuiType.RENAME);
 
 		return inv;
+	}
+	public void partyRename(InventoryClickEvent e)
+	{
+		HumanEntity he = e.getWhoClicked();
+		Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
+		if(party == null)
+		{
+			e.getView().close();
+			return;
+		}
+
+		if(!e.getSlotType().equals(SlotType.RESULT))
+		{
+			e.setCancelled(true);
+		}
+		else
+		{
+			String name = e.getCurrentItem().getItemMeta().getDisplayName();
+			if(!name.contains(" "))
+			{
+				if(findParty(name) != null)
+				{
+					e.setCancelled(true);
+				}
+				else
+				{
+					e.setCancelled(true);
+					party.rename(name);
+					e.getView().close();
+				}
+			}
+		}
 	}
 	public Inventory partyMembers(final Party party, final Player player)
 	{
@@ -621,6 +935,110 @@ public class KataParty extends JavaPlugin implements Listener
 
 		return inv;
 	}
+	public void partyMembers(InventoryClickEvent e)
+	{
+		HumanEntity he = e.getWhoClicked();
+		Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
+		if(party == null)
+		{
+			e.getView().close();
+			return;
+		}
+		if(e.getSlot() != 0)
+		{
+			Party.Member target = party.findMember(e.getCurrentItem().getItemMeta().getDisplayName());
+			if(target == null || target.getParty() != party)
+			{
+				e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+				return;
+			}
+
+			final Party.Member mt = findMember(he.getUniqueId());
+			boolean is_member = false;
+			boolean is_admin = false;
+			boolean is_partyAdmin = false;
+			boolean is_partyMod = false;
+			if(mt != null && mt.getParty() == party)
+			{
+				is_member = true;
+				is_partyAdmin = (mt.getRank() == Party.Rank.ADMIN);
+				is_partyMod = (is_partyAdmin || mt.getRank() == Party.Rank.MODERATOR);
+			}
+			if(he.hasPermission("KataParty.admin"))
+			{
+				is_admin = true;
+			}
+			final boolean isMember = is_member;
+			final boolean isAdmin = is_admin;
+			final boolean isPartyAdmin = is_partyAdmin;
+			final boolean isPartyMod = is_partyMod;
+
+			switch(e.getClick())
+			{
+				case LEFT:
+				{
+					switch(target.getRank())
+					{
+						case MEMBER:
+						{
+							if(isAdmin || (isMember && isPartyAdmin))
+							{
+								target.setRank(Party.Rank.MODERATOR);
+								e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+							}
+						} break;
+						case MODERATOR:
+						{
+							if(isAdmin || (isMember && isPartyAdmin))
+							{
+								target.setRank(Party.Rank.ADMIN);
+								e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+							}
+						} break;
+						default: break;
+					}
+				} break;
+				case RIGHT:
+				{
+					switch(target.getRank())
+					{
+						case MEMBER:
+						{
+							if(isAdmin || (isMember && isPartyMod))
+							{
+								party.removeMember(target.getUuid());
+								e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+							}
+						} break;
+						case MODERATOR:
+						{
+							if(isAdmin || (isMember && isPartyAdmin))
+							{
+								target.setRank(Party.Rank.MEMBER);
+								e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+							}
+						} break;
+						case ADMIN:
+						{
+							if(isAdmin || (isMember && isPartyAdmin))
+							{
+								target.setRank(Party.Rank.MODERATOR);
+								e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
+							}
+						} break;
+						default: break;
+					}
+				} break;
+				default: break;
+			}
+		}
+		else
+		{
+			Inventory inv = partyManage(party, (Player)he);
+			guis.put(he.getUniqueId(), GuiType.toMANAGE);
+			he.openInventory(inv);
+		}
+	}
 	public Inventory partyTeleport(final Player player)
 	{
 		Inventory inv = Bukkit.createInventory(null, 9*6, "Members in your KataParty");
@@ -667,6 +1085,32 @@ public class KataParty extends JavaPlugin implements Listener
 
 		return inv;
 	}
+	public void partyTeleport(InventoryClickEvent e)
+	{
+		if(e.getSlot() != 0 && e.getCurrentItem() != null)
+		{
+			Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
+			if(party == null)
+			{
+				e.getView().close();
+				return;
+			}
+			HumanEntity he = e.getWhoClicked();
+			Party.Member m = party.findMember(e.getCurrentItem().getItemMeta().getDisplayName());
+			if(m == null || m.getParty() != party)
+			{
+				e.getView().getTopInventory().setContents(partyTeleport((Player)he).getContents());
+				return;
+			}
+
+			OfflinePlayer target = getServer().getOfflinePlayer(m.getUuid());
+			if(target.isOnline() && m.canTp())
+			{
+				he.teleport(target.getPlayer());
+				e.getView().close();
+			}
+		}
+	}
 
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e)
@@ -681,447 +1125,30 @@ public class KataParty extends JavaPlugin implements Listener
 		{
 			case CREATE:
 			{
-				switch(e.getSlot())
-				{
-					case 0: //create
-					{
-						String name = e.getCurrentItem().getItemMeta().getDisplayName();
-						if(findParty(name) != null)
-						{
-							e.getWhoClicked().openInventory(Bukkit.createInventory(null, 9*1, "Name taken: "+name));
-							break;
-						}
-						Party p = new Party(this, name);
-						p.addMember(e.getWhoClicked().getUniqueId()).setRank(Party.Rank.ADMIN);
-						p.setTp(e.getInventory().getItem(2).getAmount() != 1);
-						p.setPvp(e.getInventory().getItem(3).getAmount() != 1);
-						if(e.getInventory().getItem(4).getAmount() != 1)
-						{
-							p.enableInventory();
-						}
-						p.setVisible(e.getInventory().getItem(5).getAmount() != 1);
-						parties.add(p);
-						e.getWhoClicked().closeInventory();
-					} break;
-					case 2: //toggle TP
-					{
-						if(e.getWhoClicked().hasPermission("KataParty.teleport.disable"))
-						{
-							ItemStack i = e.getCurrentItem();
-							ItemMeta d = i.getItemMeta();
-							if(i.getAmount() != 1)
-							{
-								i.setAmount(1);
-								d.setDisplayName("Teleportation disabled");
-							}
-							else
-							{
-								i.setAmount(2);
-								d.setDisplayName("Teleportation enabled");
-							}
-							i.setItemMeta(d);
-						}
-					} break;
-					case 3: //toggle PvP
-					{
-						ItemStack i = e.getCurrentItem();
-						ItemMeta d = i.getItemMeta();
-						if(i.getAmount() != 1)
-						{
-							i.setAmount(1);
-							i.setType(Material.STONE_SWORD);
-							d.setDisplayName("PvP disabled");
-						}
-						else
-						{
-							i.setAmount(2);
-							i.setType(Material.GOLD_SWORD);
-							d.setDisplayName("PvP enabled");
-						}
-						i.setItemMeta(d);
-					} break;
-					case 4: //toggle shared inventory
-					{
-						if(e.getWhoClicked().hasPermission("KataParty.inventory.enable"))
-						{
-							ItemStack i = e.getCurrentItem();
-							ItemMeta d = i.getItemMeta();
-							if(i.getAmount() != 1)
-							{
-								i.setAmount(1);
-								d.setDisplayName("Shared inventory disabled");
-							}
-							else
-							{
-								i.setAmount(2);
-								d.setDisplayName("Shared inventory enabled");
-							}
-							i.setItemMeta(d);
-						}
-					} break;
-					case 5: //toggle visibility
-					{
-						if(e.getWhoClicked().hasPermission("KataParty.hide"))
-						{
-							ItemStack i = e.getCurrentItem();
-							ItemMeta d = i.getItemMeta();
-							if(i.getAmount() != 1)
-							{
-								i.setAmount(1);
-								i.setType(Material.PUMPKIN);
-								d.setDisplayName("Will not be visible in list");
-							}
-							else
-							{
-								i.setAmount(2);
-								i.setType(Material.JACK_O_LANTERN);
-								d.setDisplayName("Will be visible in list");
-							}
-							i.setItemMeta(d);
-						}
-					} break;
-					default: break;
-				}
+				partyCreate(e);
 			} break;
 			case LIST:
 			{
-				Party p = findParty(e.getCurrentItem().getItemMeta().getDisplayName());
-				HumanEntity he = e.getWhoClicked();
-				if(p != null)
-				{
-					switch(e.getClick())
-					{
-						case LEFT:
-						{
-							p.addMember(he.getUniqueId());
-							e.getView().close();
-						} break;
-						case RIGHT:
-						{
-							if(he.hasPermission("KataParty.admin"))
-							{
-								Inventory inv = partyManage(p, (Player)he);
-								guis.put(he.getUniqueId(), GuiType.toMANAGE);
-								he.openInventory(inv);
-							}
-						} break;
-						default: break;
-					}
-				}
-				else
-				{
-					e.getView().getTopInventory().setContents(partyList((Player)he).getContents());
-				}
-				//
+				partyList(e);
 			} break;
 			case toMANAGE:
 			case MANAGE:
 			{
-				HumanEntity he = e.getWhoClicked();
-				Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
-				if(party == null)
-				{
-					e.getView().close();
-					return;
-				}
-
-				final Party.Member mt = findMember(he.getUniqueId());
-				boolean is_member = false;
-				boolean is_admin = false;
-				boolean is_partyAdmin = false;
-				boolean is_partyMod = false;
-				if(mt != null && mt.getParty() == party)
-				{
-					is_member = true;
-					is_partyAdmin = (mt.getRank() == Party.Rank.ADMIN);
-					is_partyMod = (is_partyAdmin || mt.getRank() == Party.Rank.MODERATOR);
-				}
-				if(he.hasPermission("KataParty.admin"))
-				{
-					is_admin = true;
-				}
-				final boolean isMember = is_member;
-				final boolean isAdmin = is_admin;
-				final boolean isPartyAdmin = is_partyAdmin;
-				final boolean isPartyMod = is_partyMod;
-
-				switch(e.getSlot())
-				{
-					case 0: //leave/rename
-					{
-						if(isMember && e.isLeftClick())
-						{
-							party.removeMember(mt.getUuid());
-							e.getView().close();
-						}
-						else if(e.isRightClick() && (isAdmin || isPartyAdmin))
-						{
-							Inventory inv = partyRename(party, (Player)he);
-							guis.put(he.getUniqueId(), GuiType.toRENAME);
-							e.getView().close(); //temporary until Bukkit supports opening Anvil inventories
-							he.openInventory(inv);
-						}
-					} break;
-					case 1: //manage members
-					{
-						Inventory inv = partyMembers(party, (Player)he);
-						guis.put(he.getUniqueId(), GuiType.toMEMBERS);
-						he.openInventory(inv);
-					} break;
-					case 2: //toggle TP
-					{
-						if(isAdmin || (he.hasPermission("KataParty.teleport.disable") && isPartyMod))
-						{
-							party.setTp(!party.canTp());
-							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
-						}
-					} break;
-					case 3: //toggle PvP
-					{
-						if(isAdmin || isPartyMod)
-						{
-							party.setPvp(!party.canPvp());
-							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
-						}
-					} break;
-					case 4: //toggle shared inventory
-					{
-						if(isAdmin || (he.hasPermission("KataParty.inventory.enable") && isPartyMod))
-						{
-							if(party.getInventory() == null)
-							{
-								party.enableInventory();
-							}
-							else
-							{
-								party.disableInventory((Player)he);
-							}
-							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
-						}
-					} break;
-					case 5: //toggle visibility
-					{
-						if(isAdmin || (he.hasPermission("KataParty.hide") && isPartyAdmin))
-						{
-							party.setVisible(!party.isVisible());
-							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
-						}
-					} break;
-					case 9: //disband/close
-					{
-						if(isAdmin || (he.hasPermission("KataParty.disband") && isPartyAdmin))
-						{
-							parties.remove(party);
-							for(Party.Member mem : party)
-							{
-								Player plr = getServer().getPlayer(mem.getUuid());
-								if(plr != null)
-								{
-									plr.sendMessage("Your KataParty was "+(isMember? "disbanded" : "closed"));
-								}
-							}
-							if(party.getInventory() != null)
-							{
-								party.disableInventory((Player)he);
-							}
-							e.getView().close();
-						}
-					} break;
-					case 10: //TP all to self
-					{
-						if(isAdmin || (he.hasPermission("KataParty.teleport.do") && isPartyAdmin))
-						{
-							for(Party.Member mem : party)
-							{
-								if(!mem.getUuid().equals(he.getUniqueId()) && mem.canTp())
-								{
-									OfflinePlayer offp = getServer().getOfflinePlayer(mem.getUuid());
-									if(offp.isOnline())
-									{
-										Player onp = offp.getPlayer();
-										onp.setNoDamageTicks(20*5); //inulnerable for 5 seconds
-										onp.teleport(he);
-										onp.sendMessage("You were teleported to "+he.getName());
-									}
-								}
-							}
-							e.getView().close();
-						}
-					} break;
-					case 11: //toggle self TP
-					{
-						if(isMember && he.hasPermission("KataParty.teleport.disallow"))
-						{
-							mt.setTp( ! mt.canTp());
-							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
-						}
-					} break;
-					default: break;
-				}
+				partyManage(e);
 			} break;
 			case toRENAME:
 			case RENAME:
 			{
-				HumanEntity he = e.getWhoClicked();
-				Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
-				if(party == null)
-				{
-					e.getView().close();
-					return;
-				}
-
-				if(!e.getSlotType().equals(SlotType.RESULT))
-				{
-					e.setCancelled(true);
-				}
-				else
-				{
-					String name = e.getCurrentItem().getItemMeta().getDisplayName();
-					if(!name.contains(" "))
-					{
-						if(findParty(name) != null)
-						{
-							e.setCancelled(true);
-						}
-						else
-						{
-							e.setCancelled(true);
-							party.rename(name);
-							e.getView().close();
-						}
-					}
-				}
+				partyRename(e);
 			} break;
 			case toMEMBERS:
 			case MEMBERS:
 			{
-				HumanEntity he = e.getWhoClicked();
-				Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
-				if(party == null)
-				{
-					e.getView().close();
-					return;
-				}
-				if(e.getSlot() != 0)
-				{
-					Party.Member target = party.findMember(e.getCurrentItem().getItemMeta().getDisplayName());
-					if(target == null || target.getParty() != party)
-					{
-						e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
-						return;
-					}
-
-					final Party.Member mt = findMember(he.getUniqueId());
-					boolean is_member = false;
-					boolean is_admin = false;
-					boolean is_partyAdmin = false;
-					boolean is_partyMod = false;
-					if(mt != null && mt.getParty() == party)
-					{
-						is_member = true;
-						is_partyAdmin = (mt.getRank() == Party.Rank.ADMIN);
-						is_partyMod = (is_partyAdmin || mt.getRank() == Party.Rank.MODERATOR);
-					}
-					if(he.hasPermission("KataParty.admin"))
-					{
-						is_admin = true;
-					}
-					final boolean isMember = is_member;
-					final boolean isAdmin = is_admin;
-					final boolean isPartyAdmin = is_partyAdmin;
-					final boolean isPartyMod = is_partyMod;
-
-					switch(e.getClick())
-					{
-						case LEFT:
-						{
-							switch(target.getRank())
-							{
-								case MEMBER:
-								{
-									if(isAdmin || (isMember && isPartyAdmin))
-									{
-										target.setRank(Party.Rank.MODERATOR);
-										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
-									}
-								} break;
-								case MODERATOR:
-								{
-									if(isAdmin || (isMember && isPartyAdmin))
-									{
-										target.setRank(Party.Rank.ADMIN);
-										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
-									}
-								} break;
-								default: break;
-							}
-						} break;
-						case RIGHT:
-						{
-							switch(target.getRank())
-							{
-								case MEMBER:
-								{
-									if(isAdmin || (isMember && isPartyMod))
-									{
-										party.removeMember(target.getUuid());
-										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
-									}
-								} break;
-								case MODERATOR:
-								{
-									if(isAdmin || (isMember && isPartyAdmin))
-									{
-										target.setRank(Party.Rank.MEMBER);
-										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
-									}
-								} break;
-								case ADMIN:
-								{
-									if(isAdmin || (isMember && isPartyAdmin))
-									{
-										target.setRank(Party.Rank.MODERATOR);
-										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
-									}
-								} break;
-								default: break;
-							}
-						} break;
-						default: break;
-					}
-				}
-				else
-				{
-					Inventory inv = partyManage(party, (Player)he);
-					guis.put(he.getUniqueId(), GuiType.toMANAGE);
-					he.openInventory(inv);
-				}
+				partyMembers(e);
 			} break;
 			case TP:
 			{
-				if(e.getSlot() != 0)
-				{
-					Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
-					if(party == null)
-					{
-						e.getView().close();
-						return;
-					}
-					HumanEntity he = e.getWhoClicked();
-					Party.Member m = party.findMember(e.getCurrentItem().getItemMeta().getDisplayName());
-					if(m == null || m.getParty() != party)
-					{
-						e.getView().getTopInventory().setContents(partyTeleport((Player)he).getContents());
-						return;
-					}
-
-					OfflinePlayer target = getServer().getOfflinePlayer(m.getUuid());
-					if(target.isOnline() && m.canTp())
-					{
-						he.teleport(target.getPlayer());
-						e.getView().close();
-					}
-				}
+				partyTeleport(e);
 			} break;
 			default: break;
 		}
