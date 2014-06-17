@@ -692,7 +692,7 @@ public class KataParty extends JavaPlugin implements Listener
 							break;
 						}
 						Party p = new Party(this, name);
-						p.addMember(e.getWhoClicked().getUniqueId());
+						p.addMember(e.getWhoClicked().getUniqueId()).setRank(Party.Rank.ADMIN);
 						p.setTp(e.getInventory().getItem(2).getAmount() != 1);
 						p.setPvp(e.getInventory().getItem(3).getAmount() != 1);
 						if(e.getInventory().getItem(4).getAmount() != 1)
