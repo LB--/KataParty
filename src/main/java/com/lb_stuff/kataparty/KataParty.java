@@ -1238,23 +1238,29 @@ public class KataParty extends JavaPlugin implements Listener
 			}
 		}
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
 		Party.Member m = findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
 			e.getPlayer().sendMessage("[KataParty] You are in KataParty §n"+m.getParty().getName()+"§r");
+			//TODO: shared health stuff
 		}
 		else
 		{
 			e.getPlayer().sendMessage("[KataParty] You are §nnot§r in a KataParty");
 		}
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLeave(PlayerQuitEvent e)
 	{
 		guis.remove(e.getPlayer().getUniqueId());
+		Party.Member m = findMember(e.getPlayer().getUniqueId());
+		if(m != null)
+		{
+			//TODO: shared health stuff
+		}
 	}
 	@EventHandler
 	public void onDamageBy(EntityDamageByEntityEvent e)
@@ -1333,7 +1339,19 @@ public class KataParty extends JavaPlugin implements Listener
 			Party.Member m = findMember(e.getEntity().getUniqueId());
 			if(m != null && m.getParty().getHealth() != null)
 			{
-				//
+				//TODO: shared health stuff
+			}
+		}
+	}
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onDeath(EntityDeathEvent e)
+	{
+		if(e.getEntity() instanceof Player)
+		{
+			Party.Member m = findMember(e.getEntity().getUniqueId());
+			if(m != null && m.getParty().getHealth() != null)
+			{
+				//TODO: shared health stuff
 			}
 		}
 	}
@@ -1345,8 +1363,17 @@ public class KataParty extends JavaPlugin implements Listener
 			Party.Member m = findMember(e.getEntity().getUniqueId());
 			if(m != null && m.getParty().getHealth() != null)
 			{
-				//
+				//TODO: shared health stuff
 			}
+		}
+	}
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onRespawn(PlayerRespawnEvent e)
+	{
+		Party.Member m = findMember(e.getPlayer().getUniqueId());
+		if(m != null && m.getParty().getHealth() != null)
+		{
+			//TODO: shared health stuff
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -1355,7 +1382,7 @@ public class KataParty extends JavaPlugin implements Listener
 		Party.Member m = findMember(e.getPlayer().getUniqueId());
 		if(m != null && m.getParty().getHealth() != null)
 		{
-			//
+			//TODO: shared health stuff
 		}
 	}
 }

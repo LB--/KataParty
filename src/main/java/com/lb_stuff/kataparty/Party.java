@@ -138,42 +138,42 @@ public class Party implements Iterable<Party.Member>
 	{
 		return members.size();
 	}
-	public int numMembersOnline()
+	public Set<Member> getMembersOnline()
 	{
-		int count = 0;
+		Set<Member> mems = new HashSet<>();
 		for(Member m : this)
 		{
 			if(inst.getServer().getOfflinePlayer(m.getUuid()).isOnline())
 			{
-				++count;
+				mems.add(m);
 			}
 		}
-		return count;
+		return mems;
 	}
-	public int numMembersAlive()
+	public Set<Member> getMembersAlive()
 	{
-		int count = 0;
+		Set<Member> mems = new HashSet<>();
 		for(Member m : this)
 		{
 			OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
 			if(offp.isOnline() && !offp.getPlayer().isDead())
 			{
-				++count;
+				mems.add(m);
 			}
 		}
-		return count;
+		return mems;
 	}
-	public int numMembersRank(Rank r)
+	public Set<Member> getMembersRank(Rank r)
 	{
-		int count = 0;
+		Set<Member> mems = new HashSet<>();
 		for(Member m : this)
 		{
 			if(m.getRank().equals(r))
 			{
-				++count;
+				mems.add(m);
 			}
 		}
-		return count;
+		return mems;
 	}
 
 	public boolean canTp()
@@ -261,14 +261,21 @@ public class Party implements Iterable<Party.Member>
 	}
 	public void enableHealth()
 	{
-		health = 1.0;
-		//
+		Set<Member> mems = getMembersAlive();
+		health = 1.0*mems.size();
+		for(Member m : mems)
+		{
+			inst.getServer().getPlayer(m.getUuid()).setMaxHealth(20.0*mems.size());
+		}
 		informMembers("Shared Health & XP Gain has been §nenabled§r for your KataParty");
 	}
 	public void disableHealth()
 	{
 		health = null;
-		//
+		for(Member m : getMembersOnline())
+		{
+			inst.getServer().getPlayer(m.getUuid()).resetMaxHealth();
+		}
 		informMembers("Shared Health & XP Gain has been §disabled§r for your KataParty");
 	}
 	public void setHealth(double v)
