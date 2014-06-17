@@ -1,17 +1,18 @@
 package com.lb_stuff.kataparty;
 
-import java.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.*;
+
 public class Party implements Iterable<Party.Member>
 {
 	private final KataParty inst;
 	private String name;
-	private Set<Member> members = new HashSet<>();
+	private final Set<Member> members = new HashSet<>();
 	private boolean tp = true;
 	private boolean pvp = false;
 	private boolean visible = true;
@@ -39,14 +40,14 @@ public class Party implements Iterable<Party.Member>
 		name = n;
 	}
 
-	public Member addMember(UUID uuid, KataParty.Rank r)
+	public Member addMember(UUID uuid)
 	{
 		Member m;
 		while((m = inst.findMember(uuid)) != null)
 		{
 			m.getParty().removeMember(uuid);
 		}
-		members.add(m = new Member(uuid, r));
+		members.add(m = new Member(uuid));
 		inst.partiers.put(uuid, name);
 		for(Member mi : members)
 		{
@@ -169,16 +170,21 @@ public class Party implements Iterable<Party.Member>
 		return inst;
 	}
 
+	public static enum Rank
+	{
+		ADMIN,
+		MODERATOR,
+		MEMBER;
+	}
 	public class Member
 	{
 		private final UUID uuid;
-		private KataParty.Rank rank;
+		private Rank rank = Rank.MEMBER;
 		private boolean tp = true;
 
-		public Member(UUID id, KataParty.Rank r)
+		public Member(UUID id)
 		{
 			uuid = id;
-			rank = r;
 		}
 
 		public Party getParty()
@@ -190,12 +196,35 @@ public class Party implements Iterable<Party.Member>
 		{
 			return uuid;
 		}
+		@Override
+		public int hashCode()
+		{
+			return uuid.hashCode();
+		}
+		@Override
+		public boolean equals(Object obj)
+		{
+			if(obj == null)
+			{
+				return false;
+			}
+			if(getClass() != obj.getClass())
+			{
+				return false;
+			}
+			final Member other = (Member)obj;
+			if(!Objects.equals(this.uuid, other.uuid))
+			{
+				return false;
+			}
+			return true;
+		}
 
-		public KataParty.Rank getRank()
+		public Rank getRank()
 		{
 			return rank;
 		}
-		public void setRank(KataParty.Rank r)
+		public void setRank(Rank r)
 		{
 			rank = r;
 		}

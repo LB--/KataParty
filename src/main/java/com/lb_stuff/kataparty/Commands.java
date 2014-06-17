@@ -105,7 +105,7 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 0)
 					{
-						inst.guis.put(player, KataParty.GuiType.LIST);
+						inst.guis.put(player.getUniqueId(), KataParty.GuiType.LIST);
 						player.openInventory(inst.partyList(player));
 						return true;
 					}
@@ -121,7 +121,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						}
 						else
 						{
-							p.addMember(player.getUniqueId(), KataParty.Rank.MEMBER);
+							p.addMember(player.getUniqueId());
 						}
 						return true;
 					}
@@ -152,7 +152,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						{
 							sender.sendMessage("You are not in any KataParty");
 						}
-						else if(m.getRank() == KataParty.Rank.ADMIN)
+						else if(m.getRank() == Party.Rank.ADMIN)
 						{
 							Party p = m.getParty();
 							inst.parties.remove(p);
