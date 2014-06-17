@@ -17,6 +17,8 @@ public class Party implements Iterable<Party.Member>
 	private boolean pvp = false;
 	private boolean visible = true;
 	private Inventory inv = null;
+	private boolean health = false;
+	private boolean potions = false;
 
 	public Party(final KataParty inst, String pname)
 	{
@@ -213,6 +215,40 @@ public class Party implements Iterable<Party.Member>
 			}
 			inv = null;
 			informMembers("Shared Inventory has been §ndisabled§r for your KataParty");
+		}
+	}
+
+	public boolean isHealthShared()
+	{
+		return health;
+	}
+	public void setHealthShared(boolean v)
+	{
+		health = v;
+		if(v)
+		{
+			informMembers("Shared Health & XP Gain has been §nenabled§r for your KataParty");
+		}
+		else
+		{
+			informMembers("Shared Health & XP Gain has been §disabled§r for your KataParty");
+		}
+	}
+
+	public boolean arePotionsSmart()
+	{
+		return potions;
+	}
+	public void setPotionsSmart(boolean v)
+	{
+		potions = v;
+		if(v)
+		{
+			informMembers("Smart Potions has been §nenabled§r for your KataParty");
+		}
+		else
+		{
+			informMembers("Smart Potions has been §disabled§r for your KataParty");
 		}
 	}
 

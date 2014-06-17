@@ -26,10 +26,13 @@ import java.io.*;
 
 public class KataParty extends JavaPlugin implements Listener
 {
+	public static final String CONFIG_DIR = "plugins/KataParty/";
+	public static final String CONFIG_MAIN = null;
+	public static final String CONFIG_PARTIES = "parties.yml";
 	@Override
 	public void onEnable()
 	{
-		File f = new File("plugins/KataParty/parties.yml");
+		File f = new File(CONFIG_DIR+CONFIG_PARTIES);
 		if(f.exists())
 		{
 			YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
@@ -51,10 +54,13 @@ public class KataParty extends JavaPlugin implements Listener
 						p.getInventory().setItem(i, items.get(i));
 					}
 				}
+				p.setHealthShared(ps.getBoolean("health"));
+				p.setPotionsSmart(ps.getBoolean("potions"));
 				for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
 				{
 					ConfigurationSection ms = (ConfigurationSection)me.getValue();
 					Party.Member m = p.addMember(UUID.fromString(me.getKey()));
+					m.setRank(Party.Rank.valueOf(ms.getString("rank")));
 					m.setTp(ms.getBoolean("tp"));
 				}
 			}
@@ -76,9 +82,9 @@ public class KataParty extends JavaPlugin implements Listener
 	@Override
 	public void onDisable()
 	{
-		File f = new File("plugins/KataParty");
+		File f = new File(CONFIG_DIR);
 		f.mkdir();
-		f = new File("plugins/KataParty/parties.yml");
+		f = new File(CONFIG_DIR+CONFIG_PARTIES);
 		YamlConfiguration conf = new YamlConfiguration();
 		ConfigurationSection cp = conf.createSection("parties");
 		for(Party p : parties)
@@ -95,6 +101,8 @@ public class KataParty extends JavaPlugin implements Listener
 			{
 				ps.set("inventory", p.getInventory().getContents());
 			}
+			ps.set("health", p.isHealthShared());
+			ps.set("potions", p.arePotionsSmart());
 			ConfigurationSection pms = ps.createSection("members");
 			for(Party.Member m : p)
 			{
@@ -113,7 +121,7 @@ public class KataParty extends JavaPlugin implements Listener
 		}
 	}
 
-	public ConcurrentSkipListMap<UUID, String> partiers = new ConcurrentSkipListMap<UUID, String>();
+	public ConcurrentSkipListMap<UUID, String> partiers = new ConcurrentSkipListMap<>();
 
 	public Set<Party> parties = new HashSet<>();
 	public Party.Member findMember(UUID uuid)
@@ -1301,7 +1309,7 @@ public class KataParty extends JavaPlugin implements Listener
 		if(ps instanceof Player)
 		{
 			Party.Member thrower = findMember(((Player)ps).getUniqueId());
-			if(thrower != null)
+			if(thrower != null && thrower.getParty().arePotionsSmart())
 			{
 				//
 			}

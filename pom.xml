@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.LB_Stuff</groupId>
     <artifactId>KataParty</artifactId>
-    <version>1.0.1-BETA</version>
+    <version>1.1.0-RELEASE</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
