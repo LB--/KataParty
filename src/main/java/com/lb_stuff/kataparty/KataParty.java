@@ -54,7 +54,10 @@ public class KataParty extends JavaPlugin implements Listener
 						p.getInventory().setItem(i, items.get(i));
 					}
 				}
-				p.setHealthShared(ps.getBoolean("health"));
+				if(!ps.isBoolean("health"))
+				{
+					p.setHealth(ps.getDouble("health"));
+				}
 				p.setPotionsSmart(ps.getBoolean("potions"));
 				for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
 				{
@@ -101,7 +104,14 @@ public class KataParty extends JavaPlugin implements Listener
 			{
 				ps.set("inventory", p.getInventory().getContents());
 			}
-			ps.set("health", p.isHealthShared());
+			if(p.getHealth() == null)
+			{
+				ps.set("health", false);
+			}
+			else
+			{
+				ps.set("health", p.getHealth());
+			}
 			ps.set("potions", p.arePotionsSmart());
 			ConfigurationSection pms = ps.createSection("members");
 			for(Party.Member m : p)
@@ -1188,7 +1198,7 @@ public class KataParty extends JavaPlugin implements Listener
 			e.setCancelled(true);
 		}
 	}
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.HIGHEST) //highest executed last
 	public void onPlayerChat(AsyncPlayerChatEvent e)
 	{
 		if(!e.isCancelled())
@@ -1315,14 +1325,37 @@ public class KataParty extends JavaPlugin implements Listener
 			}
 		}
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onDamage(EntityDamageEvent e)
 	{
-		//
+		if(!e.isCancelled() && e.getEntity() instanceof Player)
+		{
+			Party.Member m = findMember(e.getEntity().getUniqueId());
+			if(m != null && m.getParty().getHealth() != null)
+			{
+				//
+			}
+		}
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onHeal(EntityRegainHealthEvent e)
 	{
-		//
+		if(!e.isCancelled() && e.getEntity() instanceof Player)
+		{
+			Party.Member m = findMember(e.getEntity().getUniqueId());
+			if(m != null && m.getParty().getHealth() != null)
+			{
+				//
+			}
+		}
+	}
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onXp(PlayerExpChangeEvent e)
+	{
+		Party.Member m = findMember(e.getPlayer().getUniqueId());
+		if(m != null && m.getParty().getHealth() != null)
+		{
+			//
+		}
 	}
 }

@@ -17,7 +17,7 @@ public class Party implements Iterable<Party.Member>
 	private boolean pvp = false;
 	private boolean visible = true;
 	private Inventory inv = null;
-	private boolean health = false;
+	private Double health = null;
 	private boolean potions = false;
 
 	public Party(final KataParty inst, String pname)
@@ -138,6 +138,43 @@ public class Party implements Iterable<Party.Member>
 	{
 		return members.size();
 	}
+	public int numMembersOnline()
+	{
+		int count = 0;
+		for(Member m : this)
+		{
+			if(inst.getServer().getOfflinePlayer(m.getUuid()).isOnline())
+			{
+				++count;
+			}
+		}
+		return count;
+	}
+	public int numMembersAlive()
+	{
+		int count = 0;
+		for(Member m : this)
+		{
+			OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
+			if(offp.isOnline() && !offp.getPlayer().isDead())
+			{
+				++count;
+			}
+		}
+		return count;
+	}
+	public int numMembersRank(Rank r)
+	{
+		int count = 0;
+		for(Member m : this)
+		{
+			if(m.getRank().equals(r))
+			{
+				++count;
+			}
+		}
+		return count;
+	}
 
 	public boolean canTp()
 	{
@@ -218,21 +255,29 @@ public class Party implements Iterable<Party.Member>
 		}
 	}
 
-	public boolean isHealthShared()
+	public Double getHealth()
 	{
 		return health;
 	}
-	public void setHealthShared(boolean v)
+	public void enableHealth()
 	{
+		health = 1.0;
+		//
+		informMembers("Shared Health & XP Gain has been §nenabled§r for your KataParty");
+	}
+	public void disableHealth()
+	{
+		health = null;
+		//
+		informMembers("Shared Health & XP Gain has been §disabled§r for your KataParty");
+	}
+	public void setHealth(double v)
+	{
+		if(health == null)
+		{
+			enableHealth();
+		}
 		health = v;
-		if(v)
-		{
-			informMembers("Shared Health & XP Gain has been §nenabled§r for your KataParty");
-		}
-		else
-		{
-			informMembers("Shared Health & XP Gain has been §disabled§r for your KataParty");
-		}
 	}
 
 	public boolean arePotionsSmart()
