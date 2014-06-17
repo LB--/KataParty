@@ -29,34 +29,34 @@ public class Commands implements CommandExecutor, TabCompleter
 			{
 				case "kpjoin":
 				{
-					for(KataParty.Party p : inst.parties)
+					for(Party p : inst.parties)
 					{
-						if(p.visible && p.name.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+						if(p.isVisible() && p.getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 						{
-							ret.add(p.name);
+							ret.add(p.getName());
 						}
 					}
 				} break;
 				case "kpclose":
 				case "kpadmin":
 				{
-					for(KataParty.Party p : inst.parties)
+					for(Party p : inst.parties)
 					{
-						if(p.name.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+						if(p.getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 						{
-							ret.add(p.name);
+							ret.add(p.getName());
 						}
 					}
 				} break;
 				case "kptp":
 				{
-					KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+					Party.Member m = inst.findMember(player.getUniqueId());
 					if(m != null)
 					{
-						for(KataParty.Party.Member o : m.getParty().members)
+						for(Party.Member o : m.getParty())
 						{
-							String name = inst.getServer().getPlayer(o.uuid).getName();
-							if(o.tp && name.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+							String name = inst.getServer().getPlayer(o.getUuid()).getName();
+							if(o.canTp() && name.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 							{
 								ret.add(name);
 							}
@@ -114,14 +114,14 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 1)
 					{
-						KataParty.Party p = inst.findParty(args[0]);
+						Party p = inst.findParty(args[0]);
 						if(p == null)
 						{
 							sender.sendMessage("No KataParty named "+args[0]);
 						}
 						else
 						{
-							p.add(player.getUniqueId(), KataParty.Rank.MEMBER);
+							p.addMember(player.getUniqueId(), KataParty.Rank.MEMBER);
 						}
 						return true;
 					}
@@ -130,14 +130,14 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 0)
 					{
-						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						Party.Member m = inst.findMember(player.getUniqueId());
 						if(m == null)
 						{
 							sender.sendMessage("You are not in any KataParty");
 						}
 						else
 						{
-							m.getParty().remove(m.uuid);
+							m.getParty().removeMember(m.getUuid());
 							sender.sendMessage("You left your KataParty");
 						}
 						return true;
@@ -147,18 +147,18 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 0)
 					{
-						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						Party.Member m = inst.findMember(player.getUniqueId());
 						if(m == null)
 						{
 							sender.sendMessage("You are not in any KataParty");
 						}
-						else if(m.rank == KataParty.Rank.ADMIN)
+						else if(m.getRank() == KataParty.Rank.ADMIN)
 						{
-							KataParty.Party p = m.getParty();
+							Party p = m.getParty();
 							inst.parties.remove(p);
-							for(KataParty.Party.Member mem : p.members)
+							for(Party.Member mem : p)
 							{
-								Player plr = inst.getServer().getPlayer(mem.uuid);
+								Player plr = inst.getServer().getPlayer(mem.getUuid());
 								if(plr != null)
 								{
 									plr.sendMessage("Your KataParty was disbanded");
@@ -177,7 +177,7 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 1)
 					{
-						KataParty.Party p = inst.findParty(args[0]);
+						Party p = inst.findParty(args[0]);
 						if(p == null)
 						{
 							sender.sendMessage("No KataParty named "+args[0]);
@@ -185,9 +185,9 @@ public class Commands implements CommandExecutor, TabCompleter
 						else
 						{
 							inst.parties.remove(p);
-							for(KataParty.Party.Member m : p.members)
+							for(Party.Member m : p)
 							{
-								Player plr = inst.getServer().getPlayer(m.uuid);
+								Player plr = inst.getServer().getPlayer(m.getUuid());
 								if(plr != null)
 								{
 									plr.sendMessage("Your KataParty was closed");
@@ -202,7 +202,7 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 0)
 					{
-						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						Party.Member m = inst.findMember(player.getUniqueId());
 						if(m == null)
 						{
 							sender.sendMessage("You are not in any KataParty!");
@@ -218,7 +218,7 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 1)
 					{
-						KataParty.Party p = inst.findParty(args[0]);
+						Party p = inst.findParty(args[0]);
 						if(p == null)
 						{
 							sender.sendMessage("No KataParty named "+args[0]);
@@ -234,8 +234,8 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 0)
 					{
-						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
-						if(!m.getParty().tp)
+						Party.Member m = inst.findMember(player.getUniqueId());
+						if(!m.getParty().canTp())
 						{
 							sender.sendMessage("Your KataParty does not allow teleportations");
 						}
@@ -249,10 +249,10 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 0)
 					{
-						KataParty.Party.Member m = inst.findMember(player.getUniqueId());
+						Party.Member m = inst.findMember(player.getUniqueId());
 						if(m != null)
 						{
-							Inventory i = m.getParty().inv;
+							Inventory i = m.getParty().getInventory();
 							if(i != null)
 							{
 								player.openInventory(i);

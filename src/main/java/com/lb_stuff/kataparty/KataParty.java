@@ -37,25 +37,25 @@ public class KataParty extends JavaPlugin implements Listener
 			for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 			{
 				ConfigurationSection ps = (ConfigurationSection)e.getValue();
-				Party p = new Party(e.getKey());
+				Party p = new Party(this, e.getKey());
 				parties.add(p);
-				p.tp = ps.getBoolean("tp");
-				p.pvp = ps.getBoolean("pvp");
-				p.visible = ps.getBoolean("visible");
+				p.setTp(ps.getBoolean("tp"));
+				p.setPvp(ps.getBoolean("pvp"));
+				p.setVisible(ps.getBoolean("visible"));
 				if(!ps.isBoolean("inventory"))
 				{
 					List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
 					p.enableInventory();
-					for(int i = 0; i < items.size() && i < p.inv.getSize(); ++i)
+					for(int i = 0; i < items.size() && i < p.getInventory().getSize(); ++i)
 					{
-						p.inv.setItem(i, items.get(i));
+						p.getInventory().setItem(i, items.get(i));
 					}
 				}
 				for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
 				{
 					ConfigurationSection ms = (ConfigurationSection)me.getValue();
-					Party.Member m = p.add(UUID.fromString(me.getKey()), Rank.valueOf(ms.getString("rank")));
-					m.tp = ms.getBoolean("tp");
+					Party.Member m = p.addMember(UUID.fromString(me.getKey()), Rank.valueOf(ms.getString("rank")));
+					m.setTp(ms.getBoolean("tp"));
 				}
 			}
 		}
@@ -83,24 +83,24 @@ public class KataParty extends JavaPlugin implements Listener
 		ConfigurationSection cp = conf.createSection("parties");
 		for(Party p : parties)
 		{
-			ConfigurationSection ps = cp.createSection(p.name);
-			ps.set("tp", p.tp);
-			ps.set("pvp", p.pvp);
-			ps.set("visible", p.visible);
-			if(p.inv == null)
+			ConfigurationSection ps = cp.createSection(p.getName());
+			ps.set("tp", p.canTp());
+			ps.set("pvp", p.canPvp());
+			ps.set("visible", p.isVisible());
+			if(p.getInventory() == null)
 			{
 				ps.set("inventory", false);
 			}
 			else
 			{
-				ps.set("inventory", p.inv.getContents());
+				ps.set("inventory", p.getInventory().getContents());
 			}
 			ConfigurationSection pms = ps.createSection("members");
-			for(Party.Member m : p.members)
+			for(Party.Member m : p)
 			{
-				ConfigurationSection ms = pms.createSection(m.uuid.toString());
-				ms.set("rank", m.rank.toString());
-				ms.set("tp", m.tp);
+				ConfigurationSection ms = pms.createSection(m.getUuid().toString());
+				ms.set("rank", m.getRank().toString());
+				ms.set("tp", m.canTp());
 			}
 		}
 		try
@@ -131,129 +131,6 @@ public class KataParty extends JavaPlugin implements Listener
 		MEMBERS,
 		TP,
 	}
-	public class Party
-	{
-		public String name;
-		public boolean tp = true;
-		public boolean pvp = false;
-		public boolean visible = true;
-		public Inventory inv = null;
-		public Set<Member> members = new HashSet<>();
-
-		public Party(String pname)
-		{
-			name = pname;
-		}
-
-		public void rename(String n)
-		{
-			for(Map.Entry<UUID, String> e : partiers.entrySet())
-			{
-				if(e.getValue().equals(name))
-				{
-					e.setValue(n);
-				}
-			}
-			name = n;
-		}
-
-		public Member add(UUID uuid, Rank r)
-		{
-			Member m;
-			while((m = findMember(uuid)) != null)
-			{
-				m.getParty().remove(uuid);
-			}
-			members.add(m = new Member(uuid, r));
-			partiers.put(uuid, name);
-			for(Member mi : members)
-			{
-				Player p = getServer().getPlayer(mi.uuid);
-				if(p != null)
-				{
-					p.sendMessage(getServer().getPlayer(uuid).getName()+" has joined your KataParty");
-				}
-			}
-			return m;
-		}
-		public void remove(UUID uuid)
-		{
-			for(Iterator<Member> it = members.iterator(); it.hasNext(); )
-			{
-				Member m = it.next();
-				if(m.uuid.equals(uuid))
-				{
-					it.remove();
-					partiers.remove(uuid);
-					break;
-				}
-			}
-			for(Member m : members)
-			{
-				Player p = getServer().getPlayer(m.uuid);
-				if(p != null)
-				{
-					p.sendMessage(getServer().getOfflinePlayer(uuid).getName()+" has left your KataParty");
-				}
-			}
-		}
-		public Member memberByName(String name)
-		{
-			for(Member m : members)
-			{
-				OfflinePlayer offp = getServer().getOfflinePlayer(m.uuid);
-				if(offp.getName().equalsIgnoreCase(name))
-				{
-					return m;
-				}
-			}
-			return null;
-		}
-
-		public void enableInventory()
-		{
-			if(inv == null)
-			{
-				inv = Bukkit.createInventory(null, 4*9, name+" Shared Inventory");
-			}
-		}
-		public void disableInventory(Player p)
-		{
-			if(inv != null)
-			{
-				for(ItemStack i : inv.getContents())
-				{
-					if(i != null)
-					{
-						p.getWorld().dropItem(p.getLocation(), i).setPickupDelay(0);
-					}
-				}
-			}
-		}
-
-		public KataParty getPlugin()
-		{
-			return KataParty.this;
-		}
-
-		public class Member
-		{
-			public final UUID uuid;
-			public Rank rank;
-			public boolean tp = true;
-
-			public Member(UUID id, Rank r)
-			{
-				uuid = id;
-				rank = r;
-			}
-
-			public Party getParty()
-			{
-				return Party.this;
-			}
-		}
-	}
 
 	public ConcurrentSkipListMap<UUID, String> partiers = new ConcurrentSkipListMap<UUID, String>();
 
@@ -262,9 +139,9 @@ public class KataParty extends JavaPlugin implements Listener
 	{
 		for(Party p : parties)
 		{
-			for(Party.Member m : p.members)
+			for(Party.Member m : p)
 			{
-				if(m.uuid.equals(uuid))
+				if(m.getUuid().equals(uuid))
 				{
 					return m;
 				}
@@ -276,7 +153,7 @@ public class KataParty extends JavaPlugin implements Listener
 	{
 		for(Party p : parties)
 		{
-			if(p.name.equalsIgnoreCase(name))
+			if(p.getName().equalsIgnoreCase(name))
 			{
 				return p;
 			}
@@ -370,15 +247,15 @@ public class KataParty extends JavaPlugin implements Listener
 		Inventory plist = Bukkit.createInventory(null, 9*6, "List of KataParties");
 		for(final Party p : parties)
 		{
-			if(p.visible || player.hasPermission("KataParty.seehidden"))
+			if(p.isVisible() || player.hasPermission("KataParty.seehidden"))
 			{
-				ItemStack s = new ItemStack(p.visible? Material.NAME_TAG : Material.PAPER, p.members.size());
+				ItemStack s = new ItemStack(p.isVisible()? Material.NAME_TAG : Material.PAPER, p.numMembers());
 				ItemMeta m = s.getItemMeta();
-				m.setDisplayName(p.name);
+				m.setDisplayName(p.getName());
 				int online = 0;
-				for(Party.Member mem : p.members)
+				for(Party.Member mem : p)
 				{
-					if(getServer().getPlayer(mem.uuid) != null)
+					if(getServer().getPlayer(mem.getUuid()) != null)
 					{
 						++online;
 					}
@@ -388,14 +265,14 @@ public class KataParty extends JavaPlugin implements Listener
 				final boolean same = (mem != null && p == mem.getParty());
 				m.setLore(new ArrayList<String>(){
 				{
-					if(!p.visible)
+					if(!p.isVisible())
 					{
 						add("(invisible)");
 					}
-					add(online_+"/"+p.members.size()+" members online");
-					add("PvP: "+p.pvp);
-					add("TP: "+p.tp);
-					add("Shared Inv: "+(p.inv != null? true : false));
+					add(online_+"/"+p.numMembers()+" members online");
+					add("PvP: "+p.canPvp());
+					add("TP: "+p.canTp());
+					add("Shared Inv: "+(p.getInventory() != null? true : false));
 					if(!same)
 					{
 						add("Left click to join (you will leave your current KataParty)");
@@ -417,7 +294,7 @@ public class KataParty extends JavaPlugin implements Listener
 	}
 	public Inventory partyManage(final Party party, final Player player)
 	{
-		Inventory inv = Bukkit.createInventory(null, 9*2, party.name+" Settings");
+		Inventory inv = Bukkit.createInventory(null, 9*2, party.getName()+" Settings");
 
 		final Party.Member mt = findMember(player.getUniqueId());
 		boolean is_member = false;
@@ -427,8 +304,8 @@ public class KataParty extends JavaPlugin implements Listener
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.rank == Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.rank == Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == Rank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == Rank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -441,12 +318,12 @@ public class KataParty extends JavaPlugin implements Listener
 
 		ItemStack i = new ItemStack(Material.NAME_TAG);
 		ItemMeta m = i.getItemMeta();
-		m.setDisplayName(party.name);
+		m.setDisplayName(party.getName());
 		m.setLore(new ArrayList<String>(){
 		{
 			if(isMember)
 			{
-				add("Your rank: "+mt.rank);
+				add("Your rank: "+mt.getRank());
 				add("Left click to leave this KataParty");
 			}
 			else
@@ -466,24 +343,24 @@ public class KataParty extends JavaPlugin implements Listener
 		inv.setItem(0, i);
 
 		int online = 0, mods = 0, onmods = 0, admins = 0, onadmins = 0;
-		for(Party.Member mem : party.members)
+		for(Party.Member mem : party)
 		{
-			if(mem.rank.equals(Rank.MODERATOR))
+			if(mem.getRank().equals(Rank.MODERATOR))
 			{
 				++mods;
 			}
-			else if(mem.rank.equals(Rank.ADMIN))
+			else if(mem.getRank().equals(Rank.ADMIN))
 			{
 				++admins;
 			}
-			if(getServer().getPlayer(mem.uuid) != null)
+			if(getServer().getPlayer(mem.getUuid()) != null)
 			{
 				++online;
-				if(mem.rank.equals(Rank.MODERATOR))
+				if(mem.getRank().equals(Rank.MODERATOR))
 				{
 					++onmods;
 				}
-				else if(mem.rank.equals(Rank.ADMIN))
+				else if(mem.getRank().equals(Rank.ADMIN))
 				{
 					++onadmins;
 				}
@@ -495,21 +372,21 @@ public class KataParty extends JavaPlugin implements Listener
 		final int admins_ = admins;
 		final int onadmins_ = onadmins;
 
-		i = new ItemStack(Material.SKULL_ITEM, party.members.size(), (short)3);
+		i = new ItemStack(Material.SKULL_ITEM, party.numMembers(), (short)3);
 		m = i.getItemMeta();
 		m.setDisplayName("Members (submenu)");
 		m.setLore(new ArrayList<String>(){
 		{
-			add(online_+"/"+party.members.size()+" online");
+			add(online_+"/"+party.numMembers()+" online");
 			add(onmods_+"/"+mods_+" moderators online");
 			add(onadmins_+"/"+admins_+" admins online");
 		}});
 		i.setItemMeta(m);
 		inv.setItem(1, i);
 
-		i = new ItemStack(Material.ENDER_PEARL, (party.tp? 2 : 1));
+		i = new ItemStack(Material.ENDER_PEARL, (party.canTp()? 2 : 1));
 		m = i.getItemMeta();
-		m.setDisplayName("Teleportation "+(party.tp? "enabled" : "disabled"));
+		m.setDisplayName("Teleportation "+(party.canTp()? "enabled" : "disabled"));
 		m.setLore(new ArrayList<String>(){
 		{
 			if(isAdmin || (player.hasPermission("KataParty.teleport.disable") && isPartyMod))
@@ -524,9 +401,9 @@ public class KataParty extends JavaPlugin implements Listener
 		i.setItemMeta(m);
 		inv.setItem(2, i);
 
-		i = new ItemStack((party.pvp? Material.GOLD_SWORD : Material.STONE_SWORD), (party.pvp? 2 : 1));
+		i = new ItemStack((party.canPvp()? Material.GOLD_SWORD : Material.STONE_SWORD), (party.canPvp()? 2 : 1));
 		m = i.getItemMeta();
-		m.setDisplayName("PvP "+(party.pvp? "enabled" : "disabled"));
+		m.setDisplayName("PvP "+(party.canPvp()? "enabled" : "disabled"));
 		m.setLore(new ArrayList<String>(){
 		{
 			if(isAdmin || isPartyMod)
@@ -541,9 +418,9 @@ public class KataParty extends JavaPlugin implements Listener
 		i.setItemMeta(m);
 		inv.setItem(3, i);
 
-		i = new ItemStack(Material.ENDER_CHEST, (party.inv != null? 2 : 1));
+		i = new ItemStack(Material.ENDER_CHEST, (party.getInventory() != null? 2 : 1));
 		m = i.getItemMeta();
-		m.setDisplayName("Shared inventory "+(party.inv != null? "enabled" : "disabled"));
+		m.setDisplayName("Shared inventory "+(party.getInventory() != null? "enabled" : "disabled"));
 		m.setLore(new ArrayList<String>(){
 		{
 			if(isAdmin || (player.hasPermission("KataParty.inventory.enable") && isPartyMod))
@@ -558,9 +435,9 @@ public class KataParty extends JavaPlugin implements Listener
 		i.setItemMeta(m);
 		inv.setItem(4, i);
 
-		i = new ItemStack((party.visible? Material.JACK_O_LANTERN : Material.PUMPKIN), (party.visible? 2 : 1));
+		i = new ItemStack((party.isVisible()? Material.JACK_O_LANTERN : Material.PUMPKIN), (party.isVisible()? 2 : 1));
 		m = i.getItemMeta();
-		m.setDisplayName("Will"+(party.visible? "" : " not")+" be visible in list");
+		m.setDisplayName("Will"+(party.isVisible()? "" : " not")+" be visible in list");
 		m.setLore(new ArrayList<String>(){
 		{
 			if(isAdmin || (player.hasPermission("KataParty.hide") && isPartyAdmin))
@@ -614,9 +491,9 @@ public class KataParty extends JavaPlugin implements Listener
 
 		if(isMember)
 		{
-			i = new ItemStack(Material.EYE_OF_ENDER, (mt.tp? 2 : 1));
+			i = new ItemStack(Material.EYE_OF_ENDER, (mt.canTp()? 2 : 1));
 			m = i.getItemMeta();
-			m.setDisplayName("Members are"+(mt.tp? "" : " not")+" allowed to teleport to you");
+			m.setDisplayName("Members are"+(mt.canTp()? "" : " not")+" allowed to teleport to you");
 			m.setLore(new ArrayList<String>(){
 			{
 				if(player.hasPermission("KataParty.teleport.disallow"))
@@ -642,7 +519,7 @@ public class KataParty extends JavaPlugin implements Listener
 
 		ItemStack i = new ItemStack(Material.NAME_TAG);
 		ItemMeta im = i.getItemMeta();
-		im.setDisplayName(party.name);
+		im.setDisplayName(party.getName());
 		im.setLore(new ArrayList<String>(){
 		{
 			add("Party name must be unique and not contain spaces");
@@ -656,7 +533,7 @@ public class KataParty extends JavaPlugin implements Listener
 	}
 	public Inventory partyMembers(final Party party, final Player player)
 	{
-		Inventory inv = Bukkit.createInventory(null, 9*6, "Manage "+party.name+" members");
+		Inventory inv = Bukkit.createInventory(null, 9*6, "Manage "+party.getName()+" members");
 
 		final Party.Member mt = findMember(player.getUniqueId());
 		boolean is_member = false;
@@ -666,8 +543,8 @@ public class KataParty extends JavaPlugin implements Listener
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.rank == Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.rank == Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == Rank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == Rank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -678,11 +555,11 @@ public class KataParty extends JavaPlugin implements Listener
 		final boolean isPartyAdmin = is_partyAdmin;
 		final boolean isPartyMod = is_partyMod;
 
-		for(final Party.Member m : party.members)
+		for(final Party.Member m : party)
 		{
 			ItemStack i = new ItemStack(Material.NAME_TAG);
 			ItemMeta im = i.getItemMeta();
-			im.setDisplayName(party.name);
+			im.setDisplayName(party.getName());
 			im.setLore(new ArrayList<String>(){
 			{
 				add("Click to return to management");
@@ -690,19 +567,19 @@ public class KataParty extends JavaPlugin implements Listener
 			i.setItemMeta(im);
 			inv.addItem(i);
 
-			final OfflinePlayer offp = getServer().getOfflinePlayer(m.uuid);
+			final OfflinePlayer offp = getServer().getOfflinePlayer(m.getUuid());
 			final Player onp = offp.getPlayer();
-			i = new ItemStack(Material.SKULL_ITEM, (m.rank.equals(Rank.MODERATOR)? 2 : (m.rank.equals(Rank.ADMIN)? 3 : 1)), (short)3);
+			i = new ItemStack(Material.SKULL_ITEM, (m.getRank().equals(Rank.MODERATOR)? 2 : (m.getRank().equals(Rank.ADMIN)? 3 : 1)), (short)3);
 			im = i.getItemMeta();
 			im.setDisplayName(offp.getName());
 			im.setLore(new ArrayList<String>(){
 			{
-				if(m.uuid.equals(player.getUniqueId()))
+				if(m.getUuid().equals(player.getUniqueId()))
 				{
 					add("(that's you!)");
 				}
-				add("Rank: "+m.rank);
-				switch(m.rank)
+				add("Rank: "+m.getRank());
+				switch(m.getRank())
 				{
 					case MEMBER:
 					{
@@ -733,7 +610,7 @@ public class KataParty extends JavaPlugin implements Listener
 					default: break;
 				}
 				add("Online: "+offp.isOnline());
-				add("Allows TP: "+m.tp);
+				add("Allows TP: "+m.canTp());
 				if(offp.isOnline())
 				{
 					add("Alive: "+!onp.isDead());
@@ -760,26 +637,26 @@ public class KataParty extends JavaPlugin implements Listener
 
 		ItemStack i = new ItemStack(Material.NAME_TAG);
 		ItemMeta im = i.getItemMeta();
-		im.setDisplayName(m.getParty().name);
+		im.setDisplayName(m.getParty().getName());
 		i.setItemMeta(im);
 		inv.addItem(i);
 
-		for(final Party.Member mem : m.getParty().members)
+		for(final Party.Member mem : m.getParty())
 		{
-			if(mem.uuid.equals(player.getUniqueId()))
+			if(mem.getUuid().equals(player.getUniqueId()))
 			{
 				continue;
 			}
-			final OfflinePlayer offp = getServer().getOfflinePlayer(mem.uuid);
+			final OfflinePlayer offp = getServer().getOfflinePlayer(mem.getUuid());
 			final Player onp = offp.getPlayer();
 			i = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
 			im = i.getItemMeta();
 			im.setDisplayName(offp.getName());
 			im.setLore(new ArrayList<String>(){
 			{
-				add("Rank: "+mem.rank);
+				add("Rank: "+mem.getRank());
 				add("Online: "+offp.isOnline());
-				add("Allows TP: "+mem.tp);
+				add("Allows TP: "+mem.canTp());
 				if(offp.isOnline())
 				{
 					add("Alive: "+!onp.isDead());
@@ -817,15 +694,15 @@ public class KataParty extends JavaPlugin implements Listener
 							e.getWhoClicked().openInventory(Bukkit.createInventory(null, 9*1, "Name taken: "+name));
 							break;
 						}
-						Party p = new Party(name);
-						p.add(e.getWhoClicked().getUniqueId(), Rank.ADMIN);
-						p.tp = (e.getInventory().getItem(2).getAmount() != 1);
-						p.pvp = (e.getInventory().getItem(3).getAmount() != 1);
+						Party p = new Party(this, name);
+						p.addMember(e.getWhoClicked().getUniqueId(), Rank.ADMIN);
+						p.setTp(e.getInventory().getItem(2).getAmount() != 1);
+						p.setPvp(e.getInventory().getItem(3).getAmount() != 1);
 						if(e.getInventory().getItem(4).getAmount() != 1)
 						{
 							p.enableInventory();
 						}
-						p.visible = (e.getInventory().getItem(5).getAmount() != 1);
+						p.setVisible(e.getInventory().getItem(5).getAmount() != 1);
 						parties.add(p);
 						e.getWhoClicked().closeInventory();
 					} break;
@@ -919,7 +796,7 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						case LEFT:
 						{
-							p.add(he.getUniqueId(), Rank.MEMBER);
+							p.addMember(he.getUniqueId(), Rank.MEMBER);
 							e.getView().close();
 						} break;
 						case RIGHT:
@@ -959,8 +836,8 @@ public class KataParty extends JavaPlugin implements Listener
 				if(mt != null && mt.getParty() == party)
 				{
 					is_member = true;
-					is_partyAdmin = (mt.rank == Rank.ADMIN);
-					is_partyMod = (is_partyAdmin || mt.rank == Rank.MODERATOR);
+					is_partyAdmin = (mt.getRank() == Rank.ADMIN);
+					is_partyMod = (is_partyAdmin || mt.getRank() == Rank.MODERATOR);
 				}
 				if(he.hasPermission("KataParty.admin"))
 				{
@@ -977,7 +854,7 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						if(isMember && e.isLeftClick())
 						{
-							party.remove(mt.uuid);
+							party.removeMember(mt.getUuid());
 							e.getView().close();
 						}
 						else if(e.isRightClick() && (isAdmin || isPartyAdmin))
@@ -997,7 +874,7 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						if(isAdmin || (he.hasPermission("KataParty.teleport.disable") && isPartyMod))
 						{
-							party.tp = !party.tp;
+							party.setTp(!party.canTp());
 							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
 						}
 					} break;
@@ -1005,7 +882,7 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						if(isAdmin || isPartyMod)
 						{
-							party.pvp = !party.pvp;
+							party.setPvp(!party.canPvp());
 							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
 						}
 					} break;
@@ -1013,7 +890,7 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						if(isAdmin || (he.hasPermission("KataParty.inventory.enable") && isPartyMod))
 						{
-							if(party.inv == null)
+							if(party.getInventory() == null)
 							{
 								party.enableInventory();
 							}
@@ -1028,7 +905,7 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						if(isAdmin || (he.hasPermission("KataParty.hide") && isPartyAdmin))
 						{
-							party.visible = !party.visible;
+							party.setVisible(!party.isVisible());
 							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
 						}
 					} break;
@@ -1037,15 +914,15 @@ public class KataParty extends JavaPlugin implements Listener
 						if(isAdmin || (he.hasPermission("KataParty.disband") && isPartyAdmin))
 						{
 							parties.remove(party);
-							for(Party.Member mem : party.members)
+							for(Party.Member mem : party)
 							{
-								Player plr = getServer().getPlayer(mem.uuid);
+								Player plr = getServer().getPlayer(mem.getUuid());
 								if(plr != null)
 								{
 									plr.sendMessage("Your KataParty was "+(isMember? "disbanded" : "closed"));
 								}
 							}
-							if(party.inv != null)
+							if(party.getInventory() != null)
 							{
 								party.disableInventory((Player)he);
 							}
@@ -1056,11 +933,11 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						if(isAdmin || (he.hasPermission("KataParty.teleport.do") && isPartyAdmin))
 						{
-							for(Party.Member mem : party.members)
+							for(Party.Member mem : party)
 							{
-								if(!mem.uuid.equals(he.getUniqueId()) && mem.tp)
+								if(!mem.getUuid().equals(he.getUniqueId()) && mem.canTp())
 								{
-									OfflinePlayer offp = getServer().getOfflinePlayer(mem.uuid);
+									OfflinePlayer offp = getServer().getOfflinePlayer(mem.getUuid());
 									if(offp.isOnline())
 									{
 										Player onp = offp.getPlayer();
@@ -1077,7 +954,7 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						if(isMember && he.hasPermission("KataParty.teleport.disallow"))
 						{
-							mt.tp = !mt.tp;
+							mt.setTp( ! mt.canTp());
 							e.getView().getTopInventory().setContents(partyManage(party, (Player)he).getContents());
 						}
 					} break;
@@ -1126,7 +1003,7 @@ public class KataParty extends JavaPlugin implements Listener
 				}
 				if(e.getSlot() != 0)
 				{
-					Party.Member target = party.memberByName(e.getCurrentItem().getItemMeta().getDisplayName());
+					Party.Member target = party.findMember(e.getCurrentItem().getItemMeta().getDisplayName());
 					if(target == null || target.getParty() != party)
 					{
 						e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
@@ -1141,8 +1018,8 @@ public class KataParty extends JavaPlugin implements Listener
 					if(mt != null && mt.getParty() == party)
 					{
 						is_member = true;
-						is_partyAdmin = (mt.rank == Rank.ADMIN);
-						is_partyMod = (is_partyAdmin || mt.rank == Rank.MODERATOR);
+						is_partyAdmin = (mt.getRank() == Rank.ADMIN);
+						is_partyMod = (is_partyAdmin || mt.getRank() == Rank.MODERATOR);
 					}
 					if(he.hasPermission("KataParty.admin"))
 					{
@@ -1157,13 +1034,13 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						case LEFT:
 						{
-							switch(target.rank)
+							switch(target.getRank())
 							{
 								case MEMBER:
 								{
 									if(isAdmin || (isMember && isPartyAdmin))
 									{
-										target.rank = Rank.MODERATOR;
+										target.setRank(Rank.MODERATOR);
 										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
 									}
 								} break;
@@ -1171,7 +1048,7 @@ public class KataParty extends JavaPlugin implements Listener
 								{
 									if(isAdmin || (isMember && isPartyAdmin))
 									{
-										target.rank = Rank.ADMIN;
+										target.setRank(Rank.ADMIN);
 										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
 									}
 								} break;
@@ -1180,13 +1057,13 @@ public class KataParty extends JavaPlugin implements Listener
 						} break;
 						case RIGHT:
 						{
-							switch(target.rank)
+							switch(target.getRank())
 							{
 								case MEMBER:
 								{
 									if(isAdmin || (isMember && isPartyMod))
 									{
-										party.remove(target.uuid);
+										party.removeMember(target.getUuid());
 										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
 									}
 								} break;
@@ -1194,7 +1071,7 @@ public class KataParty extends JavaPlugin implements Listener
 								{
 									if(isAdmin || (isMember && isPartyAdmin))
 									{
-										target.rank = Rank.MEMBER;
+										target.setRank(Rank.MEMBER);
 										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
 									}
 								} break;
@@ -1202,7 +1079,7 @@ public class KataParty extends JavaPlugin implements Listener
 								{
 									if(isAdmin || (isMember && isPartyAdmin))
 									{
-										target.rank = Rank.MODERATOR;
+										target.setRank(Rank.MODERATOR);
 										e.getView().getTopInventory().setContents(partyMembers(party, (Player)he).getContents());
 									}
 								} break;
@@ -1230,15 +1107,15 @@ public class KataParty extends JavaPlugin implements Listener
 						return;
 					}
 					HumanEntity he = e.getWhoClicked();
-					Party.Member m = party.memberByName(e.getCurrentItem().getItemMeta().getDisplayName());
+					Party.Member m = party.findMember(e.getCurrentItem().getItemMeta().getDisplayName());
 					if(m == null || m.getParty() != party)
 					{
 						e.getView().getTopInventory().setContents(partyTeleport((Player)he).getContents());
 						return;
 					}
 
-					OfflinePlayer target = getServer().getOfflinePlayer(m.uuid);
-					if(target.isOnline() && m.tp)
+					OfflinePlayer target = getServer().getOfflinePlayer(m.getUuid());
+					if(target.isOnline() && m.canTp())
 					{
 						he.teleport(target.getPlayer());
 						e.getView().close();
@@ -1320,7 +1197,7 @@ public class KataParty extends JavaPlugin implements Listener
 		Party.Member m = findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
-			e.getPlayer().sendMessage("You are in KataParty "+m.getParty().name);
+			e.getPlayer().sendMessage("You are in KataParty "+m.getParty().getName());
 		}
 		else
 		{
@@ -1337,7 +1214,7 @@ public class KataParty extends JavaPlugin implements Listener
 	{
 		Party.Member a = findMember(e.getDamager().getUniqueId());
 		Party.Member b = findMember(e.getEntity().getUniqueId());
-		if(a != null && !a.getParty().pvp)
+		if(a != null && !a.getParty().canPvp())
 		{
 			if(b != null && a.getParty() == b.getParty())
 			{
@@ -1356,7 +1233,7 @@ public class KataParty extends JavaPlugin implements Listener
 				}
 			}
 		}
-		else if(b != null && !b.getParty().pvp && e.getDamager() instanceof Wolf)
+		else if(b != null && !b.getParty().canPvp() && e.getDamager() instanceof Wolf)
 		{
 			Wolf w = (Wolf)e.getDamager();
 			AnimalTamer owner = w.getOwner();
@@ -1381,7 +1258,7 @@ public class KataParty extends JavaPlugin implements Listener
 			{
 				Party.Member a = findMember(owner.getUniqueId());
 				Party.Member b = findMember(e.getTarget().getUniqueId());
-				if(a != null && b != null && a.getParty() == b.getParty() && !a.getParty().pvp)
+				if(a != null && b != null && a.getParty() == b.getParty() && !a.getParty().canPvp())
 				{
 					e.setCancelled(true); //member's wolf targets member
 				}
