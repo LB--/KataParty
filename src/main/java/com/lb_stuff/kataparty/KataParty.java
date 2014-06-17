@@ -976,15 +976,18 @@ public class KataParty extends JavaPlugin implements Listener
 				else
 				{
 					String name = e.getCurrentItem().getItemMeta().getDisplayName();
-					if(findParty(name) != null)
+					if(!name.contains(" "))
 					{
-						e.setCancelled(true);
-					}
-					else
-					{
-						e.setCancelled(true);
-						party.rename(name);
-						e.getView().close();
+						if(findParty(name) != null)
+						{
+							e.setCancelled(true);
+						}
+						else
+						{
+							e.setCancelled(true);
+							party.rename(name);
+							e.getView().close();
+						}
 					}
 				}
 			} break;

@@ -24,6 +24,19 @@ public class Party implements Iterable<Party.Member>
 		name = pname;
 	}
 
+	public KataParty getPlugin()
+	{
+		return inst;
+	}
+
+	public void informMembers(String message)
+	{
+		for(Member m : this)
+		{
+			m.inform(message);
+		}
+	}
+
 	public String getName()
 	{
 		return name;
@@ -37,6 +50,7 @@ public class Party implements Iterable<Party.Member>
 				e.setValue(n);
 			}
 		}
+		informMembers("Your KataParty was renamed from §n"+name+"§r to §n"+n+"§r");
 		name = n;
 	}
 
@@ -49,14 +63,7 @@ public class Party implements Iterable<Party.Member>
 		}
 		members.add(m = new Member(uuid));
 		inst.partiers.put(uuid, name);
-		for(Member mi : members)
-		{
-			Player p = inst.getServer().getPlayer(mi.getUuid());
-			if(p != null)
-			{
-				p.sendMessage(inst.getServer().getPlayer(uuid).getName() + " has joined your KataParty");
-			}
-		}
+		informMembers("§n"+inst.getServer().getOfflinePlayer(uuid).getName()+"§r has joined your KataParty");
 		return m;
 	}
 	public void removeMember(UUID uuid)
@@ -71,14 +78,7 @@ public class Party implements Iterable<Party.Member>
 				break;
 			}
 		}
-		for(Member m : members)
-		{
-			Player p = inst.getServer().getPlayer(m.getUuid());
-			if(p != null)
-			{
-				p.sendMessage(inst.getServer().getOfflinePlayer(uuid).getName() + " has left your KataParty");
-			}
-		}
+		informMembers("§n"+inst.getServer().getOfflinePlayer(uuid).getName()+"§r has left your KataParty");
 	}
 	public Member findMember(UUID uuid)
 	{
@@ -120,6 +120,14 @@ public class Party implements Iterable<Party.Member>
 	public void setTp(boolean v)
 	{
 		tp = v;
+		if(v)
+		{
+			informMembers("Teleportation has been §nenabled§r for your KataParty");
+		}
+		else
+		{
+			informMembers("Teleportation has been §ndisabled§r for your KataParty");
+		}
 	}
 
 	public boolean canPvp()
@@ -129,6 +137,14 @@ public class Party implements Iterable<Party.Member>
 	public void setPvp(boolean v)
 	{
 		pvp = v;
+		if(v)
+		{
+			informMembers("PvP has been §nenabled§r for your KataParty");
+		}
+		else
+		{
+			informMembers("PvP has been §ndisabled§r for your KataParty");
+		}
 	}
 
 	public boolean isVisible()
@@ -138,6 +154,14 @@ public class Party implements Iterable<Party.Member>
 	public void setVisible(boolean v)
 	{
 		visible = v;
+		if(v)
+		{
+			informMembers("Visibility has been §nenabled§r for your KataParty");
+		}
+		else
+		{
+			informMembers("Visibility has been §ndisabled§r for your KataParty");
+		}
 	}
 
 	public void enableInventory()
@@ -145,6 +169,7 @@ public class Party implements Iterable<Party.Member>
 		if(inv == null)
 		{
 			inv = Bukkit.createInventory(null, 4 * 9, name + " Shared Inventory");
+			informMembers("Shared Inventory has been §nenabled§r for your KataParty");
 		}
 	}
 	public Inventory getInventory()
@@ -162,12 +187,8 @@ public class Party implements Iterable<Party.Member>
 					p.getWorld().dropItem(p.getLocation(), i).setPickupDelay(0);
 				}
 			}
+			informMembers("Shared Inventory has been §ndisabled§r for your KataParty");
 		}
-	}
-
-	public KataParty getPlugin()
-	{
-		return inst;
 	}
 
 	public static enum Rank
@@ -185,6 +206,15 @@ public class Party implements Iterable<Party.Member>
 		public Member(UUID id)
 		{
 			uuid = id;
+		}
+
+		public void inform(String message)
+		{
+			OfflinePlayer offp = inst.getServer().getOfflinePlayer(uuid);
+			if(offp.isOnline())
+			{
+				offp.getPlayer().sendMessage("[KataParty] "+message);
+			}
 		}
 
 		public Party getParty()
@@ -227,6 +257,7 @@ public class Party implements Iterable<Party.Member>
 		public void setRank(Rank r)
 		{
 			rank = r;
+			inform("Your rank has been set to §n"+r+"§r");
 		}
 
 		public boolean canTp()
@@ -236,6 +267,14 @@ public class Party implements Iterable<Party.Member>
 		public void setTp(boolean v)
 		{
 			tp = v;
+			if(v)
+			{
+				inform("Teleportation has been personally §nenabled§r for you");
+			}
+			else
+			{
+				inform("Teleportation has been personally §ndisabled§r for you");
+			}
 		}
 	}
 }
