@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty;
 
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.permissions.PermissionAttachmentInfo;
@@ -55,14 +56,20 @@ public class Commands implements CommandExecutor, TabCompleter
 					{
 						for(Party.Member o : m.getParty())
 						{
-							String name = inst.getServer().getPlayer(o.getUuid()).getName();
-							if(o.canTp() && name.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+							OfflinePlayer offp = inst.getServer().getOfflinePlayer(o.getUuid());
+							Player onp = offp.getPlayer();
+							if(offp.isOnline() && player.canSee(onp))
 							{
-								ret.add(name);
+								String name = onp.getName();
+								if(o.canTp() && name.toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+								{
+									ret.add(name);
+								}
 							}
 						}
 					}
 				} break;
+				default: break;
 			}
 		}
 		return ret;

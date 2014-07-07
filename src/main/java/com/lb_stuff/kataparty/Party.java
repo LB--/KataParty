@@ -122,7 +122,7 @@ public class Party implements Iterable<Party.Member>
 		for(Member m : members)
 		{
 			OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
-			if(offp.getName().equalsIgnoreCase(name))
+			if(offp != null && offp.getName() != null && offp.getName().equalsIgnoreCase(name))
 			{
 				return m;
 			}

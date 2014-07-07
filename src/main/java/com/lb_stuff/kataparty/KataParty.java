@@ -72,12 +72,16 @@ public class KataParty extends JavaPlugin implements Listener
 		getCommand("kataparty").setExecutor(c);
 		getCommand("kpcreate").setExecutor(c);
 		getCommand("kplist").setExecutor(c);
+		getCommand("kpjoin").setTabCompleter(c);
 		getCommand("kpjoin").setExecutor(c);
 		getCommand("kpleave").setExecutor(c);
 		getCommand("kpdisband").setExecutor(c);
+		getCommand("kpclose").setTabCompleter(c);
 		getCommand("kpclose").setExecutor(c);
 		getCommand("kpmanage").setExecutor(c);
+		getCommand("kpadmin").setTabCompleter(c);
 		getCommand("kpadmin").setExecutor(c);
+		getCommand("kptp").setTabCompleter(c);
 		getCommand("kptp").setExecutor(c);
 		getCommand("kpshare").setExecutor(c);
 		getServer().getPluginManager().registerEvents(this, this);
@@ -899,9 +903,13 @@ public class KataParty extends JavaPlugin implements Listener
 			final Player onp = offp.getPlayer();
 			i = new ItemStack(Material.SKULL_ITEM, (m.getRank().equals(Party.Rank.MODERATOR)? 2 : (m.getRank().equals(Party.Rank.ADMIN)? 3 : 1)), (short)3);
 			im = i.getItemMeta();
-			im.setDisplayName(offp.getName());
+			im.setDisplayName(offp.getName() != null ? offp.getName() : m.getUuid().toString());
 			im.setLore(new ArrayList<String>(){
 			{
+				if(offp.getName() == null)
+				{
+					add("§4(missing player file; unknown name)");
+				}
 				if(m.getUuid().equals(player.getUniqueId()))
 				{
 					add("(that's you!)");
@@ -937,9 +945,9 @@ public class KataParty extends JavaPlugin implements Listener
 					} break;
 					default: break;
 				}
-				add("Online: "+offp.isOnline());
+				add("Online: "+(offp.isOnline() && player.canSee(onp)));
 				add("Allows TP: "+m.canTp());
-				if(offp.isOnline())
+				if(offp.isOnline() && player.canSee(onp))
 				{
 					add("Alive: "+!onp.isDead());
 				}
@@ -1087,9 +1095,9 @@ public class KataParty extends JavaPlugin implements Listener
 			im.setLore(new ArrayList<String>(){
 			{
 				add("Rank: "+mem.getRank());
-				add("Online: "+offp.isOnline());
+				add("Online: "+(offp.isOnline() && player.canSee(onp)));
 				add("Allows TP: "+mem.canTp());
-				if(offp.isOnline())
+				if(offp.isOnline() && player.canSee(onp))
 				{
 					add("Alive: "+!onp.isDead());
 				}
@@ -1122,7 +1130,7 @@ public class KataParty extends JavaPlugin implements Listener
 			}
 
 			OfflinePlayer target = getServer().getOfflinePlayer(m.getUuid());
-			if(target.isOnline() && m.canTp())
+			if(target.isOnline() && m.canTp() && ((Player)he).canSee(target.getPlayer()))
 			{
 				he.teleport(target.getPlayer());
 				e.getView().close();
@@ -1210,6 +1218,10 @@ public class KataParty extends JavaPlugin implements Listener
 			Set<Player> targets = e.getRecipients();
 			String spn = partiers.get(source.getUniqueId());
 			boolean forceglobal = msg.startsWith("!");
+
+			//need to manually send to console since we are cancelling the event
+			getServer().getConsoleSender().sendMessage(String.format(fmt, source.getDisplayName(), msg));
+
 			for(Player p : targets)
 			{
 				String pn = partiers.get(p.getUniqueId());
@@ -1219,21 +1231,21 @@ public class KataParty extends JavaPlugin implements Listener
 					{
 						if(forceglobal)
 						{
-							p.sendMessage(String.format(fmt, source.getName(), "§7§o"+msg.substring(1)));
+							p.sendMessage(String.format(fmt, source.getDisplayName(), "§7§o"+msg.substring(1)));
 						}
 						else if(pn.equals(spn))
 						{
-							p.sendMessage(String.format("§l{%3$s}§r"+fmt, source.getName(), msg, spn));
+							p.sendMessage(String.format("§l{%3$s}§r"+fmt, source.getDisplayName(), msg, spn));
 						}
 					}
 					else
 					{
-						p.sendMessage(String.format(fmt, source.getName(), "§7§o"+msg));
+						p.sendMessage(String.format(fmt, source.getDisplayName(), "§7§o"+msg));
 					}
 				}
 				else if(spn == null)
 				{
-					p.sendMessage(String.format(fmt, source.getName(), msg));
+					p.sendMessage(String.format(fmt, source.getDisplayName(), msg));
 				}
 			}
 		}
