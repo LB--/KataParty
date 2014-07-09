@@ -766,18 +766,8 @@ public class KataParty extends JavaPlugin implements Listener
 				if(isAdmin || (he.hasPermission("KataParty.disband") && isPartyAdmin))
 				{
 					parties.remove(party);
-					for(Party.Member mem : party)
-					{
-						Player plr = getServer().getPlayer(mem.getUuid());
-						if(plr != null)
-						{
-							plr.sendMessage("Your KataParty was "+(isMember? "disbanded" : "closed"));
-						}
-					}
-					if(party.getInventory() != null)
-					{
-						party.disableInventory((Player)he);
-					}
+					party.disband();
+					party.disableInventory((Player)he);
 					e.getView().close();
 				}
 			} break;

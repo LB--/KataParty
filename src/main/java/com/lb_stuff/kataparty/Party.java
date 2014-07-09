@@ -99,6 +99,7 @@ public class Party implements Iterable<Party.Member>
 			Member m = it.next();
 			if(m.getUuid().equals(uuid))
 			{
+				m.inform("You have left your KataParty");
 				it.remove();
 				inst.partiers.remove(uuid);
 				break;
@@ -252,6 +253,15 @@ public class Party implements Iterable<Party.Member>
 			}
 			inv = null;
 			informMembers("Shared Inventory has been §ndisabled§r for your KataParty");
+		}
+	}
+
+	public void disband()
+	{
+		for(Member m : this.members.toArray(new Member[0]))
+		{
+			m.inform("Your KataParty was disbanded");
+			removeMember(m.getUuid());
 		}
 	}
 

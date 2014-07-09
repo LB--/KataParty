@@ -145,7 +145,6 @@ public class Commands implements CommandExecutor, TabCompleter
 						else
 						{
 							m.getParty().removeMember(m.getUuid());
-							sender.sendMessage("You left your KataParty");
 						}
 						return true;
 					}
@@ -163,14 +162,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						{
 							Party p = m.getParty();
 							inst.parties.remove(p);
-							for(Party.Member mem : p)
-							{
-								Player plr = inst.getServer().getPlayer(mem.getUuid());
-								if(plr != null)
-								{
-									plr.sendMessage("Your KataParty was disbanded");
-								}
-							}
+							p.disband();
 							p.disableInventory(player);
 						}
 						else
@@ -192,14 +184,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						else
 						{
 							inst.parties.remove(p);
-							for(Party.Member m : p)
-							{
-								Player plr = inst.getServer().getPlayer(m.getUuid());
-								if(plr != null)
-								{
-									plr.sendMessage("Your KataParty was closed");
-								}
-							}
+							p.disband();
 							p.disableInventory(player);
 						}
 						return true;
@@ -271,7 +256,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						}
 						else
 						{
-							sender.sendMessage("You are not in any KataParty!");
+							sender.sendMessage("You are not in any KataParty");
 						}
 						return true;
 					}
