@@ -1134,6 +1134,8 @@ public class KataParty extends JavaPlugin implements Listener
 			{
 				he.teleport(target.getPlayer());
 				e.getView().close();
+				((Player)he).sendMessage("[KataParty] You were teleported to "+target.getName());
+				target.getPlayer().sendMessage("[KataParty] "+he.getName()+" telepoted to you");
 			}
 		}
 	}

@@ -224,16 +224,45 @@ public class Commands implements CommandExecutor, TabCompleter
 				} break;
 				case "kptp":
 				{
-					if(args.length == 0)
+					if(args.length == 0 || args.length == 1)
 					{
 						Party.Member m = inst.findMember(player.getUniqueId());
 						if(!m.getParty().canTp())
 						{
 							sender.sendMessage("[KataParty] Your KataParty does not allow teleportations");
 						}
-						else
+						else if(args.length == 0)
 						{
 							player.openInventory(inst.partyTeleport(player));
+						}
+						else
+						{
+							Player tp = inst.getServer().getPlayer(args[0]);
+							if(tp != null && player.canSee(tp))
+							{
+								Party.Member t = inst.findMember(tp.getUniqueId());
+								if(t != null && t.getParty() == m.getParty())
+								{
+									if(m.getParty().canTp() && t.canTp())
+									{
+										player.teleport(tp);
+										sender.sendMessage("[KataParty] You were teleported to "+tp.getName());
+										tp.sendMessage("[KataParty] "+player.getName()+" telepoted to you");
+									}
+									else
+									{
+										sender.sendMessage("[KataParty] You cannot teleport to "+tp.getName());
+									}
+								}
+								else
+								{
+									sender.sendMessage("[KataParty] "+tp.getName()+" is not in your KataParty");
+								}
+							}
+							else
+							{
+								sender.sendMessage("[KataParty] Could not find player \""+args[0]+"\"");
+							}
 						}
 						return true;
 					}

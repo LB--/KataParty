@@ -68,8 +68,8 @@ commands:
     aliases:
       - kataadmin
   kptp:
-    description: "Teleport to someone in your KataParty"
-    usage: "/kptp"
+    description: "Teleport to someone in your KataParty via GUI or username"
+    usage: "/kptp [optional-username]"
     permission: KataParty.teleport.do
     permission-message: "You don't have the KataParty.teleport.do permission..."
     aliases:
