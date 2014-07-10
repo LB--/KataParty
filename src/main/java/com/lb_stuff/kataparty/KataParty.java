@@ -795,7 +795,7 @@ public class KataParty extends JavaPlugin implements Listener
 								Player onp = offp.getPlayer();
 								onp.setNoDamageTicks(20*5); //inulnerable for 5 seconds
 								onp.teleport(he);
-								onp.sendMessage("You were teleported to "+he.getName());
+								onp.sendMessage("[KataParty] You were teleported to "+he.getName());
 							}
 						}
 					}
