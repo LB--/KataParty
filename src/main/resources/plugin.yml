@@ -1,7 +1,7 @@
 
 name: "KataParty"
 main: com.lb_stuff.kataparty.KataParty
-version: 1.1.2
+version: 1.1.3
 author: "Nicholas \"LB\" Braden"
 description: "A party chat plugin made for Katatunka"
 
@@ -81,6 +81,11 @@ commands:
     permission-message: "You don't have the KataParty.inventory.use permission..."
     aliases:
       - katashare
+  kptoggle:
+    description: "Toggle filtered chat between your party and global chat"
+    usage: "/kptoggle"
+    aliases:
+      - katatoggle
 
 permissions:
   KataParty.*:

@@ -84,6 +84,7 @@ public class KataParty extends JavaPlugin implements Listener
 		getCommand("kptp").setTabCompleter(c);
 		getCommand("kptp").setExecutor(c);
 		getCommand("kpshare").setExecutor(c);
+		getCommand("kptoggle").setExecutor(c);
 		getServer().getPluginManager().registerEvents(this, this);
 	}
 	@Override
@@ -135,7 +136,16 @@ public class KataParty extends JavaPlugin implements Listener
 		}
 	}
 
-	public ConcurrentSkipListMap<UUID, String> partiers = new ConcurrentSkipListMap<>();
+	public static class MemberSettings
+	{
+		public String partyname;
+		public boolean talkparty = true;
+		public MemberSettings(String pname)
+		{
+			partyname = pname;
+		}
+	}
+	public ConcurrentSkipListMap<UUID, MemberSettings> partiers = new ConcurrentSkipListMap<>();
 
 	public Set<Party> parties = new HashSet<>();
 	public Party.Member findMember(UUID uuid)
@@ -1131,7 +1141,8 @@ public class KataParty extends JavaPlugin implements Listener
 	@EventHandler
 	public void onInvClick(InventoryClickEvent e)
 	{
-		GuiType gt = guis.get(e.getWhoClicked().getUniqueId());
+		UUID uuid = e.getWhoClicked().getUniqueId();
+		GuiType gt = guis.get(uuid);
 		if(gt == null)
 		{
 			return;
@@ -1150,16 +1161,19 @@ public class KataParty extends JavaPlugin implements Listener
 			case toMANAGE:
 			case MANAGE:
 			{
+				guis.put(uuid, GuiType.MANAGE);
 				partyManage(e);
 			} break;
 			case toRENAME:
 			case RENAME:
 			{
+				guis.put(uuid, GuiType.RENAME);
 				partyRename(e);
 			} break;
 			case toMEMBERS:
 			case MEMBERS:
 			{
+				guis.put(uuid, GuiType.MEMBERS);
 				partyMembers(e);
 			} break;
 			case TP:
@@ -1206,36 +1220,71 @@ public class KataParty extends JavaPlugin implements Listener
 			String fmt = e.getFormat();
 			Player source = e.getPlayer();
 			Set<Player> targets = e.getRecipients();
-			String spn = partiers.get(source.getUniqueId());
-			boolean forceglobal = msg.startsWith("!");
+			boolean useother = msg.startsWith("!");
+			MemberSettings ms = partiers.get(source.getUniqueId());
+			String spn = (ms != null ? ms.partyname : null);
+			boolean talkparty = (ms != null ? ms.talkparty : false);
 
 			//need to manually send to console since we are cancelling the event
 			getServer().getConsoleSender().sendMessage(String.format(fmt, source.getDisplayName(), msg));
 
+			if(ms != null)
+			{
+				if(useother)
+				{
+					msg = msg.substring(1);
+				}
+				if(!talkparty)
+				{
+					useother = !useother;
+				}
+			}
 			for(Player p : targets)
 			{
-				String pn = partiers.get(p.getUniqueId());
+				MemberSettings pms = partiers.get(p.getUniqueId());
+				String pn = (pms != null ? pms.partyname : null);
 				if(pn != null)
 				{
 					if(spn != null)
 					{
-						if(forceglobal)
+						if(useother)
 						{
-							p.sendMessage(String.format(fmt, source.getDisplayName(), "§7§o"+msg.substring(1)));
+							p.sendMessage(String.format
+							(
+								fmt,
+								source.getDisplayName(),
+								(talkparty?"§7§o":"")+msg
+							));
 						}
 						else if(pn.equals(spn))
 						{
-							p.sendMessage(String.format("§l{%3$s}§r"+fmt, source.getDisplayName(), msg, spn));
+							p.sendMessage(String.format
+							(
+								(talkparty?"§l":"§o")+"{%3$s}§r"+fmt,
+								source.getDisplayName(),
+								(talkparty?"":"§7§o")+msg,
+								spn
+							));
 						}
 					}
 					else
 					{
-						p.sendMessage(String.format(fmt, source.getDisplayName(), "§7§o"+msg));
+						p.sendMessage(String.format
+						(
+							fmt,
+							source.getDisplayName(),
+							(talkparty?"§7§o":"")+msg
+						));
 					}
 				}
 				else if(spn == null)
 				{
-					p.sendMessage(String.format(fmt, source.getDisplayName(), msg));
+					p.sendMessage(String.format
+					(
+						fmt,
+						source.getDisplayName(),
+						msg
+					));
 				}
 			}
 		}
@@ -1243,10 +1292,17 @@ public class KataParty extends JavaPlugin implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
-		Party.Member m = findMember(e.getPlayer().getUniqueId());
+		Player p = e.getPlayer();
+		Party.Member m = findMember(p.getUniqueId());
 		if(m != null)
 		{
-			e.getPlayer().sendMessage("[KataParty] You are in KataParty §n"+m.getParty().getName()+"§r");
+			p.sendMessage("[KataParty] You are in KataParty §n"+m.getParty().getName()+"§r");
+			MemberSettings ms = partiers.get(p.getUniqueId());
+			if(ms != null)
+			{
+				ms.talkparty = false;
+				p.sendMessage("[KataParty] You talk in global chat, start message with ! to speak in party");
+			}
 			//TODO: shared health stuff
 		}
 		else

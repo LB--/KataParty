@@ -99,7 +99,7 @@ public class Commands implements CommandExecutor, TabCompleter
 					{
 						if(inst.findParty(args[0]) != null)
 						{
-							sender.sendMessage("There is already a KataParty named "+args[0]);
+							sender.sendMessage("[KataParty] There is already a KataParty named "+args[0]);
 						}
 						else
 						{
@@ -124,7 +124,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						Party p = inst.findParty(args[0]);
 						if(p == null)
 						{
-							sender.sendMessage("No KataParty named "+args[0]);
+							sender.sendMessage("[KataParty] No KataParty named "+args[0]);
 						}
 						else
 						{
@@ -140,7 +140,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						Party.Member m = inst.findMember(player.getUniqueId());
 						if(m == null)
 						{
-							sender.sendMessage("You are not in any KataParty");
+							sender.sendMessage("[KataParty] You are not in any KataParty");
 						}
 						else
 						{
@@ -156,7 +156,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						Party.Member m = inst.findMember(player.getUniqueId());
 						if(m == null)
 						{
-							sender.sendMessage("You are not in any KataParty");
+							sender.sendMessage("[KataParty] You are not in any KataParty");
 						}
 						else if(m.getRank() == Party.Rank.ADMIN)
 						{
@@ -167,7 +167,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						}
 						else
 						{
-							sender.sendMessage("You do not have permission to disband your KataParty");
+							sender.sendMessage("[KataParty] You do not have permission to disband your KataParty");
 						}
 						return true;
 					}
@@ -179,7 +179,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						Party p = inst.findParty(args[0]);
 						if(p == null)
 						{
-							sender.sendMessage("No KataParty named "+args[0]);
+							sender.sendMessage("[KataParty] No KataParty named "+args[0]);
 						}
 						else
 						{
@@ -197,7 +197,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						Party.Member m = inst.findMember(player.getUniqueId());
 						if(m == null)
 						{
-							sender.sendMessage("You are not in any KataParty!");
+							sender.sendMessage("[KataParty] You are not in any KataParty!");
 						}
 						else
 						{
@@ -213,7 +213,7 @@ public class Commands implements CommandExecutor, TabCompleter
 						Party p = inst.findParty(args[0]);
 						if(p == null)
 						{
-							sender.sendMessage("No KataParty named "+args[0]);
+							sender.sendMessage("[KataParty] No KataParty named "+args[0]);
 						}
 						else
 						{
@@ -229,12 +229,13 @@ public class Commands implements CommandExecutor, TabCompleter
 						Party.Member m = inst.findMember(player.getUniqueId());
 						if(!m.getParty().canTp())
 						{
-							sender.sendMessage("Your KataParty does not allow teleportations");
+							sender.sendMessage("[KataParty] Your KataParty does not allow teleportations");
 						}
 						else
 						{
 							player.openInventory(inst.partyTeleport(player));
 						}
+						return true;
 					}
 				} break;
 				case "kpshare":
@@ -251,16 +252,41 @@ public class Commands implements CommandExecutor, TabCompleter
 							}
 							else
 							{
-								sender.sendMessage("Shared Inventory is disabled for this KataParty");
+								sender.sendMessage("[KataParty] Shared Inventory is disabled for this KataParty");
 							}
 						}
 						else
 						{
-							sender.sendMessage("You are not in any KataParty");
+							sender.sendMessage("[KataParty] You are not in any KataParty");
 						}
 						return true;
 					}
 				} break;
+				case "kptoggle":
+				{
+					if(args.length == 0)
+					{
+						KataParty.MemberSettings ms = inst.partiers.get(player.getUniqueId());
+						if(ms != null)
+						{
+							ms.talkparty = !ms.talkparty;
+							sender.sendMessage("[KataParty] Chat filtering settings toggled");
+							if(ms.talkparty)
+							{
+								sender.sendMessage("[KataParty] You talk in party chat, start message with ! to speak globally");
+							}
+							else
+							{
+								sender.sendMessage("[KataParty] You talk in global chat, start message with ! to speak in party");
+							}
+						}
+						else
+						{
+							sender.sendMessage("[KataParty] You are not in any KataParty");
+						}
+						return true;
+					}
+				}
 			}
 		}
 		return false;

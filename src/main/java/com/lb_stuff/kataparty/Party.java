@@ -45,11 +45,11 @@ public class Party implements Iterable<Party.Member>
 	}
 	public void rename(String n)
 	{
-		for(Map.Entry<UUID, String> e : inst.partiers.entrySet())
+		for(Map.Entry<UUID, KataParty.MemberSettings> e : inst.partiers.entrySet())
 		{
-			if(e.getValue().equals(name))
+			if(e.getValue().partyname.equals(name))
 			{
-				e.setValue(n);
+				e.getValue().partyname = n;
 			}
 		}
 		informMembers("Your KataParty was renamed from §n"+name+"§r to §n"+n+"§r");
@@ -88,7 +88,7 @@ public class Party implements Iterable<Party.Member>
 			m.getParty().removeMember(uuid);
 		}
 		members.add(m = new Member(uuid));
-		inst.partiers.put(uuid, name);
+		inst.partiers.put(uuid, new KataParty.MemberSettings(name));
 		informMembers("§n"+inst.getServer().getOfflinePlayer(uuid).getName()+"§r has joined your KataParty");
 		return m;
 	}
