@@ -1,0 +1,7 @@
+# This file contains the default values used to generate the config
+# from the template when the existing config is missing nodes
+
+chat-filtering-swap: "!"
+
+mesages:
+  blah: "blah"
