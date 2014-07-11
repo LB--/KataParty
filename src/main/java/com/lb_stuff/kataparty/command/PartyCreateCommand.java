@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
+import com.lb_stuff.kataparty.gui.PartyCreateGui;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -27,7 +28,7 @@ public class PartyCreateCommand extends PartyCommand
 				}
 				else
 				{
-					player.openInventory(inst.partyCreate(player, args[0]));
+					new PartyCreateGui(inst, player, args[0]).show();
 				}
 				return true;
 			}

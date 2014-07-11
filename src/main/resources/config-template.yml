@@ -18,6 +18,10 @@ party-defaults:
   inventory: [%party-defaults.inventory%]
   visible: [%party-defaults.visible%]
 
+# Set to true to have empty parties automatically be disbanded. If
+# you want to instead keep empty parties, set to false instead.
+remove-empty-parties: [%remove-empty-parties%]
+
 # Below, you can customize the messages that are sent/shown to players.
 messages:
   party-member-inform: "[%messages.party-member-inform%]"

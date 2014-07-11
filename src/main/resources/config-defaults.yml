@@ -9,6 +9,8 @@ party-defaults:
   inventory: false
   visible: true
 
+remove-empty-parties: true
+
 mesages:
   party-member-inform: "You are in KataParty §n%1$s§r"
   party-introvert-inform: "You are §nnot§r in a KataParty"
