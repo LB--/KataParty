@@ -10,7 +10,7 @@ import java.util.*;
 
 public class Party implements Iterable<Party.Member>
 {
-	private final KataParty inst;
+	private final KataPartyPlugin inst;
 	private String name;
 	private final Set<Member> members = new HashSet<>();
 	private boolean tp = true;
@@ -20,13 +20,13 @@ public class Party implements Iterable<Party.Member>
 	private Double health = null;
 	private boolean potions = false;
 
-	public Party(final KataParty inst, String pname)
+	public Party(final KataPartyPlugin inst, String pname)
 	{
 		this.inst = inst;
 		name = pname;
 	}
 
-	public KataParty getPlugin()
+	public KataPartyPlugin getPlugin()
 	{
 		return inst;
 	}
@@ -45,7 +45,7 @@ public class Party implements Iterable<Party.Member>
 	}
 	public void rename(String n)
 	{
-		for(Map.Entry<UUID, KataParty.MemberSettings> e : inst.partiers.entrySet())
+		for(Map.Entry<UUID, KataPartyPlugin.MemberSettings> e : inst.partiers.entrySet())
 		{
 			if(e.getValue().partyname.equals(name))
 			{
@@ -88,7 +88,7 @@ public class Party implements Iterable<Party.Member>
 			m.getParty().removeMember(uuid);
 		}
 		members.add(m = new Member(uuid));
-		inst.partiers.put(uuid, new KataParty.MemberSettings(name));
+		inst.partiers.put(uuid, new KataPartyPlugin.MemberSettings(name));
 		informMembers("§n"+inst.getServer().getOfflinePlayer(uuid).getName()+"§r has joined your KataParty");
 		return m;
 	}

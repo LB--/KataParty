@@ -11,9 +11,9 @@ import java.util.*;
 
 public class Commands implements CommandExecutor, TabCompleter
 {
-	private KataParty inst;
+	private KataPartyPlugin inst;
 
-	public Commands(KataParty instance)
+	public Commands(KataPartyPlugin instance)
 	{
 		inst = instance;
 	}
@@ -83,36 +83,11 @@ public class Commands implements CommandExecutor, TabCompleter
 			String cmdname = cmd.getName().toLowerCase();
 			switch(cmdname)
 			{
-				case "kataparty":
-				{
-					if(args.length == 0)
-					{
-						PluginDescriptionFile d = inst.getDescription();
-						sender.sendMessage(d.getName()+" v"+d.getVersion()+" by "+d.getAuthors().get(0));
-						sender.sendMessage("For help, use /help "+d.getName()+" [page-#]");
-						return true;
-					}
-				} break;
-				case "kpcreate":
-				{
-					if(args.length == 1)
-					{
-						if(inst.findParty(args[0]) != null)
-						{
-							sender.sendMessage("[KataParty] There is already a KataParty named "+args[0]);
-						}
-						else
-						{
-							player.openInventory(inst.partyCreate(player, args[0]));
-						}
-						return true;
-					}
-				} break;
 				case "kplist":
 				{
 					if(args.length == 0)
 					{
-						inst.guis.put(player.getUniqueId(), KataParty.GuiType.LIST);
+						inst.guis.put(player.getUniqueId(), KataPartyPlugin.GuiType.LIST);
 						player.openInventory(inst.partyList(player));
 						return true;
 					}
@@ -295,7 +270,7 @@ public class Commands implements CommandExecutor, TabCompleter
 				{
 					if(args.length == 0)
 					{
-						KataParty.MemberSettings ms = inst.partiers.get(player.getUniqueId());
+						KataPartyPlugin.MemberSettings ms = inst.partiers.get(player.getUniqueId());
 						if(ms != null)
 						{
 							ms.talkparty = !ms.talkparty;

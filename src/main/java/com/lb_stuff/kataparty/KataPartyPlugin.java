@@ -1,5 +1,7 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.command.*;
+
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
@@ -24,7 +26,7 @@ import java.util.logging.Level;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.io.*;
 
-public class KataParty extends JavaPlugin implements Listener
+public class KataPartyPlugin extends JavaPlugin implements Listener
 {
 	public static final String CONFIG_DIR = "plugins/KataParty/";
 	public static final String CONFIG_MAIN = null;
@@ -69,8 +71,8 @@ public class KataParty extends JavaPlugin implements Listener
 			}
 		}
 		Commands c = new Commands(this);
-		getCommand("kataparty").setExecutor(c);
-		getCommand("kpcreate").setExecutor(c);
+		getCommand("kataparty").setExecutor(new PluginInfoCommand(this));
+		getCommand("kpcreate").setExecutor(new PartyCreateCommand(this));
 		getCommand("kplist").setExecutor(c);
 		getCommand("kpjoin").setTabCompleter(c);
 		getCommand("kpjoin").setExecutor(c);
