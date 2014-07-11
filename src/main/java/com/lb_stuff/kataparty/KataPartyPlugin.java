@@ -183,7 +183,6 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 
 	public static enum GuiType
 	{
-		CREATE,
 		LIST,
 		toMANAGE,
 		MANAGE,
@@ -194,190 +193,6 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		TP,
 	}
 	public Map<UUID, GuiType> guis = new HashMap<>();
-	public Inventory partyCreate(final Player player, String name)
-	{
-		Inventory inv = Bukkit.createInventory(null, 9*1, "Create KataParty "+name);
-
-		ItemStack i = new ItemStack(Material.NAME_TAG);
-		ItemMeta m = i.getItemMeta();
-		m.setDisplayName(name);
-		m.setLore(new ArrayList<String>(){
-		{
-			add("Click to create with these settings");
-			add("Close this inventory screen to cancel");
-		}});
-		i.setItemMeta(m);
-		inv.setItem(0, i);
-
-		i = new ItemStack(Material.ENDER_PEARL, 2);
-		m = i.getItemMeta();
-		m.setDisplayName("Teleportation enabled");
-		m.setLore(new ArrayList<String>(){
-		{
-			if(player.hasPermission("KataParty.teleport.disable"))
-			{
-				add("Click to change");
-			}
-			else
-			{
-				add("You cannot change this");
-			}
-		}});
-		i.setItemMeta(m);
-		inv.setItem(2, i);
-
-		i = new ItemStack(Material.STONE_SWORD, 1); //Material.GOLD_SWORD
-		m = i.getItemMeta();
-		m.setDisplayName("PvP disabled");
-		m.setLore(new ArrayList<String>(){
-		{
-			add("Click to change");
-		}});
-		i.setItemMeta(m);
-		inv.setItem(3, i);
-
-		i = new ItemStack(Material.ENDER_CHEST, 1);
-		m = i.getItemMeta();
-		m.setDisplayName("Shared inventory disabled");
-		m.setLore(new ArrayList<String>(){
-		{
-			if(player.hasPermission("KataParty.inventory.enable"))
-			{
-				add("Click to change");
-			}
-			else
-			{
-				add("You cannot change this");
-			}
-		}});
-		i.setItemMeta(m);
-		inv.setItem(4, i);
-
-		i = new ItemStack(Material.JACK_O_LANTERN, 2); //Material.PUMPKIN
-		m = i.getItemMeta();
-		m.setDisplayName("Will be visible in list");
-		m.setLore(new ArrayList<String>(){
-		{
-			if(player.hasPermission("KataParty.hide"))
-			{
-				add("Click to change");
-			}
-			else
-			{
-				add("You cannot change this");
-			}
-		}});
-		i.setItemMeta(m);
-		inv.setItem(5, i);
-
-		guis.put(player.getUniqueId(), GuiType.CREATE);
-
-		return inv;
-	}
-	public void partyCreate(InventoryClickEvent e)
-	{
-		switch(e.getSlot())
-		{
-			case 0: //create
-			{
-				String name = e.getCurrentItem().getItemMeta().getDisplayName();
-				if(findParty(name) != null)
-				{
-					e.getWhoClicked().openInventory(Bukkit.createInventory(null, 9*1, "Name taken: "+name));
-					break;
-				}
-				Party p = new Party(this, name);
-				p.addMember(e.getWhoClicked().getUniqueId()).setRank(Party.Rank.ADMIN);
-				p.setTp(e.getInventory().getItem(2).getAmount() != 1);
-				p.setPvp(e.getInventory().getItem(3).getAmount() != 1);
-				if(e.getInventory().getItem(4).getAmount() != 1)
-				{
-					p.enableInventory();
-				}
-				p.setVisible(e.getInventory().getItem(5).getAmount() != 1);
-				parties.add(p);
-				e.getWhoClicked().closeInventory();
-			} break;
-			case 2: //toggle TP
-			{
-				if(e.getWhoClicked().hasPermission("KataParty.teleport.disable"))
-				{
-					ItemStack i = e.getCurrentItem();
-					ItemMeta d = i.getItemMeta();
-					if(i.getAmount() != 1)
-					{
-						i.setAmount(1);
-						d.setDisplayName("Teleportation disabled");
-					}
-					else
-					{
-						i.setAmount(2);
-						d.setDisplayName("Teleportation enabled");
-					}
-					i.setItemMeta(d);
-				}
-			} break;
-			case 3: //toggle PvP
-			{
-				ItemStack i = e.getCurrentItem();
-				ItemMeta d = i.getItemMeta();
-				if(i.getAmount() != 1)
-				{
-					i.setAmount(1);
-					i.setType(Material.STONE_SWORD);
-					d.setDisplayName("PvP disabled");
-				}
-				else
-				{
-					i.setAmount(2);
-					i.setType(Material.GOLD_SWORD);
-					d.setDisplayName("PvP enabled");
-				}
-				i.setItemMeta(d);
-			} break;
-			case 4: //toggle shared inventory
-			{
-				if(e.getWhoClicked().hasPermission("KataParty.inventory.enable"))
-				{
-					ItemStack i = e.getCurrentItem();
-					ItemMeta d = i.getItemMeta();
-					if(i.getAmount() != 1)
-					{
-						i.setAmount(1);
-						d.setDisplayName("Shared inventory disabled");
-					}
-					else
-					{
-						i.setAmount(2);
-						d.setDisplayName("Shared inventory enabled");
-					}
-					i.setItemMeta(d);
-				}
-			} break;
-			case 5: //toggle visibility
-			{
-				if(e.getWhoClicked().hasPermission("KataParty.hide"))
-				{
-					ItemStack i = e.getCurrentItem();
-					ItemMeta d = i.getItemMeta();
-					if(i.getAmount() != 1)
-					{
-						i.setAmount(1);
-						i.setType(Material.PUMPKIN);
-						d.setDisplayName("Will not be visible in list");
-					}
-					else
-					{
-						i.setAmount(2);
-						i.setType(Material.JACK_O_LANTERN);
-						d.setDisplayName("Will be visible in list");
-					}
-					i.setItemMeta(d);
-				}
-			} break;
-			default: break;
-		}
-	}
 	public Inventory partyList(final Player player)
 	{
 		Inventory inv = Bukkit.createInventory(null, 9*6, "List of KataParties");
@@ -1159,10 +974,6 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		e.setCancelled(true);
 		switch(gt)
 		{
-			case CREATE:
-			{
-				partyCreate(e);
-			} break;
 			case LIST:
 			{
 				partyList(e);

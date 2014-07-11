@@ -102,15 +102,18 @@ public class PartyCreateGui extends PartyGui
 			} break;
 			case TELEPORTS:
 			{
-				if(getButton(TELEPORTS) != 1)
+				if(player.hasPermission("KataParty.teleport.disable"))
 				{
-					setButton(TELEPORTS, 1);
-					setButton(TELEPORTS, "Teleportation disabled");
-				}
-				else
-				{
-					setButton(TELEPORTS, 2);
-					setButton(TELEPORTS, "Teleportation enabled");
+					if(getButton(TELEPORTS) != 1)
+					{
+						setButton(TELEPORTS, 1);
+						setButton(TELEPORTS, "Teleportation disabled");
+					}
+					else
+					{
+						setButton(TELEPORTS, 2);
+						setButton(TELEPORTS, "Teleportation enabled");
+					}
 				}
 			} break;
 			case PVP:
@@ -128,30 +131,37 @@ public class PartyCreateGui extends PartyGui
 			} break;
 			case INVENTORY:
 			{
-				if(getButton(INVENTORY) != 1)
+				if(player.hasPermission("KataParty.inventory.enable"))
 				{
-					setButton(INVENTORY, 1, Material.CHEST);
-					setButton(INVENTORY, "Shared inventory disabled");
-				}
-				else
-				{
-					setButton(INVENTORY, 2, Material.ENDER_CHEST);
-					setButton(INVENTORY, "Shared inventory enabled");
+					if(getButton(INVENTORY) != 1)
+					{
+						setButton(INVENTORY, 1, Material.CHEST);
+						setButton(INVENTORY, "Shared inventory disabled");
+					}
+					else
+					{
+						setButton(INVENTORY, 2, Material.ENDER_CHEST);
+						setButton(INVENTORY, "Shared inventory enabled");
+					}
 				}
 			} break;
 			case VISIBLE:
 			{
-				if(getButton(VISIBLE) != 1)
+				if(player.hasPermission("KataParty.hide"))
 				{
-					setButton(VISIBLE, 1, Material.PUMPKIN);
-					setButton(VISIBLE, "Will not be visible in list");
-				}
-				else
-				{
-					setButton(VISIBLE, 2, Material.JACK_O_LANTERN);
-					setButton(VISIBLE, "Will be visible in list");
+					if(getButton(VISIBLE) != 1)
+					{
+						setButton(VISIBLE, 1, Material.PUMPKIN);
+						setButton(VISIBLE, "Will not be visible in list");
+					}
+					else
+					{
+						setButton(VISIBLE, 2, Material.JACK_O_LANTERN);
+						setButton(VISIBLE, "Will be visible in list");
+					}
 				}
 			} break;
+			default: break;
 		}
 	}
 }
