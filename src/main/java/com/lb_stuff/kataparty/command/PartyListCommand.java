@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
+import com.lb_stuff.kataparty.gui.PartyListGui;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -21,8 +22,7 @@ public class PartyListCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0)
 			{
-				inst.guis.put(player.getUniqueId(), KataPartyPlugin.GuiType.LIST);
-				player.openInventory(inst.partyList(player));
+				new PartyListGui(inst, player).show();
 				return true;
 			}
 		}
