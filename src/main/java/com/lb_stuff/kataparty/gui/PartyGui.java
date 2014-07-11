@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
-import org.bukkit.event.inventory.*;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -105,13 +104,20 @@ public abstract class PartyGui implements Listener
 
 	public final void show()
 	{
-		player.closeInventory();
-		inst.getServer().getPluginManager().registerEvents(this, inst);
-		player.openInventory(inv);
+		final PartyGui This = this;
+		inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
+		{
+			player.closeInventory();
+			inst.getServer().getPluginManager().registerEvents(This, inst);
+			player.openInventory(inv);
+		}});
 	}
 	public final void hide()
 	{
-		player.closeInventory();
+		inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
+		{
+			player.closeInventory();
+		}});
 	}
 
 	@EventHandler
