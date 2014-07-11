@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.command.*;
+import com.lb_stuff.kataparty.gui.PartyRenameGui;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.Listener;
@@ -183,103 +184,13 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 
 	public static enum GuiType
 	{
-		LIST,
 		toMANAGE,
 		MANAGE,
-		toRENAME,
-		RENAME,
 		toMEMBERS,
 		MEMBERS,
 		TP,
 	}
 	public Map<UUID, GuiType> guis = new HashMap<>();
-	public Inventory partyList(final Player player)
-	{
-		Inventory inv = Bukkit.createInventory(null, 9*6, "List of KataParties");
-		for(final Party p : parties)
-		{
-			if(p.isVisible() || player.hasPermission("KataParty.seehidden"))
-			{
-				ItemStack s = new ItemStack(p.isVisible()? Material.NAME_TAG : Material.PAPER, p.numMembers());
-				ItemMeta m = s.getItemMeta();
-				m.setDisplayName(p.getName());
-				int online = 0;
-				for(Party.Member mem : p)
-				{
-					if(getServer().getPlayer(mem.getUuid()) != null)
-					{
-						++online;
-					}
-				}
-				final int online_ = online;
-				Party.Member mem = findMember(player.getUniqueId());
-				final boolean same = (mem != null && p == mem.getParty());
-				m.setLore(new ArrayList<String>(){
-				{
-					if(!p.isVisible())
-					{
-						add("(invisible)");
-					}
-					add(online_+"/"+p.numMembers()+" members online");
-					add("PvP: "+p.canPvp());
-					add("TP: "+p.canTp());
-					add("Shared Inv: "+(p.getInventory() != null? true : false));
-					if(!same)
-					{
-						add("Left click to join (you will leave your current KataParty)");
-					}
-					else
-					{
-						add("You are in this KataParty");
-					}
-					if(player.hasPermission("KataParty.admin"))
-					{
-						add("Right click to administrate");
-					}
-				}});
-				s.setItemMeta(m);
-				inv.addItem(s);
-			}
-		}
-
-		guis.put(player.getUniqueId(), GuiType.LIST);
-
-		return inv;
-	}
-	public void partyList(InventoryClickEvent e)
-	{
-		if(e.getCurrentItem() == null)
-		{
-			return;
-		}
-		Party p = findParty(e.getCurrentItem().getItemMeta().getDisplayName());
-		HumanEntity he = e.getWhoClicked();
-		if(p != null)
-		{
-			switch(e.getClick())
-			{
-				case LEFT:
-				{
-					p.addMember(he.getUniqueId());
-					e.getView().close();
-				} break;
-				case RIGHT:
-				{
-					if(he.hasPermission("KataParty.admin"))
-					{
-						Inventory inv = partyManage(p, (Player)he);
-						guis.put(he.getUniqueId(), GuiType.toMANAGE);
-						he.openInventory(inv);
-					}
-				} break;
-				default: break;
-			}
-		}
-		else
-		{
-			e.getView().getTopInventory().setContents(partyList((Player)he).getContents());
-		}
-	}
 	public Inventory partyManage(final Party party, final Player player)
 	{
 		Inventory inv = Bukkit.createInventory(null, 9*2, party.getName()+" Settings");
@@ -542,10 +453,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 				}
 				else if(e.isRightClick() && (isAdmin || isPartyAdmin))
 				{
-					Inventory inv = partyRename(party, (Player)he);
-					guis.put(he.getUniqueId(), GuiType.toRENAME);
-					e.getView().close(); //temporary until Bukkit supports opening Anvil inventories
-					he.openInventory(inv);
+					new PartyRenameGui(this, (Player)e.getWhoClicked(), party).show();
 				}
 			} break;
 			case 1: //manage members
@@ -633,56 +541,6 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 				}
 			} break;
 			default: break;
-		}
-	}
-	public Inventory partyRename(final Party party, final Player player)
-	{
-		Inventory inv = Bukkit.createInventory(null, InventoryType.ANVIL, "Rename Party");
-
-		ItemStack i = new ItemStack(Material.NAME_TAG);
-		ItemMeta im = i.getItemMeta();
-		im.setDisplayName(party.getName());
-		im.setLore(new ArrayList<String>(){
-		{
-			add("Party name must be unique and not contain spaces");
-		}});
-		i.setItemMeta(im);
-		inv.setItem(0, i);
-
-		guis.put(player.getUniqueId(), GuiType.RENAME);
-
-		return inv;
-	}
-	public void partyRename(InventoryClickEvent e)
-	{
-		HumanEntity he = e.getWhoClicked();
-		Party party = findParty(e.getView().getTopInventory().getItem(0).getItemMeta().getDisplayName());
-		if(party == null)
-		{
-			e.getView().close();
-			return;
-		}
-
-		if(!e.getSlotType().equals(SlotType.RESULT))
-		{
-			e.setCancelled(true);
-		}
-		else
-		{
-			String name = e.getCurrentItem().getItemMeta().getDisplayName();
-			if(!name.contains(" "))
-			{
-				if(findParty(name) != null)
-				{
-					e.setCancelled(true);
-				}
-				else
-				{
-					e.setCancelled(true);
-					party.rename(name);
-					e.getView().close();
-				}
-			}
 		}
 	}
 	public Inventory partyMembers(final Party party, final Player player)
@@ -974,21 +832,11 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		e.setCancelled(true);
 		switch(gt)
 		{
-			case LIST:
-			{
-				partyList(e);
-			} break;
 			case toMANAGE:
 			case MANAGE:
 			{
 				guis.put(uuid, GuiType.MANAGE);
 				partyManage(e);
-			} break;
-			case toRENAME:
-			case RENAME:
-			{
-				guis.put(uuid, GuiType.RENAME);
-				partyRename(e);
 			} break;
 			case toMEMBERS:
 			case MEMBERS:
@@ -1012,7 +860,6 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			switch(gt)
 			{
 				case toMANAGE:
-				case toRENAME:
 				case toMEMBERS:
 					break;
 				default:

@@ -29,6 +29,12 @@ public abstract class PartyGui implements Listener
 		player = p;
 		inv = Bukkit.createInventory(null, 9*guirows, guiname);
 	}
+	public PartyGui(KataPartyPlugin plugin, Player p, Inventory inventory)
+	{
+		inst = plugin;
+		player = p;
+		inv = inventory;
+	}
 
 	protected void addButton(int slot, String name, Material icon, List<String> info)
 	{
