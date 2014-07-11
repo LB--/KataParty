@@ -3,19 +3,14 @@ package com.lb_stuff.kataparty.gui;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.Party;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
-import org.bukkit.event.inventory.ClickType;
 
 public class PartyCreateGui extends PartyGui
 {
-	private Inventory inv;
 	private static final int CREATE = 0;
 	private static final int TELEPORTS = 2;
 	private static final int PVP = 3;
