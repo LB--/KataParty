@@ -3,6 +3,12 @@
 
 chat-filtering-swap: "!"
 
+party-defaults:
+  teleports: true
+  pvp: false
+  inventory: false
+  visible: true
+
 mesages:
   party-member-inform: "You are in KataParty §n%1$s§r"
   party-introvert-inform: "You are §nnot§r in a KataParty"

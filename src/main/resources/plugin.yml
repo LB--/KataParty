@@ -1,7 +1,7 @@
 
 name: "KataParty"
 main: com.lb_stuff.kataparty.KataParty
-version: 1.2.0
+version: ${project.version}
 author: "Nicholas \"LB\" Braden"
 description: "A party chat plugin made for Katatunka"
 
