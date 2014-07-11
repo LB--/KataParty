@@ -1224,7 +1224,7 @@ public class KataParty extends JavaPlugin implements Listener
 			Set<Player> targets = e.getRecipients();
 			boolean useother = msg.startsWith("!");
 			MemberSettings ms = partiers.get(source.getUniqueId());
-			String spn = (ms != null ? ms.partyname : null);
+			String senderparty = (ms != null ? ms.partyname : null);
 			boolean talkparty = (ms != null ? ms.talkparty : false);
 
 			//need to manually send to console since we are cancelling the event
@@ -1245,11 +1245,11 @@ public class KataParty extends JavaPlugin implements Listener
 			{
 				MemberSettings pms = partiers.get(p.getUniqueId());
 				String pn = (pms != null ? pms.partyname : null);
-				if(pn != null)
+				if(pn != null) //receiver is in a party
 				{
-					if(spn != null)
+					if(senderparty != null) //sender /is/ in a party
 					{
-						if(useother)
+						if(useother) //send to other
 						{
 							p.sendMessage(String.format
 							(
@@ -1258,18 +1258,19 @@ public class KataParty extends JavaPlugin implements Listener
 								(talkparty?"§7§o":"")+msg
 							));
 						}
-						else if(pn.equals(spn))
+						else if(pn.equals(senderparty)) //send to preferred
 						{
 							p.sendMessage(String.format
 							(
 								(talkparty?"§l":"§o")+"{%3$s}§r"+fmt,
 								source.getDisplayName(),
 								(talkparty?"":"§7§o")+msg,
-								spn
+								senderparty
 							));
 						}
+						else {} //different parties
 					}
-					else
+					else //sender is /not/ in a party
 					{
 						p.sendMessage(String.format
 						(
@@ -1279,14 +1280,30 @@ public class KataParty extends JavaPlugin implements Listener
 						));
 					}
 				}
-				else if(spn == null)
+				else //receiver is /not/ in a party
 				{
-					p.sendMessage(String.format
-					(
-						fmt,
-						source.getDisplayName(),
-						msg
-					));
+					if(senderparty == null) //sender is /not/ in a party
+					{
+						p.sendMessage(String.format
+						(
+							fmt,
+							source.getDisplayName(),
+							msg
+						));
+					}
+					else //sender /is/ in a party
+					{
+						if(useother) //send to other
+						{
+							p.sendMessage(String.format
+							(
+								fmt,
+								source.getDisplayName(),
+								msg
+							));
+						}
+						else {} //send to preferred
+					}
 				}
 			}
 		}
