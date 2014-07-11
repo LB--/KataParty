@@ -1,14 +1,18 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
+import com.lb_stuff.kataparty.Party;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class PartyCreateCommand extends PartyCommand
+import java.util.ArrayList;
+import java.util.List;
+
+public class PartyCloseCommand extends PartyAdminCommand
 {
-	public PartyCreateCommand(KataPartyPlugin plugin)
+	public PartyCloseCommand(KataPartyPlugin plugin)
 	{
 		super(plugin);
 	}
@@ -21,13 +25,16 @@ public class PartyCreateCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 1)
 			{
-				if(inst.findParty(args[0]) != null)
+				Party p = inst.findParty(args[0]);
+				if(p == null)
 				{
-					sender.sendMessage("[KataParty] There is already a KataParty named "+args[0]);
+					sender.sendMessage("[KataParty] No KataParty named "+args[0]);
 				}
 				else
 				{
-					player.openInventory(inst.partyCreate(player, args[0]));
+					inst.parties.remove(p);
+					p.disband();
+					p.disableInventory(player);
 				}
 				return true;
 			}

@@ -6,9 +6,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class PartyCreateCommand extends PartyCommand
+public class PartyListCommand extends PartyCommand
 {
-	public PartyCreateCommand(KataPartyPlugin plugin)
+	public PartyListCommand(KataPartyPlugin plugin)
 	{
 		super(plugin);
 	}
@@ -19,16 +19,10 @@ public class PartyCreateCommand extends PartyCommand
 		if(sender instanceof Player)
 		{
 			Player player = (Player)sender;
-			if(args.length == 1)
+			if(args.length == 0)
 			{
-				if(inst.findParty(args[0]) != null)
-				{
-					sender.sendMessage("[KataParty] There is already a KataParty named "+args[0]);
-				}
-				else
-				{
-					player.openInventory(inst.partyCreate(player, args[0]));
-				}
+				inst.guis.put(player.getUniqueId(), KataPartyPlugin.GuiType.LIST);
+				player.openInventory(inst.partyList(player));
 				return true;
 			}
 		}

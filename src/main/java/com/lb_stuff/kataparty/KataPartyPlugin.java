@@ -28,6 +28,16 @@ import java.io.*;
 
 public class KataPartyPlugin extends JavaPlugin implements Listener
 {
+	private void implementCommand(String name, PartyCommand command)
+	{
+		getCommand(name).setExecutor(command);
+	}
+	private void implementCommand(String name, TabbablePartyCommand command)
+	{
+		getCommand(name).setTabCompleter(command);
+		getCommand(name).setExecutor(command);
+	}
+
 	public static final String CONFIG_DIR = "plugins/KataParty/";
 	public static final String CONFIG_MAIN = null;
 	public static final String CONFIG_PARTIES = "parties.yml";
@@ -70,23 +80,18 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 				}
 			}
 		}
-		Commands c = new Commands(this);
 		getCommand("kataparty").setExecutor(new PluginInfoCommand(this));
-		getCommand("kpcreate").setExecutor(new PartyCreateCommand(this));
-		getCommand("kplist").setExecutor(c);
-		getCommand("kpjoin").setTabCompleter(c);
-		getCommand("kpjoin").setExecutor(c);
-		getCommand("kpleave").setExecutor(c);
-		getCommand("kpdisband").setExecutor(c);
-		getCommand("kpclose").setTabCompleter(c);
-		getCommand("kpclose").setExecutor(c);
-		getCommand("kpmanage").setExecutor(c);
-		getCommand("kpadmin").setTabCompleter(c);
-		getCommand("kpadmin").setExecutor(c);
-		getCommand("kptp").setTabCompleter(c);
-		getCommand("kptp").setExecutor(c);
-		getCommand("kpshare").setExecutor(c);
-		getCommand("kptoggle").setExecutor(c);
+		implementCommand("kpcreate", new PartyCreateCommand(this));
+		implementCommand("kplist", new PartyListCommand(this));
+		implementCommand("kpjoin", new PartyJoinCommand(this));
+		implementCommand("kpleave", new PartyLeaveCommand(this));
+		implementCommand("kpmanage", new PartyManageCommand(this));
+		implementCommand("kpdisband", new PartyDisbandCommand(this));
+		implementCommand("kpadmin", new PartyAdminCommand(this));
+		implementCommand("kpclose", new PartyCloseCommand(this));
+		implementCommand("kptp", new PartyTeleportCommand(this));
+		implementCommand("kpshare", new PartyInventoryCommand(this));
+		implementCommand("kptoggle", new PartyChatToggleCommand(this));
 		getServer().getPluginManager().registerEvents(this, this);
 	}
 	@Override
