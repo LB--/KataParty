@@ -4,10 +4,12 @@ import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.Party;
 
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.event.inventory.InventoryType;
 
 import java.util.ArrayList;
 
@@ -25,7 +27,7 @@ public class PartyManageGui extends PartyGui
 	private final Party party;
 	public PartyManageGui(KataPartyPlugin plugin, Player plr, Party p)
 	{
-		super(plugin, plr, 1, p.getName()+" Settings");
+		super(plugin, plr, 2, p.getName()+" Settings");
 		party = p;
 
 		final Party.Member mt = inst.findMember(player.getUniqueId());
@@ -187,6 +189,7 @@ public class PartyManageGui extends PartyGui
 					add("You cannot change this");
 				}
 			}});
+			setButton(SELFTP, (mt.canTp()? 2 : 1));
 		}
 	}
 
@@ -237,7 +240,15 @@ public class PartyManageGui extends PartyGui
 					{
 						if(isAdmin || isPartyAdmin)
 						{
-							new PartyRenameGui(inst, player, party).show();
+							//Bukkit didn't support opening anvil inventories when ths code was written
+							PartyGui pg = new PartyRenameGui(inst, player, party);
+							pg.show();
+							if(player.getOpenInventory() == null || player.getOpenInventory().getTopInventory() == null
+							|| player.getOpenInventory().getTopInventory().getType() != InventoryType.ANVIL)
+							{
+								pg.onInvClose(new InventoryCloseEvent(player.getOpenInventory()));
+								player.sendMessage("Your CB version doesn't support opening anvil inventories");
+							}
 						}
 					} break;
 					default: break;
@@ -325,7 +336,10 @@ public class PartyManageGui extends PartyGui
 					new PartyManageGui(inst, player, party).show();
 				}
 			} break;
-			default: break;
+			default:
+			{
+				new PartyManageGui(inst, player, party).show();
+			} break;
 		}
 	}
 }

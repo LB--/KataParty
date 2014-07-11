@@ -41,7 +41,7 @@ public class PartyCreateGui extends PartyGui
 		{
 			add("Click to change");
 		}});
-		addButton(INVENTORY, "Shared inventory disabled", Material.ENDER_CHEST/*Material.CHEST*/, new ArrayList<String>(){
+		addButton(INVENTORY, "Shared inventory disabled", Material.CHEST/*Material.ENDER_CHEST*/, new ArrayList<String>(){
 		{
 			if(player.hasPermission("KataParty.inventory.enable"))
 			{

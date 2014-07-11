@@ -5,16 +5,16 @@ import com.lb_stuff.kataparty.KataPartyPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.*;
+import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.event.Listener;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 
 import java.util.List;
 
@@ -55,7 +55,7 @@ public abstract class PartyGui implements Listener
 	}
 	protected final String getButtonName(int slot)
 	{
-		return inv.getItem(slot).getItemMeta().getDisplayName();
+		return inv.getItem(slot ) != null? inv.getItem(slot).getItemMeta().getDisplayName() : null;
 	}
 	protected final void setButton(int slot, int value)
 	{
@@ -117,10 +117,13 @@ public abstract class PartyGui implements Listener
 	@EventHandler
 	public final void onInvClick(InventoryClickEvent e)
 	{
-		if(e.getWhoClicked() == player)
+		if(e.getWhoClicked() == player && e.getRawSlot() < e.getView().getTopInventory().getSize())
 		{
 			e.setCancelled(true);
-			onButton(e.getSlot(), e.getClick());
+			if(!e.getSlotType().equals(SlotType.OUTSIDE))
+			{
+				onButton(e.getSlot(), e.getClick());
+			}
 		}
 	}
 	@EventHandler
@@ -128,7 +131,14 @@ public abstract class PartyGui implements Listener
 	{
 		if(e.getWhoClicked() == player)
 		{
-			e.setCancelled(true);
+			for(Integer rawslot : e.getRawSlots())
+			{
+				if(rawslot < e.getView().getTopInventory().getSize())
+				{
+					e.setCancelled(true);
+					return;
+				}
+			}
 		}
 	}
 	@EventHandler

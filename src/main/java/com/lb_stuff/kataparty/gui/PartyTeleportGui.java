@@ -20,10 +20,7 @@ public class PartyTeleportGui extends PartyGui
 		super(plugin, plr, 6, "Members in your KataParty");
 		party = p;
 
-		addButton(TICKET, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
-		{
-			add("Click to return to management");
-		}});
+		addButton(TICKET, party.getName(), Material.NAME_TAG, new ArrayList<String>());
 
 		int buttons = 0;
 		for(final Party.Member m : party)
