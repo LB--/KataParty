@@ -61,22 +61,22 @@ public class PartyListGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
+		Party p = inst.findParty(getButtonName(slot));
+		if(p == null)
+		{
+			new PartyListGui(inst, player).show();
+			return;
+		}
 		switch(click)
 		{
 			case LEFT:
 			{
-				Party p = inst.findParty(getButtonName(slot));
-				if(p == null)
-				{
-					new PartyListGui(inst, player).show();
-					return;
-				}
 				p.addMember(player.getUniqueId());
 				hide();
 			} break;
 			case RIGHT:
 			{
-				//new PartyManageGui(inst, player, p).show();
+				new PartyManageGui(inst, player, p).show();
 			} break;
 			default: break;
 		}

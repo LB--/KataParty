@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.gui.PartyManageGui;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -29,7 +30,7 @@ public class PartyManageCommand extends PartyCommand
 				}
 				else
 				{
-					player.openInventory(inst.partyManage(m.getParty(), player));
+					new PartyManageGui(inst, player, m.getParty()).show();
 				}
 				return true;
 			}

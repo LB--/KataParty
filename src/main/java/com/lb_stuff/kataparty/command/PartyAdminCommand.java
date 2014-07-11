@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.gui.PartyManageGui;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -45,7 +46,7 @@ public class PartyAdminCommand extends TabbablePartyCommand
 				}
 				else
 				{
-					player.openInventory(inst.partyManage(p, player));
+					new PartyManageGui(inst, player, p).show();
 				}
 				return true;
 			}

@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.gui.PartyTeleportGui;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -60,7 +61,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 				}
 				else if(args.length == 0)
 				{
-					player.openInventory(inst.partyTeleport(player));
+					new PartyTeleportGui(inst, player, m.getParty()).show();
 				}
 				else
 				{

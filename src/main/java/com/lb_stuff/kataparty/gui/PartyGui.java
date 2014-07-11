@@ -36,7 +36,7 @@ public abstract class PartyGui implements Listener
 		inv = inventory;
 	}
 
-	protected void addButton(int slot, String name, Material icon, List<String> info)
+	protected final void addButton(int slot, String name, Material icon, List<String> info)
 	{
 		ItemStack i = new ItemStack(icon);
 		ItemMeta m = i.getItemMeta();
@@ -44,6 +44,10 @@ public abstract class PartyGui implements Listener
 		m.setLore(info);
 		i.setItemMeta(m);
 		inv.setItem(slot, i);
+	}
+	protected final void addButton(int slot, ItemStack button)
+	{
+		inv.setItem(slot, button);
 	}
 	protected final int getButton(int slot)
 	{
