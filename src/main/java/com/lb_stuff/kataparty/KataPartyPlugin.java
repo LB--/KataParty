@@ -18,7 +18,6 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.io.*;
 
 public class KataPartyPlugin extends JavaPlugin implements Listener
@@ -155,8 +154,8 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			Set<Player> targets = e.getRecipients();
 			boolean useother = msg.startsWith("!");
 			MemberSettings ms = getParties().getSettings(source.getUniqueId());
-			String senderparty = (ms != null ? ms.partyname : null);
-			boolean talkparty = (ms != null ? ms.talkparty : false);
+			String senderparty = (ms != null ? ms.getPartyName() : null);
+			boolean talkparty = (ms != null ? ms.isPartyPreferred() : false);
 
 			//need to manually send to console since we are cancelling the event
 			getServer().getConsoleSender().sendMessage(String.format(fmt, source.getDisplayName(), msg));
@@ -175,7 +174,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			for(Player p : targets)
 			{
 				MemberSettings pms = getParties().getSettings(p.getUniqueId());
-				String pn = (pms != null ? pms.partyname : null);
+				String pn = (pms != null ? pms.getPartyName() : null);
 				if(pn != null) //receiver is in a party
 				{
 					if(senderparty != null) //sender /is/ in a party
@@ -250,7 +249,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			MemberSettings ms = getParties().getSettings(p.getUniqueId());
 			if(ms != null)
 			{
-				ms.talkparty = false;
+				ms.setPartyPreferred(false);
 				p.sendMessage("[KataParty] You talk in global chat, start message with ! to speak in party");
 			}
 			//TODO: shared health stuff

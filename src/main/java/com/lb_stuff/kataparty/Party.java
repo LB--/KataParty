@@ -42,9 +42,9 @@ public class Party implements Iterable<Party.Member>
 	{
 		for(Map.Entry<UUID, PartySet.MemberSettings> e : parties.getPartyMembers())
 		{
-			if(e.getValue().partyname.equals(name))
+			if(e.getValue().getPartyName().equals(name))
 			{
-				e.getValue().partyname = n;
+				e.getValue().setPartyName(n);
 			}
 		}
 		informMembers("Your KataParty was renamed from §n"+name+"§r to §n"+n+"§r");

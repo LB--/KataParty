@@ -25,9 +25,9 @@ public class PartyChatToggleCommand extends PartyCommand
 				MemberSettings ms = inst.getParties().getSettings(player.getUniqueId());
 				if(ms != null)
 				{
-					ms.talkparty = !ms.talkparty;
+					ms.setPartyPreferred( ! ms.isPartyPreferred());
 					sender.sendMessage("[KataParty] Chat filtering settings toggled");
-					if(ms.talkparty)
+					if(ms.isPartyPreferred())
 					{
 						sender.sendMessage("[KataParty] You talk in party chat, start message with ! to speak globally");
 					}

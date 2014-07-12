@@ -36,11 +36,29 @@ public class PartySet implements Iterable<Party>
 
 	public static class MemberSettings
 	{
-		public String partyname;
-		public boolean talkparty = true;
+		private String partyname;
+		private boolean talkparty = true;
 		public MemberSettings(String pname)
 		{
 			partyname = pname;
+		}
+
+		public String getPartyName()
+		{
+			return partyname;
+		}
+		public void setPartyName(String partyname)
+		{
+			this.partyname = partyname;
+		}
+
+		public boolean isPartyPreferred()
+		{
+			return talkparty;
+		}
+		public void setPartyPreferred(boolean preferred)
+		{
+			talkparty = preferred;
 		}
 	}
 	private final ConcurrentSkipListMap<UUID, MemberSettings> partiers = new ConcurrentSkipListMap<>();

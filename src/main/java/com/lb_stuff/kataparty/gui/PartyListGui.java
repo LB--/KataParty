@@ -4,6 +4,7 @@ import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.Party;
 
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
@@ -52,6 +53,23 @@ public class PartyListGui extends PartyGui
 					if(player.hasPermission("KataParty.admin"))
 					{
 						add("Right click to administrate");
+					}
+					if(p.numMembers() > 0)
+					{
+						add("--------");
+						for(Party.Member m : p)
+						{
+							OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
+							Player onp = offp.getPlayer();
+							if(offp.isOnline())
+							{
+								add(onp.getDisplayName());
+							}
+							else
+							{
+								add(offp.getName());
+							}
+						}
 					}
 				}});
 			}
