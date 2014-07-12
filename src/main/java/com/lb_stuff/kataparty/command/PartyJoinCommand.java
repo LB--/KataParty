@@ -21,7 +21,7 @@ public class PartyJoinCommand extends TabbablePartyCommand
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		List<String> ret = new ArrayList<>();
-		for(Party p : inst.parties)
+		for(Party p : inst.getParties())
 		{
 			if(p.isVisible() && p.getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 			{
@@ -39,7 +39,7 @@ public class PartyJoinCommand extends TabbablePartyCommand
 			Player player = (Player)sender;
 			if(args.length == 1)
 			{
-				Party p = inst.findParty(args[0]);
+				Party p = inst.getParties().findParty(args[0]);
 				if(p == null)
 				{
 					sender.sendMessage("[KataParty] No KataParty named "+args[0]);

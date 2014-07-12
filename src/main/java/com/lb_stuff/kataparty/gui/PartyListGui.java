@@ -16,7 +16,7 @@ public class PartyListGui extends PartyGui
 		super(plugin, plr, 6, "List of KataParties");
 
 		int buttons = 0;
-		for(final Party p : inst.parties)
+		for(final Party p : inst.getParties())
 		{
 			if(p.isVisible() || player.hasPermission("KataParty.seehidden"))
 			{
@@ -29,7 +29,7 @@ public class PartyListGui extends PartyGui
 					}
 				}
 				final int online_ = online;
-				Party.Member mem = inst.findMember(player.getUniqueId());
+				Party.Member mem = inst.getParties().findMember(player.getUniqueId());
 				final boolean same = (mem != null && p == mem.getParty());
 				addButton(buttons++, p.getName(), p.isVisible()? Material.NAME_TAG : Material.PAPER, new ArrayList<String>(){
 				{
@@ -61,7 +61,7 @@ public class PartyListGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		Party p = inst.findParty(getButtonName(slot));
+		Party p = inst.getParties().findParty(getButtonName(slot));
 		if(p == null)
 		{
 			new PartyListGui(inst, player).show();

@@ -28,7 +28,7 @@ public class PartyRenameGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		if(inst.findParty(party.getName()) == null)
+		if(inst.getParties().findParty(party.getName()) == null)
 		{
 			hide();
 			return;

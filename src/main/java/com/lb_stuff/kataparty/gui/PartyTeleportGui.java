@@ -48,7 +48,7 @@ public class PartyTeleportGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		Party p = inst.findParty(party.getName());
+		Party p = inst.getParties().findParty(party.getName());
 		if(p == null)
 		{
 			hide();
@@ -59,7 +59,7 @@ public class PartyTeleportGui extends PartyGui
 			new PartyTeleportGui(inst, player, party).show();
 			return;
 		}
-		if(inst.findParty(party.getName()) == null)
+		if(inst.getParties().findParty(party.getName()) == null)
 		{
 			hide();
 			return;

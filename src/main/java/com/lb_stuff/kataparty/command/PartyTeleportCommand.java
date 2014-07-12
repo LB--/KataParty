@@ -26,7 +26,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 		if(args.length == 1 && sender instanceof Player)
 		{
 			Player player = (Player)sender;
-			Party.Member m = inst.findMember(player.getUniqueId());
+			Party.Member m = inst.getParties().findMember(player.getUniqueId());
 			if(m != null)
 			{
 				for(Party.Member o : m.getParty())
@@ -54,7 +54,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0 || args.length == 1)
 			{
-				Party.Member m = inst.findMember(player.getUniqueId());
+				Party.Member m = inst.getParties().findMember(player.getUniqueId());
 				if(!m.getParty().canTp())
 				{
 					sender.sendMessage("[KataParty] Your KataParty does not allow teleportations");
@@ -68,7 +68,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 					Player tp = inst.getServer().getPlayer(args[0]);
 					if(tp != null && player.canSee(tp))
 					{
-						Party.Member t = inst.findMember(tp.getUniqueId());
+						Party.Member t = inst.getParties().findMember(tp.getUniqueId());
 						if(t != null && t.getParty() == m.getParty())
 						{
 							if(m.getParty().canTp() && t.canTp())

@@ -22,7 +22,7 @@ public class PartyDisbandCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0)
 			{
-				Party.Member m = inst.findMember(player.getUniqueId());
+				Party.Member m = inst.getParties().findMember(player.getUniqueId());
 				if(m == null)
 				{
 					sender.sendMessage("[KataParty] You are not in any KataParty");
@@ -30,9 +30,7 @@ public class PartyDisbandCommand extends PartyCommand
 				else if(m.getRank() == Party.Rank.ADMIN)
 				{
 					Party p = m.getParty();
-					inst.parties.remove(p);
-					p.disband();
-					p.disableInventory(player);
+					inst.getParties().remove(p, player);
 				}
 				else
 				{

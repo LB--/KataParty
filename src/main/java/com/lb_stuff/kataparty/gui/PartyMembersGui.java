@@ -20,7 +20,7 @@ public class PartyMembersGui extends PartyGui
 		super(plugin, plr, 6, "Manage "+p.getName()+" members");
 		party = p;
 
-		final Party.Member mt = inst.findMember(player.getUniqueId());
+		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -105,7 +105,7 @@ public class PartyMembersGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		Party p = inst.findParty(party.getName());
+		Party p = inst.getParties().findParty(party.getName());
 		if(p == null)
 		{
 			hide();
@@ -123,7 +123,7 @@ public class PartyMembersGui extends PartyGui
 			return;
 		}
 
-		final Party.Member mt = inst.findMember(player.getUniqueId());
+		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;

@@ -22,7 +22,7 @@ public class PartyCreateCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 1)
 			{
-				if(inst.findParty(args[0]) != null)
+				if(inst.getParties().findParty(args[0]) != null)
 				{
 					sender.sendMessage("[KataParty] There is already a KataParty named "+args[0]);
 				}

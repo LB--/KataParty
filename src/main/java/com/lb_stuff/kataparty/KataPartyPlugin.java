@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.command.*;
+import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.Listener;
@@ -46,8 +47,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 			{
 				ConfigurationSection ps = (ConfigurationSection)e.getValue();
-				Party p = new Party(this, e.getKey());
-				parties.add(p);
+				Party p = getParties().add(e.getKey());
 				p.setTp(ps.getBoolean("tp"));
 				p.setPvp(ps.getBoolean("pvp"));
 				p.setVisible(ps.getBoolean("visible"));
@@ -96,7 +96,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		f = new File(CONFIG_DIR+CONFIG_PARTIES);
 		YamlConfiguration conf = new YamlConfiguration();
 		ConfigurationSection cp = conf.createSection("parties");
-		for(Party p : parties)
+		for(Party p : getParties())
 		{
 			ConfigurationSection ps = cp.createSection(p.getName());
 			ps.set("tp", p.canTp());
@@ -137,42 +137,10 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		}
 	}
 
-	public static class MemberSettings
+	private final PartySet parties = new PartySet();
+	public PartySet getParties()
 	{
-		public String partyname;
-		public boolean talkparty = true;
-		public MemberSettings(String pname)
-		{
-			partyname = pname;
-		}
-	}
-	public ConcurrentSkipListMap<UUID, MemberSettings> partiers = new ConcurrentSkipListMap<>();
-
-	public Set<Party> parties = new HashSet<>();
-	public Party.Member findMember(UUID uuid)
-	{
-		for(Party p : parties)
-		{
-			for(Party.Member m : p)
-			{
-				if(m.getUuid().equals(uuid))
-				{
-					return m;
-				}
-			}
-		}
-		return null;
-	}
-	public Party findParty(String name)
-	{
-		for(Party p : parties)
-		{
-			if(p.getName().equalsIgnoreCase(name))
-			{
-				return p;
-			}
-		}
-		return null;
+		return parties;
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST) //highest executed last
@@ -186,7 +154,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			Player source = e.getPlayer();
 			Set<Player> targets = e.getRecipients();
 			boolean useother = msg.startsWith("!");
-			MemberSettings ms = partiers.get(source.getUniqueId());
+			MemberSettings ms = getParties().getSettings(source.getUniqueId());
 			String senderparty = (ms != null ? ms.partyname : null);
 			boolean talkparty = (ms != null ? ms.talkparty : false);
 
@@ -206,7 +174,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			}
 			for(Player p : targets)
 			{
-				MemberSettings pms = partiers.get(p.getUniqueId());
+				MemberSettings pms = getParties().getSettings(p.getUniqueId());
 				String pn = (pms != null ? pms.partyname : null);
 				if(pn != null) //receiver is in a party
 				{
@@ -275,11 +243,11 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
 		Player p = e.getPlayer();
-		Party.Member m = findMember(p.getUniqueId());
+		Party.Member m = getParties().findMember(p.getUniqueId());
 		if(m != null)
 		{
 			p.sendMessage("[KataParty] You are in KataParty §n"+m.getParty().getName()+"§r");
-			MemberSettings ms = partiers.get(p.getUniqueId());
+			MemberSettings ms = getParties().getSettings(p.getUniqueId());
 			if(ms != null)
 			{
 				ms.talkparty = false;
@@ -296,7 +264,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 	public void onPlayerLeave(PlayerQuitEvent e)
 	{
 		e.getPlayer().closeInventory();
-		Party.Member m = findMember(e.getPlayer().getUniqueId());
+		Party.Member m = getParties().findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
 			//TODO: shared health stuff
@@ -305,8 +273,8 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 	@EventHandler
 	public void onDamageBy(EntityDamageByEntityEvent e)
 	{
-		Party.Member a = findMember(e.getDamager().getUniqueId());
-		Party.Member b = findMember(e.getEntity().getUniqueId());
+		Party.Member a = getParties().findMember(e.getDamager().getUniqueId());
+		Party.Member b = getParties().findMember(e.getEntity().getUniqueId());
 		if(a != null && !a.getParty().canPvp())
 		{
 			if(b != null && a.getParty() == b.getParty())
@@ -318,7 +286,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 				AnimalTamer owner = ((Wolf)e.getEntity()).getOwner();
 				if(owner != null)
 				{
-					b = findMember(owner.getUniqueId());
+					b = getParties().findMember(owner.getUniqueId());
 					if(a != b && a.getParty() == b.getParty())
 					{
 						e.setCancelled(true); //member attacks wolf of member
@@ -332,7 +300,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			AnimalTamer owner = w.getOwner();
 			if(owner != null)
 			{
-				a = findMember(owner.getUniqueId());
+				a = getParties().findMember(owner.getUniqueId());
 				if(a != null && a.getParty() == b.getParty())
 				{
 					e.setCancelled(true); //member's wolf attacks member
@@ -349,8 +317,8 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			AnimalTamer owner = ((Wolf)e.getEntity()).getOwner();
 			if(owner != null)
 			{
-				Party.Member a = findMember(owner.getUniqueId());
-				Party.Member b = findMember(e.getTarget().getUniqueId());
+				Party.Member a = getParties().findMember(owner.getUniqueId());
+				Party.Member b = getParties().findMember(e.getTarget().getUniqueId());
 				if(a != null && b != null && a.getParty() == b.getParty() && !a.getParty().canPvp())
 				{
 					e.setCancelled(true); //member's wolf targets member
@@ -364,7 +332,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		ProjectileSource ps = e.getPotion().getShooter();
 		if(ps instanceof Player)
 		{
-			Party.Member thrower = findMember(((Player)ps).getUniqueId());
+			Party.Member thrower = getParties().findMember(((Player)ps).getUniqueId());
 			if(thrower != null && thrower.getParty().arePotionsSmart())
 			{
 				//
@@ -376,7 +344,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 	{
 		if(!e.isCancelled() && e.getEntity() instanceof Player)
 		{
-			Party.Member m = findMember(e.getEntity().getUniqueId());
+			Party.Member m = getParties().findMember(e.getEntity().getUniqueId());
 			if(m != null && m.getParty().getHealth() != null)
 			{
 				//TODO: shared health stuff
@@ -388,7 +356,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 	{
 		if(e.getEntity() instanceof Player)
 		{
-			Party.Member m = findMember(e.getEntity().getUniqueId());
+			Party.Member m = getParties().findMember(e.getEntity().getUniqueId());
 			if(m != null && m.getParty().getHealth() != null)
 			{
 				//TODO: shared health stuff
@@ -400,7 +368,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 	{
 		if(!e.isCancelled() && e.getEntity() instanceof Player)
 		{
-			Party.Member m = findMember(e.getEntity().getUniqueId());
+			Party.Member m = getParties().findMember(e.getEntity().getUniqueId());
 			if(m != null && m.getParty().getHealth() != null)
 			{
 				//TODO: shared health stuff
@@ -410,7 +378,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onRespawn(PlayerRespawnEvent e)
 	{
-		Party.Member m = findMember(e.getPlayer().getUniqueId());
+		Party.Member m = getParties().findMember(e.getPlayer().getUniqueId());
 		if(m != null && m.getParty().getHealth() != null)
 		{
 			//TODO: shared health stuff
@@ -419,7 +387,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onXp(PlayerExpChangeEvent e)
 	{
-		Party.Member m = findMember(e.getPlayer().getUniqueId());
+		Party.Member m = getParties().findMember(e.getPlayer().getUniqueId());
 		if(m != null && m.getParty().getHealth() != null)
 		{
 			//TODO: shared health stuff

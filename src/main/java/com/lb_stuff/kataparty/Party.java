@@ -10,7 +10,7 @@ import java.util.*;
 
 public class Party implements Iterable<Party.Member>
 {
-	private final KataPartyPlugin inst;
+	private final PartySet parties;
 	private String name;
 	private final Set<Member> members = new HashSet<>();
 	private boolean tp = true;
@@ -20,15 +20,10 @@ public class Party implements Iterable<Party.Member>
 	private Double health = null;
 	private boolean potions = false;
 
-	public Party(final KataPartyPlugin inst, String pname)
+	public Party(PartySet ps, String pname)
 	{
-		this.inst = inst;
+		parties = ps;
 		name = pname;
-	}
-
-	public KataPartyPlugin getPlugin()
-	{
-		return inst;
 	}
 
 	public void informMembers(String message)
@@ -45,7 +40,7 @@ public class Party implements Iterable<Party.Member>
 	}
 	public void rename(String n)
 	{
-		for(Map.Entry<UUID, KataPartyPlugin.MemberSettings> e : inst.partiers.entrySet())
+		for(Map.Entry<UUID, PartySet.MemberSettings> e : parties.getPartyMembers())
 		{
 			if(e.getValue().partyname.equals(name))
 			{
@@ -83,13 +78,13 @@ public class Party implements Iterable<Party.Member>
 	public Member addMember(UUID uuid)
 	{
 		Member m;
-		while((m = inst.findMember(uuid)) != null)
+		while((m = parties.findMember(uuid)) != null)
 		{
 			m.getParty().removeMember(uuid);
 		}
 		members.add(m = new Member(uuid));
-		inst.partiers.put(uuid, new KataPartyPlugin.MemberSettings(name));
-		informMembers("§n"+inst.getServer().getOfflinePlayer(uuid).getName()+"§r has joined your KataParty");
+		parties.addSettings(uuid, name);
+		informMembers("§n"+Bukkit.getServer().getOfflinePlayer(uuid).getName()+"§r has joined your KataParty");
 		return m;
 	}
 	public void removeMember(UUID uuid)
@@ -101,11 +96,11 @@ public class Party implements Iterable<Party.Member>
 			{
 				m.inform("You have left your KataParty");
 				it.remove();
-				inst.partiers.remove(uuid);
+				parties.removeSettings(uuid);
 				break;
 			}
 		}
-		informMembers("§n"+inst.getServer().getOfflinePlayer(uuid).getName()+"§r has left your KataParty");
+		informMembers("§n"+Bukkit.getServer().getOfflinePlayer(uuid).getName()+"§r has left your KataParty");
 	}
 	public Member findMember(UUID uuid)
 	{
@@ -122,7 +117,7 @@ public class Party implements Iterable<Party.Member>
 	{
 		for(Member m : members)
 		{
-			OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
+			OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(m.getUuid());
 			if(offp != null && offp.getName() != null && offp.getName().equalsIgnoreCase(name))
 			{
 				return m;
@@ -144,7 +139,7 @@ public class Party implements Iterable<Party.Member>
 		Set<Member> mems = new HashSet<>();
 		for(Member m : this)
 		{
-			if(inst.getServer().getOfflinePlayer(m.getUuid()).isOnline())
+			if(Bukkit.getServer().getOfflinePlayer(m.getUuid()).isOnline())
 			{
 				mems.add(m);
 			}
@@ -156,7 +151,7 @@ public class Party implements Iterable<Party.Member>
 		Set<Member> mems = new HashSet<>();
 		for(Member m : this)
 		{
-			OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
+			OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(m.getUuid());
 			if(offp.isOnline() && !offp.getPlayer().isDead())
 			{
 				mems.add(m);
@@ -275,7 +270,7 @@ public class Party implements Iterable<Party.Member>
 		health = 1.0*mems.size();
 		for(Member m : mems)
 		{
-			inst.getServer().getPlayer(m.getUuid()).setMaxHealth(20.0*mems.size());
+			Bukkit.getServer().getPlayer(m.getUuid()).setMaxHealth(20.0*mems.size());
 		}
 		informMembers("Shared Health & XP Gain has been §nenabled§r for your KataParty");
 	}
@@ -284,7 +279,7 @@ public class Party implements Iterable<Party.Member>
 		health = null;
 		for(Member m : getMembersOnline())
 		{
-			inst.getServer().getPlayer(m.getUuid()).resetMaxHealth();
+			Bukkit.getServer().getPlayer(m.getUuid()).resetMaxHealth();
 		}
 		informMembers("Shared Health & XP Gain has been §disabled§r for your KataParty");
 	}
@@ -333,7 +328,7 @@ public class Party implements Iterable<Party.Member>
 
 		public void inform(String message)
 		{
-			OfflinePlayer offp = inst.getServer().getOfflinePlayer(uuid);
+			OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(uuid);
 			if(offp.isOnline())
 			{
 				offp.getPlayer().sendMessage("[KataParty] "+message);

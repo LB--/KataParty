@@ -78,12 +78,12 @@ public class PartyCreateGui extends PartyGui
 			case CREATE:
 			{
 				String pname = getButtonName(CREATE);
-				if(inst.findParty(pname) != null)
+				if(inst.getParties().findParty(pname) != null)
 				{
 					new PartyCreateGui(inst, player, pname, false).show();
 					return;
 				}
-				Party p = new Party(inst, pname);
+				Party p = inst.getParties().add(pname);
 				p.addMember(player.getUniqueId()).setRank(Party.Rank.ADMIN);
 				p.setTp(getButton(TELEPORTS) != 1);
 				p.setPvp(getButton(PVP) != 1);
@@ -92,7 +92,6 @@ public class PartyCreateGui extends PartyGui
 					p.enableInventory();
 				}
 				p.setVisible(getButton(VISIBLE) != 1);
-				inst.parties.add(p);
 				hide();
 			} break;
 			case TELEPORTS:

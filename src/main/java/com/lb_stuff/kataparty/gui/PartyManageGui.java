@@ -30,7 +30,7 @@ public class PartyManageGui extends PartyGui
 		super(plugin, plr, 2, p.getName()+" Settings");
 		party = p;
 
-		final Party.Member mt = inst.findMember(player.getUniqueId());
+		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -196,13 +196,13 @@ public class PartyManageGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		if(inst.findParty(party.getName()) == null)
+		if(inst.getParties().findParty(party.getName()) == null)
 		{
 			hide();
 			return;
 		}
 
-		final Party.Member mt = inst.findMember(player.getUniqueId());
+		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -301,9 +301,7 @@ public class PartyManageGui extends PartyGui
 			{
 				if(isAdmin || (player.hasPermission("KataParty.disband") && isPartyAdmin))
 				{
-					inst.parties.remove(party);
-					party.disband();
-					party.disableInventory(player);
+					inst.getParties().remove(party, player);
 					hide();
 				}
 			} break;

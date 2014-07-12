@@ -25,16 +25,14 @@ public class PartyCloseCommand extends PartyAdminCommand
 			Player player = (Player)sender;
 			if(args.length == 1)
 			{
-				Party p = inst.findParty(args[0]);
+				Party p = inst.getParties().findParty(args[0]);
 				if(p == null)
 				{
 					sender.sendMessage("[KataParty] No KataParty named "+args[0]);
 				}
 				else
 				{
-					inst.parties.remove(p);
-					p.disband();
-					p.disableInventory(player);
+					inst.getParties().remove(p, player);
 				}
 				return true;
 			}

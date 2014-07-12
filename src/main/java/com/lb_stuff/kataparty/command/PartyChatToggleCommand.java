@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import static com.lb_stuff.kataparty.KataPartyPlugin.MemberSettings;
+import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,7 +22,7 @@ public class PartyChatToggleCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0)
 			{
-				MemberSettings ms = inst.partiers.get(player.getUniqueId());
+				MemberSettings ms = inst.getParties().getSettings(player.getUniqueId());
 				if(ms != null)
 				{
 					ms.talkparty = !ms.talkparty;
