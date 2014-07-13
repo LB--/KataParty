@@ -14,45 +14,36 @@ public class PartyListGui extends PartyGui
 {
 	public PartyListGui(KataPartyPlugin plugin, Player plr)
 	{
-		super(plugin, plr, 6, "List of KataParties");
+		super(plugin, plr, 6, plugin.getMessage("list-gui-title"));
 
 		int buttons = 0;
 		for(final Party p : inst.getParties())
 		{
 			if(p.isVisible() || player.hasPermission("KataParty.seehidden"))
 			{
-				int online = 0;
-				for(Party.Member mem : p)
-				{
-					if(inst.getServer().getPlayer(mem.getUuid()) != null)
-					{
-						++online;
-					}
-				}
-				final int online_ = online;
 				Party.Member mem = inst.getParties().findMember(player.getUniqueId());
 				final boolean same = (mem != null && p == mem.getParty());
 				addButton(buttons++, p.getName(), p.isVisible()? Material.NAME_TAG : Material.PAPER, new ArrayList<String>(){
 				{
 					if(!p.isVisible())
 					{
-						add("(invisible)");
+						add(inst.getMessage("list-invisible"));
 					}
-					add(online_+"/"+p.numMembers()+" members online");
-					add("PvP: "+p.canPvp());
-					add("TP: "+p.canTp());
-					add("Shared Inv: "+(p.getInventory() != null? true : false));
+					add(inst.getMessage("list-members-online", p.getMembersOnline().size(), p.numMembers()));
+					add(inst.getMessage("list-pvp", p.canPvp()));
+					add(inst.getMessage("list-teleports", p.canTp()));
+					add(inst.getMessage("list-inventory", (p.getInventory() != null)));
 					if(!same)
 					{
-						add("Left click to join (you will leave your current KataParty)");
+						add(inst.getMessage("list-join"));
 					}
 					else
 					{
-						add("You are in this KataParty");
+						add(inst.getMessage("list-member"));
 					}
 					if(player.hasPermission("KataParty.admin"))
 					{
-						add("Right click to administrate");
+						add(inst.getMessage("list-admin"));
 					}
 					if(p.numMembers() > 0)
 					{
@@ -89,8 +80,15 @@ public class PartyListGui extends PartyGui
 		{
 			case LEFT:
 			{
-				p.addMember(player.getUniqueId());
-				hide();
+				if(inst.getParties().findMember(player.getUniqueId()).getParty() != p)
+				{
+					p.addMember(player.getUniqueId());
+					hide();
+				}
+				else
+				{
+					new PartyListGui(inst, player).show();
+				}
 			} break;
 			case RIGHT:
 			{

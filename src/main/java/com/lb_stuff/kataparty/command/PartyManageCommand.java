@@ -26,7 +26,7 @@ public class PartyManageCommand extends PartyCommand
 				Party.Member m = inst.getParties().findMember(player.getUniqueId());
 				if(m == null)
 				{
-					sender.sendMessage("[KataParty] You are not in any KataParty!");
+					inst.tellMessage(player, "not-in-party");
 				}
 				else
 				{

@@ -17,7 +17,7 @@ public class PartyTeleportGui extends PartyGui
 	private final Party party;
 	public PartyTeleportGui(KataPartyPlugin plugin, Player plr, Party p)
 	{
-		super(plugin, plr, 6, "Members in your KataParty");
+		super(plugin, plr, 6, plugin.getMessage("teleport-gui-title"));
 		party = p;
 
 		addButton(TICKET, party.getName(), Material.NAME_TAG, new ArrayList<String>());
@@ -34,12 +34,12 @@ public class PartyTeleportGui extends PartyGui
 			addButton(++buttons, new ItemStack(Material.SKULL_ITEM, 1, (short)3));
 			setButton(buttons, offp.getName(), new ArrayList<String>(){
 			{
-				add("Rank: "+m.getRank());
-				add("Online: "+(offp.isOnline() && player.canSee(onp)));
-				add("Allows TP: "+m.canTp());
+				add(inst.getMessage("members-rank", m.getRankName()));
+				add(inst.getMessage("members-online", (offp.isOnline() && player.canSee(onp))));
+				add(inst.getMessage("members-teleports", m.canTp()));
 				if(offp.isOnline() && player.canSee(onp))
 				{
-					add("Alive: "+!onp.isDead());
+					add(inst.getMessage("members-alive", !onp.isDead()));
 				}
 			}});
 		}
@@ -76,8 +76,8 @@ public class PartyTeleportGui extends PartyGui
 		{
 			player.teleport(target.getPlayer());
 			hide();
-			player.sendMessage("[KataParty] You were teleported to "+target.getName());
-			target.getPlayer().sendMessage("[KataParty] "+player.getName()+" telepoted to you");
+			inst.tellMessage(player, "member-teleported-to", target.getPlayer().getDisplayName());
+			inst.tellMessage(target.getPlayer(), "member-teleported-from", player.getDisplayName());
 		}
 	}
 }

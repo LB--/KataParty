@@ -7,9 +7,16 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 public class PartySet implements Iterable<Party>
 {
+	private final Messenger messenger;
 	private final Set<Party> parties = new HashSet<>();
-	public PartySet()
+	public PartySet(Messenger msgr)
 	{
+		messenger = msgr;
+	}
+
+	public Messenger getMessenger()
+	{
+		return messenger;
 	}
 
 	public Party add(String pname)

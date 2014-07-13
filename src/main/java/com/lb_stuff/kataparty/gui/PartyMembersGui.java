@@ -17,7 +17,7 @@ public class PartyMembersGui extends PartyGui
 	private final Party party;
 	public PartyMembersGui(KataPartyPlugin plugin, Player plr, Party p)
 	{
-		super(plugin, plr, 6, "Manage "+p.getName()+" members");
+		super(plugin, plr, 6, plugin.getMessage("members-gui-title", p.getName()));
 		party = p;
 
 		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
@@ -42,7 +42,7 @@ public class PartyMembersGui extends PartyGui
 
 		addButton(RETURN, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
 		{
-			add("Click to return to management");
+			add(inst.getMessage("members-return"));
 		}});
 
 		int buttons = 0;
@@ -55,48 +55,48 @@ public class PartyMembersGui extends PartyGui
 			{
 				if(offp.getName() == null)
 				{
-					add("§4(missing player file; unknown name)");
+					add(inst.getMessage("members-missing-player-file"));
 				}
 				if(m.getUuid().equals(player.getUniqueId()))
 				{
-					add("(that's you!)");
+					add(inst.getMessage("members-yourself"));
 				}
-				add("Rank: "+m.getRank());
+				add(inst.getMessage("members-rank", m.getRankName()));
 				switch(m.getRank())
 				{
 					case MEMBER:
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							add("Left click to promote to moderator");
+							add(inst.getMessage("members-promote-moderator"));
 						}
 						if(isAdmin || (isMember && isPartyMod))
 						{
-							add("Right click to kick");
+							add(inst.getMessage("members-demote-kick"));
 						}
 					} break;
 					case MODERATOR:
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							add("Left click to promote to admin");
-							add("Right click to demote to member");
+							add(inst.getMessage("members-promote-admin"));
+							add(inst.getMessage("members-demote-member"));
 						}
 					} break;
 					case ADMIN:
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							add("Right click to demote to moderator");
+							add(inst.getMessage("members-demote-moderator"));
 						}
 					} break;
 					default: break;
 				}
-				add("Online: "+(offp.isOnline() && player.canSee(onp)));
-				add("Allows TP: "+m.canTp());
+				add(inst.getMessage("members-online", (offp.isOnline() && player.canSee(onp))));
+				add(inst.getMessage("members-teleports", m.canTp()));
 				if(offp.isOnline() && player.canSee(onp))
 				{
-					add("Alive: "+!onp.isDead());
+					add(inst.getMessage("members-alive", !onp.isDead()));
 				}
 			}});
 		}

@@ -16,12 +16,12 @@ public class PartyRenameGui extends PartyGui
 	private final Party party;
 	public PartyRenameGui(KataPartyPlugin plugin, Player plr, Party p)
 	{
-		super(plugin, plr, Bukkit.createInventory(null, InventoryType.ANVIL, "Rename Party"));
+		super(plugin, plr, Bukkit.createInventory(null, InventoryType.ANVIL, plugin.getMessage("rename-gui-title")));
 		party = p;
 
 		addButton(0, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
 		{
-			add("Party name must be unique and not contain spaces");
+			add(inst.getMessage("rename-name-requirements"));
 		}});
 	}
 

@@ -1,22 +1,22 @@
 # KataParty Configuration, generated/updated by v${project.version}
 
-# If you want to reset any setting to default, simply delete it entirely
-# and the config will be regenerated, keeping your existing settings
-# while defaulting the deleted ones. Any comments you've made, however,
-# will be wiped, since there's no easy way to keep them.
+# If you want to reset any setting to default, simply delete it or
+# comment it out and the next time the confg is reloaded, this file
+# will be re-generated keeping your existing settings and defaulting
+# any missing settings. Any comments you make are erased, however.
 
 # This is what should be at the start of a message to send to the opposite
 # chat; global instead of party or vice-versa.
 chat-filtering-swap: "[%chat-filtering-swap%]"
 
 # Here, you can change the default settings for newly created parties.
-# Some settings require permission nodes to be changed when creating
-# the party.
+# Some settings require permission nodes to be changed.
 party-defaults:
   teleports: [%party-defaults.teleports%]
   pvp: [%party-defaults.pvp%]
   inventory: [%party-defaults.inventory%]
   visible: [%party-defaults.visible%]
+  self-teleports: [%party-defaults.self-teleports%]
 
 # Set to true to have empty parties automatically be disbanded. If
 # you want to instead keep empty parties, set to false instead.
@@ -96,3 +96,27 @@ messages:
   list-member: "[%messages.list-member%]"
   list-admin: "[%messages.list-admin%]"
   teleport-gui-title: "[%messages.teleport-gui-title%]"
+  party-rename-inform: "[%messages.party-rename-inform%]"
+  party-join-inform: "[%messages.party-join-inform%]"
+  party-left-inform: "[%messages.party-left-inform%]"
+  party-leave-inform: "[%messages.party-leave-inform%]"
+  party-teleports-enabled-inform: "[%messages.party-teleports-enabled-inform%]"
+  party-teleports-disabled-inform: "[%messages.party-teleports-disabled-inform%]"
+  party-pvp-enabled-inform: "[%messages.party-pvp-enabled-inform%]"
+  party-pvp-disabled-inform: "[%messages.party-pvp-disabled-inform%]"
+  party-visibility-enabled-inform: "[%messages.party-visibility-enabled-inform%]"
+  party-visibility-disabled-inform: "[%messages.party-visibility-disabled-inform%]"
+  party-inventory-gui-title: "[%messages.party-inventory-gui-title%]"
+  party-inventory-enable-inform: "[%messages.party-inventory-enable-inform%]"
+  party-inventory-disable-inform: "[%messages.party-inventory-disable-inform%]"
+  party-disband-inform: "[%messages.party-disband-inform%]"
+  party-shared-health-xp-enable-inform: "[%messages.party-shared-health-xp-enable-inform%]"
+  party-shared-health-xp-disable-inform: "[%messages.party-shared-health-xp-disable-inform%]"
+  party-smart-potions-enable-inform: "[%messages.party-smart-potions-enable-inform%]"
+  party-smart-potions-disable-inform: "[%messages.party-smart-potions-disable-inform%]"
+  party-rank-inform: "[%messages.party-rank-inform%]"
+  party-rank-admin: "[%messages.party-rank-admin%]"
+  party-rank-moderator: "[%messages.party-rank-moderator%]"
+  party-rank-member: "[%messages.party-rank-member%]"
+  party-self-teleports-enable-inform: "[%messages.party-self-teleports-enable-inform%]"
+  party-self-teleports-disable-inform: "[%messages.party-self-teleports-disable-inform%]"

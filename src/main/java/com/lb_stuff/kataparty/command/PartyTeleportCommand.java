@@ -57,7 +57,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 				Party.Member m = inst.getParties().findMember(player.getUniqueId());
 				if(!m.getParty().canTp())
 				{
-					sender.sendMessage("[KataParty] Your KataParty does not allow teleportations");
+					inst.tellMessage(player, "party-teleports-disabled");
 				}
 				else if(args.length == 0)
 				{
@@ -74,22 +74,22 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 							if(m.getParty().canTp() && t.canTp())
 							{
 								player.teleport(tp);
-								sender.sendMessage("[KataParty] You were teleported to "+tp.getName());
-								tp.sendMessage("[KataParty] "+player.getName()+" telepoted to you");
+								inst.tellMessage(player, "member-teleported-to", tp.getDisplayName());
+								inst.tellMessage(tp, "member-teleported-from", player.getDisplayName());
 							}
 							else
 							{
-								sender.sendMessage("[KataParty] You cannot teleport to "+tp.getName());
+								inst.tellMessage(player, "member-teleport-disabled", tp.getDisplayName());
 							}
 						}
 						else
 						{
-							sender.sendMessage("[KataParty] "+tp.getName()+" is not in your KataParty");
+							inst.tellMessage(player, "player-not-member", tp.getDisplayName());
 						}
 					}
 					else
 					{
-						sender.sendMessage("[KataParty] Could not find player \""+args[0]+"\"");
+						inst.tellMessage(player, "player-not-found", args[0]);
 					}
 				}
 				return true;

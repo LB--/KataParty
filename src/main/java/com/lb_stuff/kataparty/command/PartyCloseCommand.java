@@ -28,7 +28,7 @@ public class PartyCloseCommand extends PartyAdminCommand
 				Party p = inst.getParties().findParty(args[0]);
 				if(p == null)
 				{
-					sender.sendMessage("[KataParty] No KataParty named "+args[0]);
+					inst.tellMessage(player, "party-does-not-exist", args[0]);
 				}
 				else
 				{

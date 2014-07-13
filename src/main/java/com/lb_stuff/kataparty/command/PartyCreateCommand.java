@@ -24,7 +24,7 @@ public class PartyCreateCommand extends PartyCommand
 			{
 				if(inst.getParties().findParty(args[0]) != null)
 				{
-					sender.sendMessage("[KataParty] There is already a KataParty named "+args[0]);
+					inst.tellMessage(player, "party-already-exists", args[0]);
 				}
 				else
 				{

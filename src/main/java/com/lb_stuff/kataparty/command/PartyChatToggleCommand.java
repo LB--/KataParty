@@ -26,19 +26,19 @@ public class PartyChatToggleCommand extends PartyCommand
 				if(ms != null)
 				{
 					ms.setPartyPreferred( ! ms.isPartyPreferred());
-					sender.sendMessage("[KataParty] Chat filtering settings toggled");
+					inst.tellMessage(player, "chat-filtering-toggled");
 					if(ms.isPartyPreferred())
 					{
-						sender.sendMessage("[KataParty] You talk in party chat, start message with ! to speak globally");
+						inst.tellMessage(player, "chat-filtering-party", inst.getFilterSwap());
 					}
 					else
 					{
-						sender.sendMessage("[KataParty] You talk in global chat, start message with ! to speak in party");
+						inst.tellMessage(player, "chat-filtering-global", inst.getFilterSwap());
 					}
 				}
 				else
 				{
-					sender.sendMessage("[KataParty] You are not in any KataParty");
+					inst.tellMessage(player, "not-in-party");
 				}
 				return true;
 			}

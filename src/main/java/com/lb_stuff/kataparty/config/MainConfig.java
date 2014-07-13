@@ -6,7 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.util.*;
 import java.io.*;
 
-public class MainConfig
+public final class MainConfig
 {
 	private static final YamlConfiguration DEFAULTS = YamlConfiguration.loadConfiguration
 	(
@@ -53,5 +53,10 @@ public class MainConfig
 			pw.append(result);
 		}
 		return YamlConfiguration.loadConfiguration(new CharArrayReader(result.toCharArray()));
+	}
+
+	public Object get(String path)
+	{
+		return config.get(path);
 	}
 }

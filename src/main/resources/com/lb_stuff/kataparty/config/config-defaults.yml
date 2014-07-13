@@ -8,12 +8,13 @@ party-defaults:
   pvp: false
   inventory: false
   visible: true
+  self-teleports: true
 
 remove-empty-parties: true
 
 messages:
-  party-member-inform: "You are in KataParty §n%1$s§r"
-  party-introvert-inform: "You are §nnot§r in a KataParty"
+  party-member-inform: "You are in KataParty &n%1$s&r"
+  party-introvert-inform: "You are &nnot&r in a KataParty"
   party-already-exists: "There is already a KataParty named %1$s"
   party-does-not-exist: "No KataParty named %1$s"
   not-in-party: "You are not in any KataParty"
@@ -63,7 +64,7 @@ messages:
   rename-name-requirements: "Party name must be unique and not contain spaces"
   members-gui-title: "Manage %1$s members"
   members-return: "Click to return to management"
-  members-missing-player-file: "§4(missing player file; unknown name)"
+  members-missing-player-file: "&4(missing player file; unknown name)"
   members-yourself: "(that's you!)"
   members-rank: "Rank: %1$s"
   members-promote-moderator: "Left click to promote to moderator"
@@ -84,3 +85,27 @@ messages:
   list-member: "You are in this KataParty"
   list-admin: "Right click to administrate"
   teleport-gui-title: "Members in your KataParty"
+  party-rename-inform: "Your KataParty was renamed from &n%1$s&r to &n%2$s&r"
+  party-join-inform: "&n%1$s&r has joined your KataParty"
+  party-left-inform: "You have left your KataParty"
+  party-leave-inform: "&n%1$s&r has left your KataParty"
+  party-teleports-enabled-inform: "Teleportation has been &nenabled&r for your KataParty"
+  party-teleports-disabled-inform: "Teleportation has been &ndisabled&r for your KataParty"
+  party-pvp-enabled-inform: "PvP has been &nenabled&r for your KataParty"
+  party-pvp-disabled-inform: "PvP has been &ndisabled&r for your KataParty"
+  party-visibility-enabled-inform: "Visibility has been &nenabled&r for your KataParty"
+  party-visibility-disabled-inform: "Visibility has been &ndisabled&r for your KataParty"
+  party-inventory-gui-title: "%1$s Shared Inventory"
+  party-inventory-enable-inform: "Shared Inventory has been &nenabled&r for your KataParty"
+  party-inventory-disable-inform: "Shared Inventory has been &ndisabled&r for your KataParty"
+  party-disband-inform: "Your KataParty was disbanded"
+  party-shared-health-xp-enable-inform: "Shared Health + XP Gain has been &nenabled&r for your KataParty"
+  party-shared-health-xp-disable-inform: "Shared Health + XP Gain has been &ndisabled&r for your KataParty"
+  party-smart-potions-enable-inform: "Smart Potions has been &nenabled&r for your KataParty"
+  party-smart-potions-disable-inform: "Smart Potions has been &ndisabled&r for your KataParty"
+  party-rank-inform: "Your rank has been set to &n%1$s&r"
+  party-rank-admin: "Admin"
+  party-rank-moderator: "Moderator"
+  party-rank-member: "Member"
+  party-self-teleports-enable-inform: "Teleportation has been personally &nenabled&r for you"
+  party-self-teleports-disable-inform: "Teleportation has been personally &ndisabled&r for you"

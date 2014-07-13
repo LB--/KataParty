@@ -11,6 +11,7 @@ import java.util.*;
 public class Party implements Iterable<Party.Member>
 {
 	private final PartySet parties;
+	private final Messenger messenger;
 	private String name;
 	private final Set<Member> members = new HashSet<>();
 	private boolean tp = true;
@@ -23,14 +24,23 @@ public class Party implements Iterable<Party.Member>
 	public Party(PartySet ps, String pname)
 	{
 		parties = ps;
+		messenger = ps.getMessenger();
 		name = pname;
 	}
 
+	@Deprecated
 	public void informMembers(String message)
 	{
 		for(Member m : this)
 		{
 			m.inform(message);
+		}
+	}
+	public void informMembersMessage(String name, Object... parameters)
+	{
+		for(Member m : this)
+		{
+			m.informMessage(name, parameters);
 		}
 	}
 
@@ -47,7 +57,7 @@ public class Party implements Iterable<Party.Member>
 				e.getValue().setPartyName(n);
 			}
 		}
-		informMembers("Your KataParty was renamed from §n"+name+"§r to §n"+n+"§r");
+		informMembersMessage("party-rename-inform", name, n);
 		name = n;
 	}
 
@@ -84,7 +94,7 @@ public class Party implements Iterable<Party.Member>
 		}
 		members.add(m = new Member(uuid));
 		parties.addSettings(uuid, name);
-		informMembers("§n"+Bukkit.getServer().getOfflinePlayer(uuid).getName()+"§r has joined your KataParty");
+		informMembersMessage("party-join-inform", Bukkit.getServer().getOfflinePlayer(uuid).getName());
 		return m;
 	}
 	public void removeMember(UUID uuid)
@@ -94,13 +104,13 @@ public class Party implements Iterable<Party.Member>
 			Member m = it.next();
 			if(m.getUuid().equals(uuid))
 			{
-				m.inform("You have left your KataParty");
+				m.informMessage("party-left-inform");
 				it.remove();
 				parties.removeSettings(uuid);
 				break;
 			}
 		}
-		informMembers("§n"+Bukkit.getServer().getOfflinePlayer(uuid).getName()+"§r has left your KataParty");
+		informMembersMessage("party-leave-inform", Bukkit.getServer().getOfflinePlayer(uuid).getName());
 	}
 	public Member findMember(UUID uuid)
 	{
@@ -159,7 +169,7 @@ public class Party implements Iterable<Party.Member>
 		}
 		return mems;
 	}
-	public Set<Member> getMembersRank(Rank r)
+	public Set<Member> getMembersRanked(Rank r)
 	{
 		Set<Member> mems = new HashSet<>();
 		for(Member m : this)
@@ -181,11 +191,11 @@ public class Party implements Iterable<Party.Member>
 		tp = v;
 		if(v)
 		{
-			informMembers("Teleportation has been §nenabled§r for your KataParty");
+			informMembersMessage("party-teleports-enabled-inform");
 		}
 		else
 		{
-			informMembers("Teleportation has been §ndisabled§r for your KataParty");
+			informMembersMessage("party-teleports-enabled-inform");
 		}
 	}
 
@@ -198,11 +208,11 @@ public class Party implements Iterable<Party.Member>
 		pvp = v;
 		if(v)
 		{
-			informMembers("PvP has been §nenabled§r for your KataParty");
+			informMembersMessage("party-pvp-enabled-inform");
 		}
 		else
 		{
-			informMembers("PvP has been §ndisabled§r for your KataParty");
+			informMembersMessage("party-pvp-disabled-inform");
 		}
 	}
 
@@ -215,11 +225,11 @@ public class Party implements Iterable<Party.Member>
 		visible = v;
 		if(v)
 		{
-			informMembers("Visibility has been §nenabled§r for your KataParty");
+			informMembersMessage("party-visibility-enabled-inform");
 		}
 		else
 		{
-			informMembers("Visibility has been §ndisabled§r for your KataParty");
+			informMembersMessage("party-visibility-disabled-inform");
 		}
 	}
 
@@ -227,8 +237,8 @@ public class Party implements Iterable<Party.Member>
 	{
 		if(inv == null)
 		{
-			inv = Bukkit.createInventory(null, 4 * 9, name + " Shared Inventory");
-			informMembers("Shared Inventory has been §nenabled§r for your KataParty");
+			inv = Bukkit.createInventory(null, 4 * 9, messenger.getMessage("party-inventory-gui-title", name));
+			informMembersMessage("party-inventory-enable-inform");
 		}
 	}
 	public Inventory getInventory()
@@ -247,7 +257,7 @@ public class Party implements Iterable<Party.Member>
 				}
 			}
 			inv = null;
-			informMembers("Shared Inventory has been §ndisabled§r for your KataParty");
+			informMembersMessage("party-inventory-disable-inform");
 		}
 	}
 
@@ -255,7 +265,7 @@ public class Party implements Iterable<Party.Member>
 	{
 		for(Member m : this.members.toArray(new Member[0]))
 		{
-			m.inform("Your KataParty was disbanded");
+			m.informMessage("party-disband-inform");
 			removeMember(m.getUuid());
 		}
 	}
@@ -272,7 +282,7 @@ public class Party implements Iterable<Party.Member>
 		{
 			Bukkit.getServer().getPlayer(m.getUuid()).setMaxHealth(20.0*mems.size());
 		}
-		informMembers("Shared Health & XP Gain has been §nenabled§r for your KataParty");
+		informMembersMessage("party-shared-health-xp-enable-inform");
 	}
 	public void disableHealth()
 	{
@@ -281,7 +291,7 @@ public class Party implements Iterable<Party.Member>
 		{
 			Bukkit.getServer().getPlayer(m.getUuid()).resetMaxHealth();
 		}
-		informMembers("Shared Health & XP Gain has been §disabled§r for your KataParty");
+		informMembersMessage("party-shared-health-xp-disable-inform");
 	}
 	public void setHealth(double v)
 	{
@@ -301,11 +311,11 @@ public class Party implements Iterable<Party.Member>
 		potions = v;
 		if(v)
 		{
-			informMembers("Smart Potions has been §nenabled§r for your KataParty");
+			informMembersMessage("party-smart-potions-enable-inform");
 		}
 		else
 		{
-			informMembers("Smart Potions has been §disabled§r for your KataParty");
+			informMembersMessage("party-smart-potions-disable-inform");
 		}
 	}
 
@@ -314,6 +324,23 @@ public class Party implements Iterable<Party.Member>
 		ADMIN,
 		MODERATOR,
 		MEMBER;
+
+		@Override
+		@Deprecated
+		public String toString()
+		{
+			return super.toString();
+		}
+	}
+	public String rankName(Rank r)
+	{
+		switch(r)
+		{
+			case ADMIN: return messenger.getMessage("party-rank-admin");
+			case MODERATOR: return messenger.getMessage("party-rank-moderator");
+			case MEMBER: return messenger.getMessage("party-rank-member");
+			default: throw new IllegalStateException();
+		}
 	}
 	public class Member
 	{
@@ -326,12 +353,21 @@ public class Party implements Iterable<Party.Member>
 			uuid = id;
 		}
 
+		@Deprecated
 		public void inform(String message)
 		{
 			OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(uuid);
 			if(offp.isOnline())
 			{
 				offp.getPlayer().sendMessage("[KataParty] "+message);
+			}
+		}
+		public void informMessage(String name, Object... parameters)
+		{
+			OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(uuid);
+			if(offp.isOnline())
+			{
+				messenger.tellMessage(offp.getPlayer(), name, parameters);
 			}
 		}
 
@@ -372,10 +408,14 @@ public class Party implements Iterable<Party.Member>
 		{
 			return rank;
 		}
+		public String getRankName()
+		{
+			return rankName(getRank());
+		}
 		public void setRank(Rank r)
 		{
 			rank = r;
-			inform("Your rank has been set to §n"+r+"§r");
+			informMessage("party-rank-inform", rankName(r));
 		}
 
 		public boolean canTp()
@@ -387,11 +427,11 @@ public class Party implements Iterable<Party.Member>
 			tp = v;
 			if(v)
 			{
-				inform("Teleportation has been personally §nenabled§r for you");
+				informMessage("party-self-teleports-enable-inform");
 			}
 			else
 			{
-				inform("Teleportation has been personally §ndisabled§r for you");
+				informMessage("party-self-teleports-disable-inform");
 			}
 		}
 	}

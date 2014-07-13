@@ -25,7 +25,7 @@ public class PartyDisbandCommand extends PartyCommand
 				Party.Member m = inst.getParties().findMember(player.getUniqueId());
 				if(m == null)
 				{
-					sender.sendMessage("[KataParty] You are not in any KataParty");
+					inst.tellMessage(player, "not-in-party");
 				}
 				else if(m.getRank() == Party.Rank.ADMIN)
 				{
@@ -34,7 +34,7 @@ public class PartyDisbandCommand extends PartyCommand
 				}
 				else
 				{
-					sender.sendMessage("[KataParty] You do not have permission to disband your KataParty");
+					inst.tellMessage(player, "missing-disband-permission");
 				}
 				return true;
 			}

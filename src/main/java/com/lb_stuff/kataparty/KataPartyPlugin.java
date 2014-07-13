@@ -5,6 +5,7 @@ import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 import com.lb_stuff.kataparty.config.*;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.ChatColor;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.*;
@@ -21,7 +22,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.io.*;
 
-public class KataPartyPlugin extends JavaPlugin implements Listener
+public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 {
 	private void implementCommand(String name, PartyCommand command)
 	{
@@ -35,12 +36,13 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 
 	public final File configFile = new File(getDataFolder(), "config.yml");
 	public final File partiesFile = new File(getDataFolder(), "parties.yml");
+	private MainConfig config;
 	@Override
 	public void onEnable()
 	{
 		try
 		{
-			new MainConfig(configFile);
+			config = new MainConfig(configFile);
 		}
 		catch(IOException e)
 		{
@@ -140,7 +142,47 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		}
 	}
 
-	private final PartySet parties = new PartySet();
+	public String getFilterSwap()
+	{
+		return config.get("chat-filtering-swap").toString();
+	}
+	@Override
+	public String getMessage(String name, Object... parameters)
+	{
+		Object format = config.get("messages."+name);
+		if(format != null)
+		{
+			try
+			{
+				return String.format(format.toString().replaceAll("\\&", ""+ChatColor.COLOR_CHAR), parameters);
+			}
+			catch(IllegalFormatException e)
+			{
+				getLogger().warning("Error when using translation \""+name+"\":");
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				try(PrintStream ps = new PrintStream(baos))
+				{
+					e.printStackTrace(ps);
+				}
+				getLogger().warning(baos.toString());
+				return "<Broken translation \""+name+"\">";
+			}
+		}
+		getLogger().warning("Missing translation string \""+name+"\"");
+		return "<Missing translation \""+name+"\">";
+	}
+	@Override @Deprecated
+	public void tell(Player p, String message)
+	{
+		p.sendMessage("[KataParty] "+message);
+	}
+	@Override
+	public void tellMessage(Player p, String name, Object... parameters)
+	{
+		tell(p, getMessage(name, parameters));
+	}
+
+	private final PartySet parties = new PartySet(this);
 	public PartySet getParties()
 	{
 		return parties;
@@ -156,7 +198,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			String fmt = e.getFormat();
 			Player source = e.getPlayer();
 			Set<Player> targets = e.getRecipients();
-			boolean useother = msg.startsWith("!");
+			boolean useother = msg.startsWith(getFilterSwap());
 			MemberSettings ms = getParties().getSettings(source.getUniqueId());
 			String senderparty = (ms != null ? ms.getPartyName() : null);
 			boolean talkparty = (ms != null ? ms.isPartyPreferred() : false);
@@ -168,7 +210,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 			{
 				if(useother)
 				{
-					msg = msg.substring(1);
+					msg = msg.substring(getFilterSwap().length());
 				}
 				if(!talkparty)
 				{
@@ -249,18 +291,18 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		Party.Member m = getParties().findMember(p.getUniqueId());
 		if(m != null)
 		{
-			p.sendMessage("[KataParty] You are in KataParty §n"+m.getParty().getName()+"§r");
+			tellMessage(p, "party-member-inform", m.getParty().getName());
 			MemberSettings ms = getParties().getSettings(p.getUniqueId());
 			if(ms != null)
 			{
 				ms.setPartyPreferred(false);
-				p.sendMessage("[KataParty] You talk in global chat, start message with ! to speak in party");
+				tellMessage(p, "chat-filtering-global", getFilterSwap());
 			}
 			//TODO: shared health stuff
 		}
 		else
 		{
-			e.getPlayer().sendMessage("[KataParty] You are §nnot§r in a KataParty");
+			tellMessage(p, "party-introvert-inform");
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR)

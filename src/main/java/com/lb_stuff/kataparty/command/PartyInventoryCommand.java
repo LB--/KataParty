@@ -33,12 +33,12 @@ public class PartyInventoryCommand extends PartyCommand
 					}
 					else
 					{
-						sender.sendMessage("[KataParty] Shared Inventory is disabled for this KataParty");
+						inst.tellMessage(player, "shared-inventory-disabled");
 					}
 				}
 				else
 				{
-					sender.sendMessage("[KataParty] You are not in any KataParty");
+					inst.tellMessage(player, "not-in-party");
 				}
 				return true;
 			}
