@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.command.*;
 import static com.lb_stuff.kataparty.PartySet.MemberSettings;
+import com.lb_stuff.kataparty.config.*;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.Listener;
@@ -32,16 +33,22 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		getCommand(name).setExecutor(command);
 	}
 
-	public static final String CONFIG_DIR = "plugins/KataParty/";
-	public static final String CONFIG_MAIN = null;
-	public static final String CONFIG_PARTIES = "parties.yml";
+	public final File configFile = new File(getDataFolder(), "config.yml");
+	public final File partiesFile = new File(getDataFolder(), "parties.yml");
 	@Override
 	public void onEnable()
 	{
-		File f = new File(CONFIG_DIR+CONFIG_PARTIES);
-		if(f.exists())
+		try
 		{
-			YamlConfiguration conf = YamlConfiguration.loadConfiguration(f);
+			new MainConfig(configFile);
+		}
+		catch(IOException e)
+		{
+			getLogger().info(e.toString());
+		}
+		if(partiesFile.exists())
+		{
+			YamlConfiguration conf = YamlConfiguration.loadConfiguration(partiesFile);
 			ConfigurationSection cs = conf.getConfigurationSection("parties");
 			for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 			{
@@ -90,9 +97,6 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 	@Override
 	public void onDisable()
 	{
-		File f = new File(CONFIG_DIR);
-		f.mkdir();
-		f = new File(CONFIG_DIR+CONFIG_PARTIES);
 		YamlConfiguration conf = new YamlConfiguration();
 		ConfigurationSection cp = conf.createSection("parties");
 		for(Party p : getParties())
@@ -128,7 +132,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener
 		}
 		try
 		{
-			conf.save(f);
+			conf.save(partiesFile);
 		}
 		catch(IOException e)
 		{

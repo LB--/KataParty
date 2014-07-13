@@ -11,7 +11,7 @@ party-defaults:
 
 remove-empty-parties: true
 
-mesages:
+messages:
   party-member-inform: "You are in KataParty §n%1$s§r"
   party-introvert-inform: "You are §nnot§r in a KataParty"
   party-already-exists: "There is already a KataParty named %1$s"

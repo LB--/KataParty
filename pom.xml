@@ -35,8 +35,8 @@
 				<filtering>true</filtering>
 				<includes>
 					<include>plugin.yml</include>
-					<include>config-template.yml</include>
-					<include>config-defaults.yml</include>
+					<include>com/lb_stuff/kataparty/config/config-template.yml</include>
+					<include>com/lb_stuff/kataparty/config/config-defaults.yml</include>
 				</includes>
 			</resource>
 		</resources>
