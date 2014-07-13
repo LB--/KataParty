@@ -8,6 +8,14 @@ import java.io.*;
 
 public class MainConfig
 {
+	private static final YamlConfiguration DEFAULTS = YamlConfiguration.loadConfiguration
+	(
+		new InputStreamReader(MainConfig.class.getResourceAsStream("config-defaults.yml"))
+	);
+	private static final String TEMPLATE = new Scanner
+	(
+		MainConfig.class.getResourceAsStream("config-template.yml")
+	).useDelimiter("\\A").next();
 	private Configuration config;
 	public MainConfig(File f) throws IOException
 	{
@@ -23,8 +31,7 @@ public class MainConfig
 	}
 	private Configuration regenConfig(File f, Configuration current) throws IOException
 	{
-		String template = new Scanner(getClass().getResourceAsStream("config-template.yml")).useDelimiter("\\A").next();
-		YamlConfiguration defaults = YamlConfiguration.loadConfiguration(new InputStreamReader(getClass().getResourceAsStream("config-defaults.yml")));
+		String template = TEMPLATE;
 		String result = "";
 		int i1, i2;
 		while((i1 = template.indexOf("[%")) >= 0 && (i2 = template.indexOf("%]")) >= 0)
@@ -35,7 +42,7 @@ public class MainConfig
 			Object v = current.get(value);
 			if(v == null)
 			{
-				v = defaults.get(value);
+				v = DEFAULTS.get(value);
 			}
 			result += v.toString().replaceAll("\"", "\\\\\"");
 		}
