@@ -73,57 +73,55 @@ public class PartyChatFilter implements Listener
 				{
 					targetparty = targetsettings.getPartyName();
 					targetpref = targetsettings.getPref();
+				}
 
-					if(sourcepref == null)
+				if(sourcepref == null)
+				{
+					if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
 					{
-						if(targetpref == null)
+						target.sendMessage(normalmsg);
+					}
+					else
+					{
+						target.sendMessage(filtermsg);
+					}
+				}
+				else if(sourcepref.equals(PREFER_PARTY))
+				{
+					if(prefswap)
+					{
+						if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
 						{
 							target.sendMessage(normalmsg);
 						}
-						else
+						else if(targetpref.equals(PREFER_PARTY))
 						{
 							target.sendMessage(filtermsg);
 						}
 					}
-					else if(sourcepref.equals(PREFER_PARTY))
+					else if(targetpref != null && targetparty.equals(sourceparty))
 					{
-						if(prefswap)
-						{
-							if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
-							{
-								target.sendMessage(normalmsg);
-							}
-							else if(targetpref.equals(PREFER_PARTY))
-							{
-								target.sendMessage(filtermsg);
-							}
-						}
-						else if(targetpref != null && targetparty.equals(sourceparty))
-						{
-							target.sendMessage(""+BOLD+"{"+sourceparty+"}"+RESET+normalmsg);
-						}
-					}
-					else if(sourcepref.equals(PREFER_GLOBAL))
-					{
-						if(!prefswap)
-						{
-							if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
-							{
-								target.sendMessage(normalmsg);
-							}
-							else if(targetpref.equals(PREFER_PARTY))
-							{
-								target.sendMessage(filtermsg);
-							}
-						}
-						else if(targetpref != null && targetparty.equals(sourceparty))
-						{
-							target.sendMessage(""+ITALIC+"{"+sourceparty+"}"+RESET+filtermsg);
-						}
+						target.sendMessage(""+BOLD+"{"+sourceparty+"}"+RESET+normalmsg);
 					}
 				}
-
-				//
+				else if(sourcepref.equals(PREFER_GLOBAL))
+				{
+					if(!prefswap)
+					{
+						if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
+						{
+							target.sendMessage(normalmsg);
+						}
+						else if(targetpref.equals(PREFER_PARTY))
+						{
+							target.sendMessage(filtermsg);
+						}
+					}
+					else if(targetpref != null && targetparty.equals(sourceparty))
+					{
+						target.sendMessage(""+ITALIC+"{"+sourceparty+"}"+RESET+filtermsg);
+					}
+				}
 			}
 
 			e.setCancelled(true);
