@@ -34,8 +34,8 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		getCommand(name).setExecutor(command);
 	}
 
-	public final File configFile = new File(getDataFolder(), "config.yml");
-	public final File partiesFile = new File(getDataFolder(), "parties.yml");
+	private final File configFile = new File(getDataFolder(), "config.yml");
+	private final File partiesFile = new File(getDataFolder(), "parties.yml");
 	private MainConfig config;
 	@Override
 	public void onEnable()
@@ -83,6 +83,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			}
 		}
 		getCommand("kataparty").setExecutor(new PluginInfoCommand(this));
+		getCommand("kpreload").setExecutor(new PluginReloadCommand(this));
 		implementCommand("kpcreate", new PartyCreateCommand(this));
 		implementCommand("kplist", new PartyListCommand(this));
 		implementCommand("kpjoin", new PartyJoinCommand(this));
@@ -95,6 +96,18 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		implementCommand("kpshare", new PartyInventoryCommand(this));
 		implementCommand("kptoggle", new PartyChatToggleCommand(this));
 		getServer().getPluginManager().registerEvents(this, this);
+	}
+	@Override
+	public void reloadConfig()
+	{
+		try
+		{
+			config.reload(configFile);
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 	@Override
 	public void onDisable()

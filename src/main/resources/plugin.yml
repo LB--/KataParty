@@ -2,7 +2,8 @@
 name: "KataParty"
 main: com.lb_stuff.kataparty.KataPartyPlugin
 version: ${project.version}
-author: "Nicholas \"LB\" Braden"
+authors:
+  - "Nicholas \"LB\" Braden"
 description: "A party chat plugin made for Katatunka"
 website: http://dev.bukkit.org/bukkit-plugins/kataparty/
 
@@ -87,6 +88,13 @@ commands:
     usage: "/kptoggle"
     aliases:
       - katatoggle
+  kpreload:
+    description: "Reload and regenerate the config file"
+    usage: "/kpreload"
+    permission: KataParty.reload
+    permission-message: "You don't have the KataParty.reload permission!"
+    aliases:
+      - katareload
 
 permissions:
   KataParty.*:
@@ -100,6 +108,7 @@ permissions:
       KataParty.disband: true
       KataParty.manage: true
       KataParty.admin: true
+      KataParty.reload: true
       KataParty.teleport.*: true
       KataParty.inventory.*: true
     default: op
@@ -152,4 +161,7 @@ permissions:
     default: true
   KataParty.inventory.enable:
     description: "Allows enabling/disabling the shared KataParty inventory"
+    default: op
+  KataParty.reload:
+    description: "Allows use of the /kpreload command to reload and regenerate the config"
     default: op
