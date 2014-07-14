@@ -62,7 +62,35 @@ public class PartyChatFilter implements Listener
 			final String filtermsg = String.format(fmt, source.getDisplayName(), ""+GRAY+ITALIC+msg);
 
 			//need to manually send to console since we are cancelling the event
-			inst.getServer().getConsoleSender().sendMessage(normalmsg);
+			if(sourcepref != null)
+			{
+				if(sourcepref.equals(PREFER_GLOBAL))
+				{
+					if(prefswap)
+					{
+						inst.getServer().getConsoleSender().sendMessage("{"+sourceparty+"} "+normalmsg);
+					}
+					else
+					{
+						inst.getServer().getConsoleSender().sendMessage(normalmsg);
+					}
+				}
+				else if(sourcepref.equals(PREFER_PARTY))
+				{
+					if(prefswap)
+					{
+						inst.getServer().getConsoleSender().sendMessage(normalmsg);
+					}
+					else
+					{
+						inst.getServer().getConsoleSender().sendMessage("{"+sourceparty+"} "+normalmsg);
+					}
+				}
+			}
+			else
+			{
+				inst.getServer().getConsoleSender().sendMessage(normalmsg);
+			}
 
 			for(Player target : targets)
 			{
@@ -101,7 +129,7 @@ public class PartyChatFilter implements Listener
 					}
 					else if(targetpref != null && targetparty.equals(sourceparty))
 					{
-						target.sendMessage(""+BOLD+"{"+sourceparty+"}"+RESET+normalmsg);
+						target.sendMessage(""+BOLD+"{"+sourceparty+"} "+RESET+normalmsg);
 					}
 				}
 				else if(sourcepref.equals(PREFER_GLOBAL))
@@ -119,7 +147,7 @@ public class PartyChatFilter implements Listener
 					}
 					else if(targetpref != null && targetparty.equals(sourceparty))
 					{
-						target.sendMessage(""+ITALIC+"{"+sourceparty+"}"+RESET+filtermsg);
+						target.sendMessage(""+ITALIC+"{"+sourceparty+"} "+RESET+filtermsg);
 					}
 				}
 			}
