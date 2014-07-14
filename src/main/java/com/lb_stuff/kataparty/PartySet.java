@@ -9,7 +9,7 @@ public class PartySet implements Iterable<Party>
 {
 	private final Messenger messenger;
 	private final Set<Party> parties = new HashSet<>();
-	boolean keep_empty = false;
+	private boolean keep_empty = false;
 	public PartySet(Messenger msgr)
 	{
 		messenger = msgr;
