@@ -4,6 +4,7 @@ main: com.lb_stuff.kataparty.KataPartyPlugin
 version: ${project.version}
 author: "Nicholas \"LB\" Braden"
 description: "A party chat plugin made for Katatunka"
+website: http://dev.bukkit.org/bukkit-plugins/kataparty/
 
 commands:
   kataparty:
