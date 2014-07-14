@@ -80,7 +80,8 @@ public class PartyListGui extends PartyGui
 		{
 			case LEFT:
 			{
-				if(inst.getParties().findMember(player.getUniqueId()).getParty() != p)
+				Party.Member m = inst.getParties().findMember(player.getUniqueId());
+				if(m != null && m.getParty() != p)
 				{
 					p.addMember(player.getUniqueId());
 					hide();

@@ -1,7 +1,7 @@
 # KataParty Configuration, generated/updated by v${project.version}
 
 # If you want to reset any setting to default, simply delete it or
-# comment it out and the next time the confg is reloaded, this file
+# comment it out and the next time the config is reloaded, this file
 # will be re-generated keeping your existing settings and defaulting
 # any missing settings. Any comments you make are erased, however.
 
@@ -12,10 +12,15 @@ chat-filtering-swap: "[%chat-filtering-swap%]"
 # Here, you can change the default settings for newly created parties.
 # Some settings require permission nodes to be changed.
 party-defaults:
+  # Teleportation for whole party
   teleports: [%party-defaults.teleports%]
+  # PvP amongst party members
   pvp: [%party-defaults.pvp%]
+  # Shared inventory for party
   inventory: [%party-defaults.inventory%]
+  # Party visibility in list
   visible: [%party-defaults.visible%]
+  # Teleportation setting for individual party members
   self-teleports: [%party-defaults.self-teleports%]
 
 # Set to true to have empty parties automatically be disbanded. If
@@ -120,3 +125,6 @@ messages:
   party-rank-member: "[%messages.party-rank-member%]"
   party-self-teleports-enable-inform: "[%messages.party-self-teleports-enable-inform%]"
   party-self-teleports-disable-inform: "[%messages.party-self-teleports-disable-inform%]"
+
+# This is updated automatically. Don't change it. Java will smite you if you do.
+this-is-the-config-version-number-dont-change-it-unless-you-want-very-bad-things-to-happen: [%version%]

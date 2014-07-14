@@ -94,7 +94,7 @@ public class Party implements Iterable<Party.Member>
 		}
 		members.add(m = new Member(uuid));
 		parties.addSettings(uuid, name);
-		informMembersMessage("party-join-inform", Bukkit.getServer().getOfflinePlayer(uuid).getName());
+		informMembersMessage("party-join-inform", Bukkit.getOfflinePlayer(uuid).getName());
 		return m;
 	}
 	public void removeMember(UUID uuid)
@@ -110,7 +110,11 @@ public class Party implements Iterable<Party.Member>
 				break;
 			}
 		}
-		informMembersMessage("party-leave-inform", Bukkit.getServer().getOfflinePlayer(uuid).getName());
+		informMembersMessage("party-leave-inform", Bukkit.getOfflinePlayer(uuid).getName());
+		if(numMembers() == 0 && !parties.keepEmptyParties())
+		{
+			parties.remove(this, Bukkit.getPlayer(uuid));
+		}
 	}
 	public Member findMember(UUID uuid)
 	{
@@ -127,7 +131,7 @@ public class Party implements Iterable<Party.Member>
 	{
 		for(Member m : members)
 		{
-			OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(m.getUuid());
+			OfflinePlayer offp = Bukkit.getOfflinePlayer(m.getUuid());
 			if(offp != null && offp.getName() != null && offp.getName().equalsIgnoreCase(name))
 			{
 				return m;
@@ -149,7 +153,7 @@ public class Party implements Iterable<Party.Member>
 		Set<Member> mems = new HashSet<>();
 		for(Member m : this)
 		{
-			if(Bukkit.getServer().getOfflinePlayer(m.getUuid()).isOnline())
+			if(Bukkit.getOfflinePlayer(m.getUuid()).isOnline())
 			{
 				mems.add(m);
 			}
@@ -161,7 +165,7 @@ public class Party implements Iterable<Party.Member>
 		Set<Member> mems = new HashSet<>();
 		for(Member m : this)
 		{
-			OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(m.getUuid());
+			OfflinePlayer offp = Bukkit.getOfflinePlayer(m.getUuid());
 			if(offp.isOnline() && !offp.getPlayer().isDead())
 			{
 				mems.add(m);
@@ -280,7 +284,7 @@ public class Party implements Iterable<Party.Member>
 		health = 1.0*mems.size();
 		for(Member m : mems)
 		{
-			Bukkit.getServer().getPlayer(m.getUuid()).setMaxHealth(20.0*mems.size());
+			Bukkit.getPlayer(m.getUuid()).setMaxHealth(20.0*mems.size());
 		}
 		informMembersMessage("party-shared-health-xp-enable-inform");
 	}
@@ -289,7 +293,7 @@ public class Party implements Iterable<Party.Member>
 		health = null;
 		for(Member m : getMembersOnline())
 		{
-			Bukkit.getServer().getPlayer(m.getUuid()).resetMaxHealth();
+			Bukkit.getPlayer(m.getUuid()).resetMaxHealth();
 		}
 		informMembersMessage("party-shared-health-xp-disable-inform");
 	}
@@ -356,7 +360,7 @@ public class Party implements Iterable<Party.Member>
 		@Deprecated
 		public void inform(String message)
 		{
-			OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(uuid);
+			OfflinePlayer offp = Bukkit.getOfflinePlayer(uuid);
 			if(offp.isOnline())
 			{
 				offp.getPlayer().sendMessage("[KataParty] "+message);
@@ -364,7 +368,7 @@ public class Party implements Iterable<Party.Member>
 		}
 		public void informMessage(String name, Object... parameters)
 		{
-			OfflinePlayer offp = Bukkit.getServer().getOfflinePlayer(uuid);
+			OfflinePlayer offp = Bukkit.getOfflinePlayer(uuid);
 			if(offp.isOnline())
 			{
 				messenger.tellMessage(offp.getPlayer(), name, parameters);

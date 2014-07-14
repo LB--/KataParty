@@ -109,3 +109,5 @@ messages:
   party-rank-member: "Member"
   party-self-teleports-enable-inform: "Teleportation has been personally &nenabled&r for you"
   party-self-teleports-disable-inform: "Teleportation has been personally &ndisabled&r for you"
+
+version: 0

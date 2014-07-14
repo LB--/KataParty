@@ -9,6 +9,7 @@ public class PartySet implements Iterable<Party>
 {
 	private final Messenger messenger;
 	private final Set<Party> parties = new HashSet<>();
+	boolean keep_empty = false;
 	public PartySet(Messenger msgr)
 	{
 		messenger = msgr;
@@ -33,6 +34,27 @@ public class PartySet implements Iterable<Party>
 	{
 		p.disableInventory(player);
 		p.disband();
+		parties.remove(p);
+	}
+	public void keepEmptyParties(boolean keep)
+	{
+		keep_empty = keep;
+		if(!keep)
+		{
+			Iterator<Party> it = iterator();
+			while(it.hasNext())
+			{
+				Party p = it.next();
+				if(p.numMembers() == 0)
+				{
+					it.remove();
+				}
+			}
+		}
+	}
+	public boolean keepEmptyParties()
+	{
+		return keep_empty;
 	}
 
 	@Override

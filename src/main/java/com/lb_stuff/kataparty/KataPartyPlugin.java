@@ -83,6 +83,9 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 				}
 			}
 		}
+
+		parties.keepEmptyParties(!(Boolean)config.get("remove-empty-parties"));
+
 		getCommand("kataparty").setExecutor(new PluginInfoCommand(this));
 		getCommand("kpreload").setExecutor(new PluginReloadCommand(this));
 		implementCommand("kpcreate", new PartyCreateCommand(this));
