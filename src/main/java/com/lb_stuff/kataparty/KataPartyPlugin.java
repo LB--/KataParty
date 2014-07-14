@@ -100,7 +100,9 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		implementCommand("kptp", new PartyTeleportCommand(this));
 		implementCommand("kpshare", new PartyInventoryCommand(this));
 		implementCommand("kptoggle", new PartyChatToggleCommand(this));
+
 		getServer().getPluginManager().registerEvents(this, this);
+		getServer().getPluginManager().registerEvents(new PartyChatFilter(this), this);
 	}
 	@Override
 	public FileConfiguration getConfig()
@@ -211,102 +213,6 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		return parties;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST) //highest executed last
-	public void onPlayerChat(AsyncPlayerChatEvent e)
-	{
-		if(!e.isCancelled())
-		{
-			e.setCancelled(true);
-			String msg = e.getMessage();
-			String fmt = e.getFormat();
-			Player source = e.getPlayer();
-			Set<Player> targets = e.getRecipients();
-			boolean useother = msg.startsWith(getFilterSwap());
-			MemberSettings ms = getParties().getSettings(source.getUniqueId());
-			String senderparty = (ms != null ? ms.getPartyName() : null);
-			boolean talkparty = (ms != null ? ms.isPartyPreferred() : false);
-
-			//need to manually send to console since we are cancelling the event
-			getServer().getConsoleSender().sendMessage(String.format(fmt, source.getDisplayName(), msg));
-
-			if(ms != null)
-			{
-				if(useother)
-				{
-					msg = msg.substring(getFilterSwap().length());
-				}
-				if(!talkparty)
-				{
-					useother = !useother;
-				}
-			}
-			for(Player p : targets)
-			{
-				MemberSettings pms = getParties().getSettings(p.getUniqueId());
-				String pn = (pms != null ? pms.getPartyName() : null);
-				if(pn != null) //receiver is in a party
-				{
-					if(senderparty != null) //sender /is/ in a party
-					{
-						if(useother) //send to other
-						{
-							p.sendMessage(String.format
-							(
-								fmt,
-								source.getDisplayName(),
-								(talkparty?"§7§o":"")+msg
-							));
-						}
-						else if(pn.equals(senderparty)) //send to preferred
-						{
-							p.sendMessage(String.format
-							(
-								(talkparty?"§l":"§o")+"{%3$s}§r"+fmt,
-								source.getDisplayName(),
-								(talkparty?"":"§7§o")+msg,
-								senderparty
-							));
-						}
-						else {} //different parties
-					}
-					else //sender is /not/ in a party
-					{
-						p.sendMessage(String.format
-						(
-							fmt,
-							source.getDisplayName(),
-							(talkparty?"§7§o":"")+msg
-						));
-					}
-				}
-				else //receiver is /not/ in a party
-				{
-					if(senderparty == null) //sender is /not/ in a party
-					{
-						p.sendMessage(String.format
-						(
-							fmt,
-							source.getDisplayName(),
-							msg
-						));
-					}
-					else //sender /is/ in a party
-					{
-						if(useother) //send to other
-						{
-							p.sendMessage(String.format
-							(
-								fmt,
-								source.getDisplayName(),
-								msg
-							));
-						}
-						else {} //send to preferred
-					}
-				}
-			}
-		}
-	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
@@ -318,7 +224,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			MemberSettings ms = getParties().getSettings(p.getUniqueId());
 			if(ms != null)
 			{
-				ms.setPartyPreferred(false);
+				ms.setPref(ChatFilterPref.PREFER_GLOBAL);
 				tellMessage(p, "chat-filtering-global", getFilterSwap());
 			}
 			//TODO: shared health stuff

@@ -1,5 +1,7 @@
 package com.lb_stuff.kataparty;
 
+import static com.lb_stuff.kataparty.ChatFilterPref.*;
+
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -66,7 +68,7 @@ public class PartySet implements Iterable<Party>
 	public static class MemberSettings
 	{
 		private String partyname;
-		private boolean talkparty = true;
+		private ChatFilterPref pref = PREFER_PARTY;
 		public MemberSettings(String pname)
 		{
 			partyname = pname;
@@ -81,13 +83,28 @@ public class PartySet implements Iterable<Party>
 			this.partyname = partyname;
 		}
 
-		public boolean isPartyPreferred()
+		public ChatFilterPref getPref()
 		{
-			return talkparty;
+			return pref;
 		}
-		public void setPartyPreferred(boolean preferred)
+		public void setPref(ChatFilterPref cfp)
 		{
-			talkparty = preferred;
+			pref = cfp;
+		}
+		public void togglePref()
+		{
+			switch(pref)
+			{
+				case PREFER_PARTY:
+				{
+					pref = PREFER_GLOBAL;
+				} break;
+				case PREFER_GLOBAL:
+				{
+					pref = PREFER_PARTY;
+				} break;
+				default: throw new IllegalStateException();
+			}
 		}
 	}
 	private final ConcurrentSkipListMap<UUID, MemberSettings> partiers = new ConcurrentSkipListMap<>();
