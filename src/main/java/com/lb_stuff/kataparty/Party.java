@@ -99,6 +99,7 @@ public class Party implements Iterable<Party.Member>
 	}
 	public void removeMember(UUID uuid)
 	{
+		final boolean hadmembers = (numMembers() > 0);
 		for(Iterator<Member> it = members.iterator(); it.hasNext();)
 		{
 			Member m = it.next();
@@ -111,7 +112,7 @@ public class Party implements Iterable<Party.Member>
 			}
 		}
 		informMembersMessage("party-leave-inform", Bukkit.getOfflinePlayer(uuid).getName());
-		if(numMembers() == 0 && !parties.keepEmptyParties())
+		if(hadmembers && numMembers() == 0 && !parties.keepEmptyParties())
 		{
 			parties.remove(this, Bukkit.getPlayer(uuid));
 		}
