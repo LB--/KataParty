@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty.config;
 
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.*;
@@ -16,7 +17,7 @@ public final class MainConfig
 	(
 		MainConfig.class.getResourceAsStream("config-template.yml")
 	).useDelimiter("\\A").next();
-	private Configuration config;
+	private YamlConfiguration config;
 	public MainConfig(File f) throws IOException
 	{
 		reload(f);
@@ -29,7 +30,7 @@ public final class MainConfig
 		}
 		config = regenConfig(f, YamlConfiguration.loadConfiguration(f));
 	}
-	private Configuration regenConfig(File f, Configuration current) throws IOException
+	private YamlConfiguration regenConfig(File f, Configuration current) throws IOException
 	{
 		String template = TEMPLATE;
 		String result = "";
@@ -53,6 +54,10 @@ public final class MainConfig
 			pw.append(result);
 		}
 		return YamlConfiguration.loadConfiguration(new CharArrayReader(result.toCharArray()));
+	}
+	public FileConfiguration getFileConfiguration()
+	{
+		return config;
 	}
 
 	public Object get(String path)

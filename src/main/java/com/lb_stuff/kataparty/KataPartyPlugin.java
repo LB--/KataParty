@@ -5,6 +5,7 @@ import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 import com.lb_stuff.kataparty.config.*;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.ChatColor;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
@@ -96,6 +97,11 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		implementCommand("kpshare", new PartyInventoryCommand(this));
 		implementCommand("kptoggle", new PartyChatToggleCommand(this));
 		getServer().getPluginManager().registerEvents(this, this);
+	}
+	@Override
+	public FileConfiguration getConfig()
+	{
+		return config.getFileConfiguration();
 	}
 	@Override
 	public void reloadConfig()
