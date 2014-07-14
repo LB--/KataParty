@@ -5,8 +5,8 @@
 # will be re-generated keeping your existing settings and defaulting
 # any missing settings. Any comments you make are erased, however.
 
-# This is what should be at the start of a message to send to the opposite
-# chat; global instead of party or vice-versa.
+# This is what should be at the start of a message to send to the
+# opposite chat; global instead of party or vice-versa.
 chat-filtering-swap: "[%chat-filtering-swap%]"
 
 # Here, you can change the default settings for newly created parties.

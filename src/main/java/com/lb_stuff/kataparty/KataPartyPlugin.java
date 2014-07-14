@@ -1,5 +1,6 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.command.*;
 import com.lb_stuff.kataparty.command.*;
 import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 import com.lb_stuff.kataparty.config.*;
