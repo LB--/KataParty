@@ -87,6 +87,10 @@ public class Party implements Iterable<Party.Member>
 
 	public Member addMember(UUID uuid)
 	{
+		if(disbanded)
+		{
+			return null;
+		}
 		Member m;
 		while((m = parties.findMember(uuid)) != null)
 		{
@@ -110,25 +114,32 @@ public class Party implements Iterable<Party.Member>
 	public void removeMember(UUID uuid)
 	{
 		final boolean hadmembers = (numMembers() > 0);
+		Member m = null;
 		for(Iterator<Member> it = members.iterator(); it.hasNext();)
 		{
-			Member m = it.next();
+			m = it.next();
 			if(m.getUuid().equals(uuid))
 			{
-				m.informMessage("party-left-inform");
-				if(!parties.keepEmptyParties())
+				if(!disbanded)
 				{
-					m.informMessage("party-closed-on-leave-inform", name);
+					m.informMessage("party-left-inform");
 				}
 				it.remove();
 				parties.removeSettings(uuid);
 				break;
 			}
 		}
-		informMembersMessage("party-leave-inform", Bukkit.getOfflinePlayer(uuid).getName());
-		if(hadmembers && numMembers() == 0 && !parties.keepEmptyParties())
+		if(!disbanded)
 		{
-			parties.remove(this, Bukkit.getPlayer(uuid));
+			informMembersMessage("party-leave-inform", Bukkit.getOfflinePlayer(uuid).getName());
+			if(hadmembers && numMembers() == 0 && !parties.keepEmptyParties())
+			{
+				parties.remove(this, Bukkit.getPlayer(uuid));
+				if(m  != null)
+				{
+					m.informMessage("party-closed-on-leave-inform", name);
+				}
+			}
 		}
 	}
 	public Member findMember(UUID uuid)
@@ -214,7 +225,7 @@ public class Party implements Iterable<Party.Member>
 		}
 		else
 		{
-			informMembersMessage("party-teleports-enabled-inform");
+			informMembersMessage("party-teleports-disabled-inform");
 		}
 	}
 
@@ -280,8 +291,10 @@ public class Party implements Iterable<Party.Member>
 		}
 	}
 
+	private boolean disbanded = false;
 	public void disband()
 	{
+		disbanded = true;
 		for(Member m : this.members.toArray(new Member[0]))
 		{
 			m.informMessage("party-disband-inform");

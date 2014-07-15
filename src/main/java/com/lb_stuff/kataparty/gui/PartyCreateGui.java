@@ -11,6 +11,11 @@ import java.util.ArrayList;
 
 public class PartyCreateGui extends PartyGui
 {
+	private boolean getDefault(String path)
+	{
+		return inst.getConfig().getBoolean("party-defaults."+path);
+	}
+
 	private static final int CREATE = 0;
 	private static final int TELEPORTS = 2;
 	private static final int PVP = 3;
@@ -25,7 +30,7 @@ public class PartyCreateGui extends PartyGui
 			add(inst.getMessage("create-create"));
 			add(inst.getMessage("create-cancel"));
 		}});
-		addButton(TELEPORTS, inst.getMessage("manage-teleports-enabled"), Material.ENDER_PEARL, new ArrayList<String>(){
+		addButton(TELEPORTS, inst.getMessage(getDefault("teleports")? "manage-teleports-enabled" : "manage-teleports-disabled"), Material.ENDER_PEARL, new ArrayList<String>(){
 		{
 			if(player.hasPermission("KataParty.teleport.disable"))
 			{
@@ -36,12 +41,13 @@ public class PartyCreateGui extends PartyGui
 				add(inst.getMessage("manage-cannot-change"));
 			}
 		}});
-		setButton(TELEPORTS, 2);
-		addButton(PVP, inst.getMessage("manage-pvp-disabled"), Material.STONE_SWORD/*Material.GOLD_SWORD*/, new ArrayList<String>(){
+		setButton(TELEPORTS, (getDefault("teleports")? 2 : 1));
+		addButton(PVP, inst.getMessage(getDefault("pvp")? "manage-pvp-enabled" : "manage-pvp-disabled"), (getDefault("pvp")? Material.GOLD_SWORD : Material.STONE_SWORD), new ArrayList<String>(){
 		{
 			add(inst.getMessage("manage-click-to-change"));
 		}});
-		addButton(INVENTORY, inst.getMessage("manage-inventory-disabled"), Material.CHEST/*Material.ENDER_CHEST*/, new ArrayList<String>(){
+		setButton(PVP, (getDefault("pvp")? 2 : 1));
+		addButton(INVENTORY, inst.getMessage(getDefault("inventory")? "manage-inventory-enabled" : "manage-inventory-disabled"), (getDefault("inventory")? Material.ENDER_CHEST : Material.CHEST), new ArrayList<String>(){
 		{
 			if(player.hasPermission("KataParty.inventory.enable"))
 			{
@@ -52,7 +58,8 @@ public class PartyCreateGui extends PartyGui
 				add(inst.getMessage("manage-cannot-change"));
 			}
 		}});
-		addButton(VISIBLE, inst.getMessage("manage-visibility-enabled"), Material.JACK_O_LANTERN/*Material.PUMPKIN*/, new ArrayList<String>(){
+		setButton(INVENTORY, (getDefault("inventory")? 2 : 1));
+		addButton(VISIBLE, inst.getMessage(getDefault("visible")? "manage-visibility-enabled" : "manage-visibility-disabled"), (getDefault("visible")? Material.JACK_O_LANTERN : Material.PUMPKIN), new ArrayList<String>(){
 		{
 			if(player.hasPermission("KataParty.hide"))
 			{
@@ -63,7 +70,7 @@ public class PartyCreateGui extends PartyGui
 				add(inst.getMessage("manage-cannot-change"));
 			}
 		}});
-		setButton(VISIBLE, 2);
+		setButton(VISIBLE, (getDefault("visible")? 2 : 1));
 	}
 	private PartyCreateGui(KataPartyPlugin plugin, Player p, String pname, Object unused)
 	{
@@ -162,7 +169,8 @@ public class PartyCreateGui extends PartyGui
 	@Override
 	protected void onClose()
 	{
-		if(inst.getParties().findMember(player.getUniqueId()) == null)
+		Party.Member m = inst.getParties().findMember(player.getUniqueId());
+		if(m == null || !m.getParty().getName().equals(getButtonName(CREATE)))
 		{
 			inst.tellMessage(player, "create-cancelled");
 		}
