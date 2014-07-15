@@ -17,6 +17,11 @@ public class PartySet implements Iterable<Party>
 		inst = plugin;
 	}
 
+	public boolean defaultSelfTeleports()
+	{
+		return inst.getConfig().getBoolean("party-defaults.self-teleports");
+	}
+
 	public Messenger getMessenger()
 	{
 		return inst;

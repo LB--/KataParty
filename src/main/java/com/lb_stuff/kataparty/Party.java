@@ -109,6 +109,7 @@ public class Party implements Iterable<Party.Member>
 			informMembersMessage("party-join-inform", offp.getName());
 		}
 		parties.getSettings(uuid).setPref(parties.getJoinFilterPref());
+		m.setTp(parties.defaultSelfTeleports());
 		return m;
 	}
 	public void removeMember(UUID uuid)
