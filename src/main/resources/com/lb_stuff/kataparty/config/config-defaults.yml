@@ -97,7 +97,7 @@ messages:
   list-member: "&r&oYou&r are in &othis&r KataParty"
   list-admin: "&bRight click&r to administrate"
   teleport-gui-title: "&3Members&r in your KataParty"
-  party-rename-inform: "Your KataParty was renamed from &n%1$s&r to &n%2$s&r"
+  party-rename-inform: "Your KataParty was &brenamed&r from &n%1$s&r to &n%2$s&r"
   party-join-inform: "&n%1$s&r has &ajoined&r your KataParty"
   party-left-inform: "You have &cleft&r your KataParty"
   party-leave-inform: "&n%1$s&r has &cleft&r your KataParty"
