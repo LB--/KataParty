@@ -46,7 +46,18 @@ public class PartyJoinCommand extends TabbablePartyCommand
 				}
 				else
 				{
-					p.addMember(player.getUniqueId());
+					Party.Member m = inst.getParties().findMember(player.getUniqueId());
+					if(m != null)
+					{
+						if(m.getParty() != p)
+						{
+							p.addMember(player.getUniqueId());
+						}
+						else
+						{
+							inst.tellMessage(player, "join-already-member", args[0]);
+						}
+					}
 				}
 				return true;
 			}

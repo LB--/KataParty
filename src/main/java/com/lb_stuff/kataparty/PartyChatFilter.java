@@ -79,6 +79,7 @@ public class PartyChatFilter implements Listener
 				} break;
 				default: throw new IllegalStateException();
 			}
+			inst.tellMessage(p, "chat-filtering-howto");
 		}
 		else
 		{

@@ -14,35 +14,35 @@ commands:
     aliases:
       - kp
   kpcreate:
-    description: "Create a KataParty"
+    description: "Create a KataParty via GUI"
     usage: "/kpcreate <KataParty-name>"
     permission: KataParty.create
     permission-message: "You don't have the KataParty.create permisson :("
     aliases:
       - katacreate
   kplist:
-    description: "Show a list of available KataParties"
+    description: "Show a GUI with a list of available KataParties"
     usage: "/kplist"
     permission: KataParty.list
     permission-message: "You don't have the KataParty.list permission :\\"
     aliases:
       - katalist
   kpjoin:
-    description: "Join a KataParty by name"
+    description: "Join a KataParty by name instead of via /kplist"
     usage: "/kpjoin <KataParty-name>"
     permission: KataParty.join
     permission-message: "You don't have the KataParty.join permission :'("
     aliases:
       - katajoin
   kpleave:
-    description: "Leave the KataParty you are in"
+    description: "Leave the KataParty you are in instead of via /kpmanage"
     usage: "/kpleave"
     permission: KataParty.join
     permission-message: "You don't have the KataParty.join permission (required to leave)"
     aliases:
       - kataleave
   kpdisband:
-    description: "Disband your KataParty if you have permission to"
+    description: "Disband your KataParty instead of via /kpmanage"
     usage: "/kpdisband"
     permission: KataParty.disband
     permission-message: "You don't have the KataParty.disband permission >:)"
@@ -56,14 +56,14 @@ commands:
     aliases:
       - kataclose
   kpmanage:
-    description: "Manage your KataParty and its members"
+    description: "Manage your personal KataParty settings, or the party-wide settings"
     usage: "/kpmanage"
     permission: KataParty.manage
     permission-message: "You don't have the KataParty.manage permission :("
     aliases:
       - katamanage
   kpadmin:
-    description: "Manage a specific KataParty and its members (for admins)"
+    description: "Manage a specific KataParty's settings (for admins)"
     usage: "/kpadmin <KataParty-name>"
     permission: KataParty.admin
     permission-message: "You don't have the KataParty.admin permission >:\\"

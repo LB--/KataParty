@@ -27,6 +27,7 @@ public class PluginInfoCommand implements CommandExecutor
 			if(website != null)
 			{
 				sender.sendMessage(""+AQUA+UNDERLINE+website);
+				sender.sendMessage("");
 			}
 			return true;
 		}

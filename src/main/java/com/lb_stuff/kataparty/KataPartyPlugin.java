@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.configuration.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.projectiles.ProjectileSource;
+import static org.bukkit.ChatColor.*;
 
 import java.util.*;
 import java.io.*;
@@ -207,7 +208,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 	@Override @Deprecated
 	public void tell(Player p, String message)
 	{
-		p.sendMessage("[KataParty] "+message);
+		p.sendMessage(""+AQUA+"[KataParty] "+RESET+message);
 	}
 	@Override
 	public void tellMessage(Player p, String name, Object... parameters)

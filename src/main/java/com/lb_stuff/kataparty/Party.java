@@ -1,7 +1,5 @@
 package com.lb_stuff.kataparty;
 
-import static com.lb_stuff.kataparty.ChatFilterPref.*;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -100,6 +98,7 @@ public class Party implements Iterable<Party.Member>
 		if(offp.isOnline())
 		{
 			informMembersMessage("party-join-inform", offp.getPlayer().getDisplayName());
+			m.informMessage("manage-hint");
 		}
 		else
 		{
@@ -117,6 +116,10 @@ public class Party implements Iterable<Party.Member>
 			if(m.getUuid().equals(uuid))
 			{
 				m.informMessage("party-left-inform");
+				if(!parties.keepEmptyParties())
+				{
+					m.informMessage("party-closed-on-leave-inform", name);
+				}
 				it.remove();
 				parties.removeSettings(uuid);
 				break;
