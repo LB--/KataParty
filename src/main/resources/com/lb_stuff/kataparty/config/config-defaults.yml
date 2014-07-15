@@ -1,8 +1,6 @@
 # This file contains the default values used to generate the config
 # from the template when the existing config is missing nodes
 
-chat-filtering-swap: "!"
-
 party-defaults:
   teleports: true
   pvp: false
@@ -11,6 +9,16 @@ party-defaults:
   self-teleports: true
 
 remove-empty-parties: true
+
+chat-filtering:
+    prefix-when-party-preferred: "&l{%1$s}&r "
+    prefix-when-global-preferred: "&o{%1$s}&r "
+    filtered-chat-format: "&7&o"
+    swap-string: "!"
+    defaults:
+      on-party-create: party
+      on-party-join: party
+      on-join-server: global
 
 messages:
   party-member-inform: "You are in KataParty &n%1$s&r"
@@ -33,6 +41,7 @@ messages:
   create-create: "Click to create with these settings"
   create-cancel: "Close this inventory screen to cancel"
   create-name-taken: "Name taken: %1$s"
+  create-cancelled: "Your KataParty was not created because you closed the GUI"
   manage-gui-title: "%1$s Settings"
   manage-click-to-change: "Click to change"
   manage-cannot-change: "You cannot change this"

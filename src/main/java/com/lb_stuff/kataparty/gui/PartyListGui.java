@@ -84,6 +84,7 @@ public class PartyListGui extends PartyGui
 				if(m != null && m.getParty() != p)
 				{
 					p.addMember(player.getUniqueId());
+					inst.getFilter().tellFilterPref(player);
 					hide();
 				}
 				else

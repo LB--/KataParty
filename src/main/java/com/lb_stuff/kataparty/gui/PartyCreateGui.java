@@ -83,8 +83,7 @@ public class PartyCreateGui extends PartyGui
 					new PartyCreateGui(inst, player, pname, null).show();
 					return;
 				}
-				Party p = inst.getParties().add(pname);
-				p.addMember(player.getUniqueId()).setRank(Party.Rank.ADMIN);
+				Party p = inst.getParties().add(pname, player);
 				p.setTp(getButton(TELEPORTS) != 1);
 				p.setPvp(getButton(PVP) != 1);
 				if(getButton(INVENTORY) != 1)
@@ -92,6 +91,7 @@ public class PartyCreateGui extends PartyGui
 					p.enableInventory();
 				}
 				p.setVisible(getButton(VISIBLE) != 1);
+				inst.getFilter().tellFilterPref(player);
 				hide();
 			} break;
 			case TELEPORTS:
@@ -156,6 +156,15 @@ public class PartyCreateGui extends PartyGui
 				}
 			} break;
 			default: break;
+		}
+	}
+
+	@Override
+	protected void onClose()
+	{
+		if(inst.getParties().findMember(player.getUniqueId()) == null)
+		{
+			inst.tellMessage(player, "create-cancelled");
 		}
 	}
 }

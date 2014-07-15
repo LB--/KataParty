@@ -120,6 +120,10 @@ public abstract class PartyGui implements Listener
 		}});
 	}
 
+	protected void onClose()
+	{
+	}
+
 	@EventHandler
 	public final void onInvClick(InventoryClickEvent e)
 	{
@@ -153,6 +157,7 @@ public abstract class PartyGui implements Listener
 		if(e.getPlayer() == player)
 		{
 			HandlerList.unregisterAll(this);
+			onClose();
 		}
 	}
 }

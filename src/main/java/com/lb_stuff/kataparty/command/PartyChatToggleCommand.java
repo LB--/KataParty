@@ -27,17 +27,7 @@ public class PartyChatToggleCommand extends PartyCommand
 				{
 					ms.togglePref();
 					inst.tellMessage(player, "chat-filtering-toggled");
-					switch(ms.getPref())
-					{
-						case PREFER_PARTY:
-						{
-							inst.tellMessage(player, "chat-filtering-party", inst.getFilterSwap());
-						} break;
-						case PREFER_GLOBAL:
-						{
-							inst.tellMessage(player, "chat-filtering-global", inst.getFilterSwap());
-						} break;
-					}
+					inst.getFilter().tellFilterPref(player);
 				}
 				else
 				{

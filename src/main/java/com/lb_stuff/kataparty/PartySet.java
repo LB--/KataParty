@@ -9,25 +9,30 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 public class PartySet implements Iterable<Party>
 {
-	private final Messenger messenger;
+	private final KataPartyPlugin inst;
 	private final Set<Party> parties = new HashSet<>();
 	private boolean keep_empty = false;
-	public PartySet(Messenger msgr)
+	public PartySet(KataPartyPlugin plugin)
 	{
-		messenger = msgr;
+		inst = plugin;
 	}
 
 	public Messenger getMessenger()
 	{
-		return messenger;
+		return inst;
 	}
 
-	public Party add(String pname)
+	public Party add(String pname, Player creator)
 	{
 		if(findParty(pname) == null)
 		{
 			Party p = new Party(this, pname);
 			parties.add(p);
+			if(creator != null)
+			{
+				p.addMember(creator.getUniqueId()).setRank(Party.Rank.ADMIN);
+				getSettings(creator.getUniqueId()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
+			}
 			return p;
 		}
 		return null;
@@ -120,6 +125,12 @@ public class PartySet implements Iterable<Party>
 	{
 		partiers.remove(uuid);
 	}
+
+	public ChatFilterPref getJoinFilterPref()
+	{
+		return inst.getFilter().getDefaultFilterPref("on-party-join");
+	}
+
 	private class PartyMembers implements Iterable<Map.Entry<UUID, MemberSettings>>
 	{
 		@Override

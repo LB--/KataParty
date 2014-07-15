@@ -5,10 +5,6 @@
 # will be re-generated keeping your existing settings and defaulting
 # any missing settings. Any comments you make are erased, however.
 
-# This is what should be at the start of a message to send to the
-# opposite chat; global instead of party or vice-versa.
-chat-filtering-swap: "[%chat-filtering-swap%]"
-
 # Here, you can change the default settings for newly created parties.
 # Some settings require permission nodes to be changed.
 party-defaults:
@@ -26,6 +22,27 @@ party-defaults:
 # Set to true to have empty parties automatically be disbanded. If
 # you want to instead keep empty parties, set to false instead.
 remove-empty-parties: [%remove-empty-parties%]
+
+# Here you can configure the formatting used for chat filtering
+chat-filtering:
+    # This is the prefix to use for party messages when the
+    # receiver prefers party chat
+    prefix-when-party-preferred: "[%chat-filtering.prefix-when-party-preferred%]"
+    # This is the prefix to use for party messages when the
+    # reveiever prefers global chat
+    prefix-when-global-preferred: "[%chat-filtering.prefix-when-global-preferred%]"
+    # Ths is the prefix to use after username and before chat
+    # message for chat coming from the non-preferred source
+    filtered-chat-format: "[%chat-filtering.filtered-chat-format%]"
+    # This is what should be at the start of a message to send to the
+    # opposite chat; global instead of party or vice-versa.
+    swap-string: "[%chat-filtering.swap-string%]"
+    # Here you can change the default preferred chat in certain cases
+    # Only valid strings are "party" and "global"
+    defaults:
+      on-party-create: [%chat-filtering.defaults.on-party-create%]
+      on-party-join: [%chat-filtering.defaults.on-party-join%]
+      on-join-server: [%chat-filtering.defaults.on-join-server%]
 
 # Below, you can customize the messages that are sent/shown to players.
 messages:
@@ -49,6 +66,7 @@ messages:
   create-create: "[%messages.create-create%]"
   create-cancel: "[%messages.create-cancel%]"
   create-name-taken: "[%messages.create-name-taken%]"
+  create-cancelled: "[%messages.create-cancelled%]"
   manage-gui-title: "[%messages.manage-gui-title%]"
   manage-click-to-change: "[%messages.manage-click-to-change%]"
   manage-cannot-change: "[%messages.manage-cannot-change%]"

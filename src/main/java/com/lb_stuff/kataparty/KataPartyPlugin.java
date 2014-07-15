@@ -7,7 +7,7 @@ import com.lb_stuff.kataparty.config.*;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.ChatColor;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.*;
@@ -21,7 +21,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
-import java.util.logging.Level;
 import java.io.*;
 
 public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
@@ -44,11 +43,12 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 	{
 		try
 		{
+			getDataFolder().mkdirs();
 			config = new MainConfig(configFile);
 		}
-		catch(IOException e)
+		catch(IOException|InvalidConfigurationException e)
 		{
-			getLogger().info(e.toString());
+			throw new RuntimeException(e);
 		}
 		if(partiesFile.exists())
 		{
@@ -57,7 +57,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 			{
 				ConfigurationSection ps = (ConfigurationSection)e.getValue();
-				Party p = getParties().add(e.getKey());
+				Party p = getParties().add(e.getKey(), null);
 				p.setTp(ps.getBoolean("tp"));
 				p.setPvp(ps.getBoolean("pvp"));
 				p.setVisible(ps.getBoolean("visible"));
@@ -85,7 +85,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			}
 		}
 
-		parties.keepEmptyParties(!(Boolean)config.get("remove-empty-parties"));
+		parties.keepEmptyParties(!config.getBoolean("remove-empty-parties"));
 
 		getCommand("kataparty").setExecutor(new PluginInfoCommand(this));
 		getCommand("kpreload").setExecutor(new PluginReloadCommand(this));
@@ -102,12 +102,12 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		implementCommand("kptoggle", new PartyChatToggleCommand(this));
 
 		getServer().getPluginManager().registerEvents(this, this);
-		getServer().getPluginManager().registerEvents(new PartyChatFilter(this), this);
+		getServer().getPluginManager().registerEvents(filter, this);
 	}
 	@Override
 	public FileConfiguration getConfig()
 	{
-		return config.getFileConfiguration();
+		return config;
 	}
 	@Override
 	public void reloadConfig()
@@ -116,7 +116,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		{
 			config.reload(configFile);
 		}
-		catch(IOException e)
+		catch(IOException|InvalidConfigurationException e)
 		{
 			throw new RuntimeException(e);
 		}
@@ -163,23 +163,31 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		}
 		catch(IOException e)
 		{
-			getLogger().log(Level.SEVERE, "Could not save parties!", e);
+			throw new RuntimeException(e);
 		}
 	}
 
-	public String getFilterSwap()
+	private final PartySet parties = new PartySet(this);
+	public PartySet getParties()
 	{
-		return config.get("chat-filtering-swap").toString();
+		return parties;
 	}
+
+	private final PartyChatFilter filter = new PartyChatFilter(this);
+	public PartyChatFilter getFilter()
+	{
+		return filter;
+	}
+
 	@Override
 	public String getMessage(String name, Object... parameters)
 	{
-		Object format = config.get("messages."+name);
+		String format = config.getString("messages."+name);
 		if(format != null)
 		{
 			try
 			{
-				return String.format(format.toString().replaceAll("\\&", ""+ChatColor.COLOR_CHAR), parameters);
+				return String.format(format, parameters);
 			}
 			catch(IllegalFormatException e)
 			{
@@ -207,12 +215,6 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		tell(p, getMessage(name, parameters));
 	}
 
-	private final PartySet parties = new PartySet(this);
-	public PartySet getParties()
-	{
-		return parties;
-	}
-
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
@@ -224,8 +226,8 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			MemberSettings ms = getParties().getSettings(p.getUniqueId());
 			if(ms != null)
 			{
-				ms.setPref(ChatFilterPref.PREFER_GLOBAL);
-				tellMessage(p, "chat-filtering-global", getFilterSwap());
+				ms.setPref(filter.getDefaultFilterPref("on-join-server"));
+				filter.tellFilterPref(p);
 			}
 			//TODO: shared health stuff
 		}

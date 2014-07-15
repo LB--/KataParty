@@ -1,13 +1,14 @@
 package com.lb_stuff.kataparty.config;
 
 import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.ChatColor;
 
 import java.util.*;
 import java.io.*;
 
-public final class MainConfig
+public final class MainConfig extends YamlConfiguration
 {
 	private static final YamlConfiguration DEFAULTS = YamlConfiguration.loadConfiguration
 	(
@@ -17,20 +18,19 @@ public final class MainConfig
 	(
 		MainConfig.class.getResourceAsStream("config-template.yml")
 	).useDelimiter("\\A").next();
-	private YamlConfiguration config;
-	public MainConfig(File f) throws IOException
+	public MainConfig(File f) throws IOException, InvalidConfigurationException
 	{
 		reload(f);
 	}
-	public void reload(File f) throws IOException
+	public void reload(File f) throws IOException, InvalidConfigurationException
 	{
 		if(!f.exists())
 		{
 			f.createNewFile();
 		}
-		config = regenConfig(f, YamlConfiguration.loadConfiguration(f));
+		regenConfig(f, YamlConfiguration.loadConfiguration(f));
 	}
-	private YamlConfiguration regenConfig(File f, Configuration current) throws IOException
+	private void regenConfig(File f, Configuration current) throws IOException, InvalidConfigurationException
 	{
 		String template = TEMPLATE;
 		String result = "";
@@ -53,15 +53,17 @@ public final class MainConfig
 		{
 			pw.append(result);
 		}
-		return YamlConfiguration.loadConfiguration(new CharArrayReader(result.toCharArray()));
-	}
-	public FileConfiguration getFileConfiguration()
-	{
-		return config;
+		load(new CharArrayReader(result.toCharArray()));
 	}
 
-	public Object get(String path)
+	@Override
+	public String getString(String path)
 	{
-		return config.get(path);
+		String str = super.getString(path);
+		if(str != null)
+		{
+			return ChatColor.translateAlternateColorCodes('&', str);
+		}
+		return str;
 	}
 }

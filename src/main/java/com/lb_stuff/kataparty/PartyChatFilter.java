@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import static org.bukkit.ChatColor.*;
 
 import java.util.Set;
 import java.util.UUID;
@@ -25,9 +24,66 @@ public class PartyChatFilter implements Listener
 	{
 		return inst.getParties().getSettings(uuid);
 	}
-	private String getSwap()
+
+	private String getConfig(String path)
 	{
-		return inst.getFilterSwap();
+		return inst.getConfig().getString("chat-filtering."+path);
+	}
+	public String getPartyPrefix(ChatFilterPref pref)
+	{
+		if(pref != null) switch(pref)
+		{
+			case PREFER_PARTY: return getConfig("prefix-when-party-preferred");
+			case PREFER_GLOBAL: return getConfig("prefix-when-global-preferred");
+		}
+		return "";
+	}
+	public String getFilterFormat()
+	{
+		return getConfig("filtered-chat-format");
+	}
+	public String getSwap()
+	{
+		return getConfig("swap-string");
+	}
+	public ChatFilterPref getDefaultFilterPref(String event)
+	{
+		final String path = "defaults."+event;
+		final String setting = getConfig(path).toLowerCase();
+		switch(setting)
+		{
+			case "party": return ChatFilterPref.PREFER_PARTY;
+			case "global": return ChatFilterPref.PREFER_GLOBAL;
+			default:
+			{
+				inst.getLogger().warning("Invalid config setting for chat-filtering."+path+": \""+setting+"\"");
+			} break;
+		}
+		return ChatFilterPref.PREFER_PARTY;
+	}
+
+	public void tellFilterPref(Player p)
+	{
+		MemberSettings ms = inst.getParties().getSettings(p.getUniqueId());
+		if(ms != null)
+		{
+			switch(ms.getPref())
+			{
+				case PREFER_GLOBAL:
+				{
+					inst.tellMessage(p, "chat-filtering-global", getSwap());
+				} break;
+				case PREFER_PARTY:
+				{
+					inst.tellMessage(p, "chat-filtering-party", getSwap());
+				} break;
+				default: throw new IllegalStateException();
+			}
+		}
+		else
+		{
+			inst.tellMessage(p, "not-in-party");
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST) //highest executed last
@@ -59,7 +115,7 @@ public class PartyChatFilter implements Listener
 			}
 
 			final String normalmsg = String.format(fmt, source.getDisplayName(), msg);
-			final String filtermsg = String.format(fmt, source.getDisplayName(), ""+GRAY+ITALIC+msg);
+			final String filtermsg = String.format(fmt, source.getDisplayName(), getFilterFormat()+msg);
 
 			//need to manually send to console since we are cancelling the event
 			if(sourcepref != null)
@@ -68,7 +124,10 @@ public class PartyChatFilter implements Listener
 				{
 					if(prefswap)
 					{
-						inst.getServer().getConsoleSender().sendMessage("{"+sourceparty+"} "+normalmsg);
+						inst.getServer().getConsoleSender().sendMessage
+						(
+							String.format(getPartyPrefix(PREFER_PARTY), sourceparty)+normalmsg
+						);
 					}
 					else
 					{
@@ -83,7 +142,10 @@ public class PartyChatFilter implements Listener
 					}
 					else
 					{
-						inst.getServer().getConsoleSender().sendMessage("{"+sourceparty+"} "+normalmsg);
+						inst.getServer().getConsoleSender().sendMessage
+						(
+							String.format(getPartyPrefix(PREFER_PARTY), sourceparty)+normalmsg
+						);
 					}
 				}
 			}
@@ -129,7 +191,7 @@ public class PartyChatFilter implements Listener
 					}
 					else if(targetpref != null && targetparty.equals(sourceparty))
 					{
-						target.sendMessage(""+BOLD+"{"+sourceparty+"} "+RESET+normalmsg);
+						target.sendMessage(String.format(getPartyPrefix(targetpref), sourceparty)+normalmsg);
 					}
 				}
 				else if(sourcepref.equals(PREFER_GLOBAL))
@@ -147,7 +209,7 @@ public class PartyChatFilter implements Listener
 					}
 					else if(targetpref != null && targetparty.equals(sourceparty))
 					{
-						target.sendMessage(""+ITALIC+"{"+sourceparty+"} "+RESET+filtermsg);
+						target.sendMessage(String.format(getPartyPrefix(targetpref), sourceparty)+filtermsg);
 					}
 				}
 			}
