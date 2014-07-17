@@ -87,135 +87,132 @@ public class PartyChatFilter implements Listener
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST) //highest executed last
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) //highest executed last
 	public void onPlayerChat(AsyncPlayerChatEvent e)
 	{
-		if(!e.isCancelled())
+		String msg = e.getMessage();
+		String fmt = e.getFormat();
+		Player source = e.getPlayer();
+		Set<Player> targets = e.getRecipients();
+
+		boolean prefswap = msg.startsWith(getSwap());
+		String sourceparty = null;
+		ChatFilterPref sourcepref = null;
+		MemberSettings sourcesettings = getSettings(source.getUniqueId());
+		if(sourcesettings != null)
 		{
-			String msg = e.getMessage();
-			String fmt = e.getFormat();
-			Player source = e.getPlayer();
-			Set<Player> targets = e.getRecipients();
+			sourceparty = sourcesettings.getPartyName();
+			sourcepref = sourcesettings.getPref();
+		}
 
-			boolean prefswap = msg.startsWith(getSwap());
-			String sourceparty = null;
-			ChatFilterPref sourcepref = null;
-			MemberSettings sourcesettings = getSettings(source.getUniqueId());
-			if(sourcesettings != null)
+		if(sourcesettings != null)
+		{
+			if(prefswap)
 			{
-				sourceparty = sourcesettings.getPartyName();
-				sourcepref = sourcesettings.getPref();
+				msg = msg.substring(getSwap().length());
 			}
+		}
 
-			if(sourcesettings != null)
+		final String normalmsg = String.format(fmt, source.getDisplayName(), msg);
+		final String filtermsg = String.format(fmt, source.getDisplayName(), getFilterFormat()+msg);
+
+		//need to manually send to console since we are cancelling the event
+		if(sourcepref != null)
+		{
+			if(sourcepref.equals(PREFER_GLOBAL))
 			{
 				if(prefswap)
 				{
-					msg = msg.substring(getSwap().length());
+					inst.getServer().getConsoleSender().sendMessage
+					(
+						String.format(getPartyPrefix(PREFER_PARTY), sourceparty)+normalmsg
+					);
+				}
+				else
+				{
+					inst.getServer().getConsoleSender().sendMessage(normalmsg);
 				}
 			}
-
-			final String normalmsg = String.format(fmt, source.getDisplayName(), msg);
-			final String filtermsg = String.format(fmt, source.getDisplayName(), getFilterFormat()+msg);
-
-			//need to manually send to console since we are cancelling the event
-			if(sourcepref != null)
+			else if(sourcepref.equals(PREFER_PARTY))
 			{
-				if(sourcepref.equals(PREFER_GLOBAL))
+				if(prefswap)
 				{
-					if(prefswap)
-					{
-						inst.getServer().getConsoleSender().sendMessage
-						(
-							String.format(getPartyPrefix(PREFER_PARTY), sourceparty)+normalmsg
-						);
-					}
-					else
-					{
-						inst.getServer().getConsoleSender().sendMessage(normalmsg);
-					}
+					inst.getServer().getConsoleSender().sendMessage(normalmsg);
 				}
-				else if(sourcepref.equals(PREFER_PARTY))
+				else
 				{
-					if(prefswap)
-					{
-						inst.getServer().getConsoleSender().sendMessage(normalmsg);
-					}
-					else
-					{
-						inst.getServer().getConsoleSender().sendMessage
-						(
-							String.format(getPartyPrefix(PREFER_PARTY), sourceparty)+normalmsg
-						);
-					}
+					inst.getServer().getConsoleSender().sendMessage
+					(
+						String.format(getPartyPrefix(PREFER_PARTY), sourceparty)+normalmsg
+					);
 				}
 			}
-			else
+		}
+		else
+		{
+			inst.getServer().getConsoleSender().sendMessage(normalmsg);
+		}
+
+		for(Player target : targets)
+		{
+			String targetparty = null;
+			ChatFilterPref targetpref = null;
+			MemberSettings targetsettings = getSettings(target.getUniqueId());
+			if(targetsettings != null)
 			{
-				inst.getServer().getConsoleSender().sendMessage(normalmsg);
+				targetparty = targetsettings.getPartyName();
+				targetpref = targetsettings.getPref();
 			}
 
-			for(Player target : targets)
+			if(sourcepref == null)
 			{
-				String targetparty = null;
-				ChatFilterPref targetpref = null;
-				MemberSettings targetsettings = getSettings(target.getUniqueId());
-				if(targetsettings != null)
+				if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
 				{
-					targetparty = targetsettings.getPartyName();
-					targetpref = targetsettings.getPref();
+					target.sendMessage(normalmsg);
 				}
-
-				if(sourcepref == null)
+				else
+				{
+					target.sendMessage(filtermsg);
+				}
+			}
+			else if(sourcepref.equals(PREFER_PARTY))
+			{
+				if(prefswap)
 				{
 					if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
 					{
 						target.sendMessage(normalmsg);
 					}
-					else
+					else if(targetpref.equals(PREFER_PARTY))
 					{
 						target.sendMessage(filtermsg);
 					}
 				}
-				else if(sourcepref.equals(PREFER_PARTY))
+				else if(targetpref != null && targetparty.equals(sourceparty))
 				{
-					if(prefswap)
-					{
-						if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
-						{
-							target.sendMessage(normalmsg);
-						}
-						else if(targetpref.equals(PREFER_PARTY))
-						{
-							target.sendMessage(filtermsg);
-						}
-					}
-					else if(targetpref != null && targetparty.equals(sourceparty))
-					{
-						target.sendMessage(String.format(getPartyPrefix(targetpref), sourceparty)+normalmsg);
-					}
-				}
-				else if(sourcepref.equals(PREFER_GLOBAL))
-				{
-					if(!prefswap)
-					{
-						if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
-						{
-							target.sendMessage(normalmsg);
-						}
-						else if(targetpref.equals(PREFER_PARTY))
-						{
-							target.sendMessage(filtermsg);
-						}
-					}
-					else if(targetpref != null && targetparty.equals(sourceparty))
-					{
-						target.sendMessage(String.format(getPartyPrefix(targetpref), sourceparty)+filtermsg);
-					}
+					target.sendMessage(String.format(getPartyPrefix(targetpref), sourceparty)+normalmsg);
 				}
 			}
-
-			e.setCancelled(true);
+			else if(sourcepref.equals(PREFER_GLOBAL))
+			{
+				if(!prefswap)
+				{
+					if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
+					{
+						target.sendMessage(normalmsg);
+					}
+					else if(targetpref.equals(PREFER_PARTY))
+					{
+						target.sendMessage(filtermsg);
+					}
+				}
+				else if(targetpref != null && targetparty.equals(sourceparty))
+				{
+					target.sendMessage(String.format(getPartyPrefix(targetpref), sourceparty)+filtermsg);
+				}
+			}
 		}
+
+		e.setCancelled(true);
 	}
 }

@@ -216,10 +216,10 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		tell(p, getMessage(name, parameters));
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
-		Player p = e.getPlayer();
+		final Player p = e.getPlayer();
 		Party.Member m = getParties().findMember(p.getUniqueId());
 		if(m != null)
 		{
@@ -247,7 +247,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			//TODO: shared health stuff
 		}
 	}
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onDamageBy(EntityDamageByEntityEvent e)
 	{
 		Party.Member a = getParties().findMember(e.getDamager().getUniqueId());
@@ -286,7 +286,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			}
 		}
 	}
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onTarget(EntityTargetEvent e)
 	{
 		if(e.getEntity() instanceof Wolf && (e.getReason() == TargetReason.TARGET_ATTACKED_OWNER || e.getReason() == TargetReason.OWNER_ATTACKED_TARGET))
@@ -303,7 +303,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			}
 		}
 	}
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onSplash(PotionSplashEvent e)
 	{
 		ProjectileSource ps = e.getPotion().getShooter();
@@ -316,10 +316,10 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onDamage(EntityDamageEvent e)
 	{
-		if(!e.isCancelled() && e.getEntity() instanceof Player)
+		if(e.getEntity() instanceof Player)
 		{
 			Party.Member m = getParties().findMember(e.getEntity().getUniqueId());
 			if(m != null && m.getParty().getHealth() != null)
@@ -340,10 +340,10 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onHeal(EntityRegainHealthEvent e)
 	{
-		if(!e.isCancelled() && e.getEntity() instanceof Player)
+		if(e.getEntity() instanceof Player)
 		{
 			Party.Member m = getParties().findMember(e.getEntity().getUniqueId());
 			if(m != null && m.getParty().getHealth() != null)
