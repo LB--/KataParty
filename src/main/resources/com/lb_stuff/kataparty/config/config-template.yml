@@ -137,6 +137,8 @@ messages:
   party-inventory-gui-title: "[%messages.party-inventory-gui-title%]"
   party-inventory-enable-inform: "[%messages.party-inventory-enable-inform%]"
   party-inventory-disable-inform: "[%messages.party-inventory-disable-inform%]"
+  party-invite-only-inform: "[%messages.party-invite-only-inform%]"
+  party-public-inform: "[%messages.party-public-inform%]"
   party-shared-health-xp-enable-inform: "[%messages.party-shared-health-xp-enable-inform%]"
   party-shared-health-xp-disable-inform: "[%messages.party-shared-health-xp-disable-inform%]"
   party-smart-potions-enable-inform: "[%messages.party-smart-potions-enable-inform%]"

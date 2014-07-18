@@ -17,10 +17,10 @@ import static org.bukkit.ChatColor.*;
 
 import java.util.ArrayList;
 
-public class PartyTicketListener implements Listener
+public class PartyTicketManager implements Listener
 {
 	private final KataPartyPlugin inst;
-	public PartyTicketListener(KataPartyPlugin plugin)
+	public PartyTicketManager(KataPartyPlugin plugin)
 	{
 		inst = plugin;
 

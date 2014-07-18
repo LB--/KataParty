@@ -180,8 +180,8 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		return filter;
 	}
 
-	private final PartyTicketListener tickets = new PartyTicketListener(this);
-	public PartyTicketListener getTicketListener()
+	private final PartyTicketManager tickets = new PartyTicketManager(this);
+	public PartyTicketManager getTicketListener()
 	{
 		return tickets;
 	}
