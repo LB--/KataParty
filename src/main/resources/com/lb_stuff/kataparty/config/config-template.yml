@@ -16,6 +16,8 @@ party-defaults:
   inventory: [%party-defaults.inventory%]
   # Party visibility in list
   visible: [%party-defaults.visible%]
+  # Whether party requires an invitation ticket to join
+  invite-only: [%party-defaults.invite-only%]
   # Teleportation setting for individual party members
   self-teleports: [%party-defaults.self-teleports%]
 
@@ -51,6 +53,7 @@ messages:
   party-already-exists: "[%messages.party-already-exists%]"
   party-does-not-exist: "[%messages.party-does-not-exist%]"
   join-already-member: "[%messages.join-already-member%]"
+  party-join-invite-only-fail: "[%messages.party-join-invite-only-fail%]"
   not-in-party: "[%messages.not-in-party%]"
   missing-disband-permission: "[%messages.missing-disband-permission%]"
   party-teleports-disabled: "[%messages.party-teleports-disabled%]"
@@ -92,6 +95,9 @@ messages:
   manage-inventory-disabled: "[%messages.manage-inventory-disabled%]"
   manage-visibility-enabled: "[%messages.manage-visibility-enabled%]"
   manage-visibility-disabled: "[%messages.manage-visibility-disabled%]"
+  manage-invites-enabled: "[%messages.manage-invites-enabled%]"
+  manage-invites-disabled: "[%messages.manage-invites-disabled%]"
+  manage-generate-ticket: "[%messages.manage-generate-ticket%]"
   manage-disband: "[%messages.manage-disband%]"
   manage-close: "[%messages.manage-close%]"
   manage-summon: "[%messages.manage-summon%]"
@@ -118,6 +124,7 @@ messages:
   list-pvp: "[%messages.list-pvp%]"
   list-teleports: "[%messages.list-teleports%]"
   list-inventory: "[%messages.list-inventory%]"
+  list-invite-only: "[%messages.list-invite-only%]"
   list-join: "[%messages.list-join%]"
   list-member: "[%messages.list-member%]"
   list-admin: "[%messages.list-admin%]"

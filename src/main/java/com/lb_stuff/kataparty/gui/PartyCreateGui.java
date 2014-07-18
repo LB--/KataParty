@@ -21,6 +21,7 @@ public final class PartyCreateGui extends PartyGui
 	private static final int PVP = 3;
 	private static final int INVENTORY = 4;
 	private static final int VISIBLE = 5;
+	private static final int INVITES = 6;
 	public PartyCreateGui(KataPartyPlugin plugin, Player p, String pname)
 	{
 		super(plugin, p, 1, plugin.getMessage("create-gui-title", pname));
@@ -71,6 +72,18 @@ public final class PartyCreateGui extends PartyGui
 			}
 		}});
 		setButton(VISIBLE, (getDefault("visible")? 2 : 1));
+		addButton(INVITES, inst.getMessage(getDefault("invite-only")? "manage-invites-enabled" : "manage-invites-disabled"), (getDefault("invite-only")? Material.IRON_DOOR : Material.WOODEN_DOOR), new ArrayList<String>(){
+		{
+			if(player.hasPermission("KataParty.invite.enforce"))
+			{
+				add(inst.getMessage("manage-click-to-change"));
+			}
+			else
+			{
+				add(inst.getMessage("manage-cannot-change"));
+			}
+		}});
+		setButton(INVITES, (getDefault("invite-only")? 2 : 1));
 	}
 
 	@Override
@@ -169,6 +182,22 @@ public final class PartyCreateGui extends PartyGui
 					}
 				}
 			} break;
+			case INVITES:
+			{
+				if(player.hasPermission("KataParty.invite.enforce"))
+				{
+					if(getButton(INVITES) != 1)
+					{
+						setButton(INVITES, 1, Material.WOODEN_DOOR);
+						setButton(INVITES, inst.getMessage("manage-invites-disabled"));
+					}
+					else
+					{
+						setButton(INVITES, 2, Material.IRON_DOOR);
+						setButton(INVITES, inst.getMessage("manage-invites-enabled"));
+					}
+				}
+			}
 			default: break;
 		}
 	}

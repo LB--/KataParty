@@ -23,6 +23,8 @@ public final class PartyManageGui extends PartyGui
 	private static final int PVP = 3;
 	private static final int INVENTORY = 4;
 	private static final int VISIBLE = 5;
+	private static final int INVITES = 6;
+	private static final int TICKETS = 7;
 	private static final int DISBAND = 9;
 	private static final int TPALL = 10;
 	private static final int SELFTP = 11;
@@ -147,6 +149,32 @@ public final class PartyManageGui extends PartyGui
 			}
 		}});
 		setButton(VISIBLE, (party.isVisible()? 2 : 1));
+		addButton(INVITES, inst.getMessage(party.isInviteOnly()? "manage-invites-enabled" : "manage-invites-disabled"), (party.isInviteOnly()? Material.IRON_DOOR : Material.WOODEN_DOOR), new ArrayList<String>(){
+		{
+			if(isAdmin || (player.hasPermission("KataParty.invite.enforce") && isPartyAdmin))
+			{
+				add(inst.getMessage("manage-click-to-change"));
+			}
+			else
+			{
+				add(inst.getMessage("manage-cannot-change"));
+			}
+		}});
+		setButton(INVITES, (party.isInviteOnly()? 2 : 1));
+		if(party.isInviteOnly())
+		{
+			addButton(TICKETS, inst.getMessage("manage-generate-ticket"), Material.ANVIL, new ArrayList<String>(){
+			{
+				if(isAdmin || (player.hasPermission("KataParty.invite.create") && isPartyAdmin))
+				{
+					add(inst.getMessage("manage-click-to-use"));
+				}
+				else
+				{
+					add(inst.getMessage("manage-cannot-use"));
+				}
+			}});
+		}
 		addButton(DISBAND, inst.getMessage(isMember? "manage-disband" : "manage-close"), Material.TNT, new ArrayList<String>(){
 		{
 			if(isAdmin || (player.hasPermission("KataParty.disband") && isPartyAdmin))
@@ -285,6 +313,20 @@ public final class PartyManageGui extends PartyGui
 				if(isAdmin || (player.hasPermission("KataParty.hide") && isPartyAdmin))
 				{
 					party.setVisible(!party.isVisible());
+				}
+			} break;
+			case INVITES:
+			{
+				if(isAdmin || (player.hasPermission("KataParty.invite.enforce") && isPartyAdmin))
+				{
+					party.setInviteOnly(!party.isInviteOnly());
+				}
+			} break;
+			case TICKETS:
+			{
+				if(isAdmin || (player.hasPermission("KataParty.invite.create") && isPartyAdmin))
+				{
+					player.getWorld().dropItem(player.getLocation(), inst.getTicketManager().generateTicket(party)).setPickupDelay(0);
 				}
 			} break;
 			case DISBAND:

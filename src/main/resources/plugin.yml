@@ -111,6 +111,7 @@ permissions:
       KataParty.reload: true
       KataParty.teleport.*: true
       KataParty.inventory.*: true
+      KataParty.invite.*: true
     default: op
   KataParty.teleport.*:
     description: "Gives access to all teleportation features"
@@ -123,6 +124,12 @@ permissions:
     children:
       KataParty.inventory.use: true
       KataParty.inventory.enable: true
+  KataParty.invite.*:
+    description: "Gives access to all invitiation ticket permissions"
+    children:
+      KataParty.invite.enforce: true
+      KataParty.invite.create: true
+      KataParty.invite.accept: true
   KataParty.create:
     description: "Allows creation of a KataParty"
     default: true
@@ -162,6 +169,15 @@ permissions:
   KataParty.inventory.enable:
     description: "Allows enabling/disabling the shared KataParty inventory"
     default: op
+  KataParty.invite.enforce:
+    description: "Allows making a party invite-only"
+    default: true
+  KataParty.invite.create:
+    description: "Allows creating invitation tickets"
+    default: true
+  KataParty.invite.accept:
+    description: "Allows accepting invitation tickets"
+    default: true
   KataParty.reload:
     description: "Allows use of the /kpreload command to reload and regenerate the config"
     default: op

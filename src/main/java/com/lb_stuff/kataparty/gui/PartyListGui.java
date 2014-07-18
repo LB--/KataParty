@@ -39,6 +39,7 @@ public final class PartyListGui extends PartyGui
 					add(inst.getMessage("list-pvp", p.canPvp()));
 					add(inst.getMessage("list-teleports", p.canTp()));
 					add(inst.getMessage("list-inventory", (p.getInventory() != null)));
+					add(inst.getMessage("list-invite-only", p.isInviteOnly()));
 					if(!same)
 					{
 						add(inst.getMessage("list-join"));
@@ -86,15 +87,14 @@ public final class PartyListGui extends PartyGui
 			case LEFT:
 			{
 				Party.Member m = inst.getParties().findMember(player.getUniqueId());
-				if(m != null && m.getParty() != p)
+				if(m == null || (m != null && m.getParty() != p))
 				{
-					p.addMember(player.getUniqueId());
-					inst.getFilter().tellFilterPref(player);
-					hide();
-				}
-				else
-				{
-					update();
+					if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
+					{
+						p.addMember(player.getUniqueId());
+						inst.getFilter().tellFilterPref(player);
+						hide();
+					}
 				}
 			} break;
 			case RIGHT:

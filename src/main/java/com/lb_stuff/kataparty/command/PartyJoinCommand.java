@@ -51,7 +51,14 @@ public class PartyJoinCommand extends TabbablePartyCommand
 					{
 						if(m.getParty() != p)
 						{
-							p.addMember(player.getUniqueId());
+							if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
+							{
+								p.addMember(player.getUniqueId());
+							}
+							else
+							{
+								inst.tellMessage(player, "party-join-invite-only-fail", args[0]);
+							}
 						}
 						else
 						{

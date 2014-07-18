@@ -6,6 +6,7 @@ party-defaults:
   pvp: false
   inventory: false
   visible: true
+  invite-only: false
   self-teleports: true
 
 remove-empty-parties: true
@@ -26,6 +27,7 @@ messages:
   party-already-exists: "There is &calready&r a KataParty named &b%1$s&r"
   party-does-not-exist: "No KataParty named &c%1$s&r"
   join-already-member: "You are &aalready&r a member of &b%1$s&r"
+  party-join-invite-only-fail: "&b%1$s&r is &cinvite-only&r; request an &binvitiation ticket"
   not-in-party: "You &care&r not in &oany&r KataParty"
   missing-disband-permission: "You &cdo not&r have permission to disband your KataParty"
   party-teleports-disabled: "Your KataParty &cdoes not&r allow teleportations"
@@ -67,6 +69,9 @@ messages:
   manage-inventory-disabled: "&bShared inventory&r is &cdisabled"
   manage-visibility-enabled: "&aWill&r be visible in list"
   manage-visibility-disabled: "&cWill not&r be visible in list"
+  manage-invites-enabled: "&r&oAnyone&r can join your KataParty"
+  manage-invites-disabled: "&rYour KataParty is &binvite-only"
+  manage-generate-ticket: "Generate an &binvite ticket"
   manage-disband: "&cDisband&r your KataParty"
   manage-close: "&cClose&r this KataParty"
   manage-summon: "&bTeleport&r all players to &oyourself"
@@ -93,6 +98,7 @@ messages:
   list-pvp: "&rPvP: %1$b"
   list-teleports: "&rTP: %1$b"
   list-inventory: "&rShared Inv: %1$b"
+  list-invite-only: "&rInvite-only: %1$b"
   list-join: "&bLeft click&r to join &o(you will leave your current KataParty)"
   list-member: "&r&oYou&r are in &othis&r KataParty"
   list-admin: "&bRight click&r to administrate"
