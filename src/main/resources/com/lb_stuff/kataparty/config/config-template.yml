@@ -159,6 +159,7 @@ messages:
   ticket-name: "[%messages.ticket-name%]"
   ticket-giver-instructions-1: "[%messages.ticket-giver-instructions-1%]"
   ticket-giver-instructions-2: "[%messages.ticket-giver-instructions-2%]"
+  ticket-receive-inform: "[%messages.ticket-receive-inform%]"
   ticket-receiver-instructions-1: "[%messages.ticket-receiver-instructions-1%]"
   ticket-receiver-instructions-2: "[%messages.ticket-receiver-instructions-2%]"
   ticket-reject-inform: "[%messages.ticket-reject-inform%]"

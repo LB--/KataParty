@@ -7,7 +7,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +24,7 @@ import static org.bukkit.ChatColor.*;
 import java.util.List;
 import java.util.ArrayList;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryType;
 
 public class PartyTicketManager implements Listener
 {
@@ -104,16 +108,21 @@ public class PartyTicketManager implements Listener
 		}
 	}
 
-	@EventHandler(ignoreCancelled = true)
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onInvClick(InventoryClickEvent e)
 	{
-		ItemStack is = e.getCurrentItem();
-		if(isTicket(is))
+		Inventory top = e.getView().getTopInventory();
+		if(top != null)
 		{
-			//
+			if((isTicket(e.getCursor()) && e.getRawSlot() < top.getSize())
+			|| (isTicket(e.getCurrentItem()) && e.getAction().equals(e.getAction().MOVE_TO_OTHER_INVENTORY)))
+			{
+				e.setCancelled(true);
+			}
 		}
 	}
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInteract(final PlayerInteractEvent e)
 	{
 		final ItemStack is = e.getItem();
@@ -151,7 +160,8 @@ public class PartyTicketManager implements Listener
 			{
 				e.getItemDrop().remove();
 				Party p = getTicketParty(is);
-				if(p != null)
+				Party.Member m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+				if(p != null && (m == null || m.getParty() != p))
 				{
 					inst.tellMessage(e.getPlayer(), "ticket-reject-inform", p.getName());
 					p.informMembersMessage("ticket-reject-inform-members", e.getPlayer().getDisplayName());
@@ -164,23 +174,30 @@ public class PartyTicketManager implements Listener
 				{
 					ItemStack is2 = new ItemStack(is);
 					setTicketGiven(is2);
-					inst.getLogger().info("######## isTicket? "+isTicket(is2));
 					i.getWorld().dropItem(i.getLocation(), is2).setVelocity(i.getVelocity());
 					removeTickets(e.getPlayer());
 				}});
 			}
 		}
 	}
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPickup(InventoryPickupItemEvent e)
 	{
-		ItemStack im = e.getItem().getItemStack();
-		if(isTicket(im))
+		if(isTicket(e.getItem().getItemStack()))
 		{
-			InventoryHolder ih = e.getInventory().getHolder();
-			if(ih instanceof Player)
+			e.setCancelled(true);
+		}
+	}
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onPickup(PlayerPickupItemEvent e)
+	{
+		ItemStack is = e.getItem().getItemStack();
+		if(isTicket(is) && wasTicketGiven(is))
+		{
+			Player p = e.getPlayer();
+			if(p.hasPermission("KataParty.invite.accept"))
 			{
-				//
+				inst.tellMessage(p, "ticket-receive-inform", getTicketParty(is).getName());
 			}
 			else
 			{
@@ -188,7 +205,17 @@ public class PartyTicketManager implements Listener
 			}
 		}
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onJoin(PlayerJoinEvent e)
+	{
+		removeTickets(e.getPlayer());
+	}
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onKick(PlayerKickEvent e)
+	{
+		removeTickets(e.getPlayer());
+	}
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onLeave(PlayerQuitEvent e)
 	{
 		removeTickets(e.getPlayer());
