@@ -127,6 +127,7 @@ messages:
   party-left-inform: "[%messages.party-left-inform%]"
   party-leave-inform: "[%messages.party-leave-inform%]"
   party-closed-on-leave-inform: "[%messages.party-closed-on-leave-inform%]"
+  party-disband-inform: "[%messages.party-disband-inform%]"
   party-teleports-enabled-inform: "[%messages.party-teleports-enabled-inform%]"
   party-teleports-disabled-inform: "[%messages.party-teleports-disabled-inform%]"
   party-pvp-enabled-inform: "[%messages.party-pvp-enabled-inform%]"
@@ -136,7 +137,6 @@ messages:
   party-inventory-gui-title: "[%messages.party-inventory-gui-title%]"
   party-inventory-enable-inform: "[%messages.party-inventory-enable-inform%]"
   party-inventory-disable-inform: "[%messages.party-inventory-disable-inform%]"
-  party-disband-inform: "[%messages.party-disband-inform%]"
   party-shared-health-xp-enable-inform: "[%messages.party-shared-health-xp-enable-inform%]"
   party-shared-health-xp-disable-inform: "[%messages.party-shared-health-xp-disable-inform%]"
   party-smart-potions-enable-inform: "[%messages.party-smart-potions-enable-inform%]"
@@ -147,6 +147,14 @@ messages:
   party-rank-member: "[%messages.party-rank-member%]"
   party-self-teleports-enable-inform: "[%messages.party-self-teleports-enable-inform%]"
   party-self-teleports-disable-inform: "[%messages.party-self-teleports-disable-inform%]"
+  ticket-name: "[%messages.ticket-name%]"
+  ticket-giver-instructions-1: "[%messages.ticket-giver-instructions-1%]"
+  ticket-giver-instructions-2: "[%messages.ticket-giver-instructions-2%]"
+  ticket-receiver-instructions-1: "[%messages.ticket-receiver-instructions-1%]"
+  ticket-receiver-instructions-2: "[%messages.ticket-receiver-instructions-2%]"
+  ticket-reject-inform: "[%messages.ticket-reject-inform%]"
+  ticket-accept-inform: "[%messages.ticket-accept-inform%]"
+  ticket-reject-inform-members: "[%messages.ticket-reject-inform-members%]"
 
 # This is updated automatically. Don't change it. Java will smite you if you do.
 this-is-the-config-version-number-dont-change-it-unless-you-want-very-bad-things-to-happen: [%version%]

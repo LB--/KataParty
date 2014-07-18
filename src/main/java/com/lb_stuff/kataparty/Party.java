@@ -18,6 +18,7 @@ public class Party implements Iterable<Party.Member>
 	private boolean pvp = false;
 	private boolean visible = true;
 	private Inventory inv = null;
+	private boolean invite = false;
 	private Double health = null;
 	private boolean potions = false;
 
@@ -213,6 +214,17 @@ public class Party implements Iterable<Party.Member>
 		return mems;
 	}
 
+	private boolean disbanded = false;
+	public void disband()
+	{
+		disbanded = true;
+		for(Member m : this.members.toArray(new Member[0]))
+		{
+			m.informMessage("party-disband-inform");
+			removeMember(m.getUuid());
+		}
+	}
+
 	public boolean canTp()
 	{
 		return tp;
@@ -292,15 +304,21 @@ public class Party implements Iterable<Party.Member>
 		}
 	}
 
-	private boolean disbanded = false;
-	public void disband()
+	public boolean isInviteOnly()
 	{
-		disbanded = true;
-		for(Member m : this.members.toArray(new Member[0]))
+		return invite;
+	}
+	public void setInviteOnly(boolean only)
+	{
+		if(only)
 		{
-			m.informMessage("party-disband-inform");
-			removeMember(m.getUuid());
+			informMembersMessage("party-invite-only-inform");
 		}
+		else
+		{
+			informMembersMessage("party-public-inform");
+		}
+		invite = only;
 	}
 
 	public Double getHealth()
