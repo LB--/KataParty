@@ -10,11 +10,17 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 
-public class PartyListGui extends PartyGui
+public final class PartyListGui extends PartyGui
 {
 	public PartyListGui(KataPartyPlugin plugin, Player plr)
 	{
 		super(plugin, plr, 6, plugin.getMessage("list-gui-title"));
+	}
+
+	@Override
+	protected void update()
+	{
+		clearButtons();
 
 		int buttons = 0;
 		for(final Party p : inst.getParties())
@@ -73,7 +79,6 @@ public class PartyListGui extends PartyGui
 		Party p = inst.getParties().findParty(getButtonName(slot));
 		if(p == null)
 		{
-			new PartyListGui(inst, player).show();
 			return;
 		}
 		switch(click)
@@ -89,7 +94,7 @@ public class PartyListGui extends PartyGui
 				}
 				else
 				{
-					new PartyListGui(inst, player).show();
+					update();
 				}
 			} break;
 			case RIGHT:

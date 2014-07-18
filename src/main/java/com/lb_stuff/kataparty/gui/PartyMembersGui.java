@@ -11,14 +11,26 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
-public class PartyMembersGui extends PartyGui
+public final class PartyMembersGui extends PartyGui
 {
-	private static final int RETURN = 0;
+	private static final int TICKET = 0;
 	private final Party party;
 	public PartyMembersGui(KataPartyPlugin plugin, Player plr, Party p)
 	{
 		super(plugin, plr, 6, plugin.getMessage("members-gui-title", p.getName()));
 		party = p;
+	}
+
+	@Override
+	protected void update()
+	{
+		clearButtons();
+
+		if(!inst.getParties().contains(party))
+		{
+			hide();
+			return;
+		}
 
 		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
@@ -40,7 +52,7 @@ public class PartyMembersGui extends PartyGui
 		final boolean isPartyAdmin = is_partyAdmin;
 		final boolean isPartyMod = is_partyMod;
 
-		addButton(RETURN, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
+		addButton(TICKET, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
 		{
 			add(inst.getMessage("members-return"));
 		}});
@@ -105,13 +117,13 @@ public class PartyMembersGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		Party p = inst.getParties().findParty(party.getName());
-		if(p == null)
+		update();
+		if(getButtonName(TICKET) == null)
 		{
-			hide();
 			return;
 		}
-		if(slot == RETURN)
+
+		if(slot == TICKET)
 		{
 			new PartyManageGui(inst, player, party).show();
 			return;
@@ -119,7 +131,6 @@ public class PartyMembersGui extends PartyGui
 		Party.Member target = party.findMember(getButtonName(slot));
 		if(target == null || target.getParty() != party)
 		{
-			new PartyMembersGui(inst, player, party).show();
 			return;
 		}
 
@@ -154,7 +165,6 @@ public class PartyMembersGui extends PartyGui
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
 							target.setRank(Party.Rank.MODERATOR);
-							new PartyMembersGui(inst, player, party).show();
 						}
 					} break;
 					case MODERATOR:
@@ -162,7 +172,6 @@ public class PartyMembersGui extends PartyGui
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
 							target.setRank(Party.Rank.ADMIN);
-							new PartyMembersGui(inst, player, party).show();
 						}
 					} break;
 					default: break;
@@ -177,7 +186,6 @@ public class PartyMembersGui extends PartyGui
 						if(isAdmin || (isMember && isPartyMod))
 						{
 							party.removeMember(target.getUuid());
-							new PartyMembersGui(inst, player, party).show();
 						}
 					} break;
 					case MODERATOR:
@@ -185,7 +193,6 @@ public class PartyMembersGui extends PartyGui
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
 							target.setRank(Party.Rank.MEMBER);
-							new PartyMembersGui(inst, player, party).show();
 						}
 					} break;
 					case ADMIN:
@@ -193,7 +200,6 @@ public class PartyMembersGui extends PartyGui
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
 							target.setRank(Party.Rank.MODERATOR);
-							new PartyMembersGui(inst, player, party).show();
 						}
 					} break;
 					default: break;

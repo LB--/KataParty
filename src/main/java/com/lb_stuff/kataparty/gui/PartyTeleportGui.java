@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
-public class PartyTeleportGui extends PartyGui
+public final class PartyTeleportGui extends PartyGui
 {
 	private static final int TICKET = 0;
 	private final Party party;
@@ -19,6 +19,18 @@ public class PartyTeleportGui extends PartyGui
 	{
 		super(plugin, plr, 6, plugin.getMessage("teleport-gui-title"));
 		party = p;
+	}
+
+	@Override
+	protected void update()
+	{
+		clearButtons();
+
+		if(!inst.getParties().contains(party))
+		{
+			hide();
+			return;
+		}
 
 		addButton(TICKET, party.getName(), Material.NAME_TAG, new ArrayList<String>());
 
@@ -48,15 +60,13 @@ public class PartyTeleportGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		Party p = inst.getParties().findParty(party.getName());
-		if(p == null)
+		if(getButtonName(TICKET) == null)
 		{
-			hide();
 			return;
 		}
+
 		if(slot == TICKET)
 		{
-			new PartyTeleportGui(inst, player, party).show();
 			return;
 		}
 		if(inst.getParties().findParty(party.getName()) == null)
@@ -67,7 +77,6 @@ public class PartyTeleportGui extends PartyGui
 		Party.Member m = party.findMember(getButtonName(slot));
 		if(m == null || m.getParty() != party)
 		{
-			new PartyTeleportGui(inst, player, party).show();
 			return;
 		}
 

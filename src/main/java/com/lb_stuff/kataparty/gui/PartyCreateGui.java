@@ -9,14 +9,14 @@ import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
 
-public class PartyCreateGui extends PartyGui
+public final class PartyCreateGui extends PartyGui
 {
 	private boolean getDefault(String path)
 	{
 		return inst.getConfig().getBoolean("party-defaults."+path);
 	}
 
-	private static final int CREATE = 0;
+	private static final int TICKET = 0;
 	private static final int TELEPORTS = 2;
 	private static final int PVP = 3;
 	private static final int INVENTORY = 4;
@@ -25,7 +25,7 @@ public class PartyCreateGui extends PartyGui
 	{
 		super(plugin, p, 1, plugin.getMessage("create-gui-title", pname));
 
-		addButton(CREATE, pname, Material.NAME_TAG, new ArrayList<String>(){
+		addButton(TICKET, pname, Material.NAME_TAG, new ArrayList<String>(){
 		{
 			add(inst.getMessage("create-create"));
 			add(inst.getMessage("create-cancel"));
@@ -72,9 +72,16 @@ public class PartyCreateGui extends PartyGui
 		}});
 		setButton(VISIBLE, (getDefault("visible")? 2 : 1));
 	}
-	private PartyCreateGui(KataPartyPlugin plugin, Player p, String pname, Object unused)
+
+	@Override
+	protected void update()
 	{
-		super(plugin, p, 1, plugin.getMessage("create-name-taken", pname));
+		String pname = getButtonName(TICKET);
+		if(pname != null && inst.getParties().findParty(pname) != null)
+		{
+			clearButtons();
+			rename(inst.getMessage("create-name-taken", pname));
+		}
 	}
 
 	@Override
@@ -82,12 +89,12 @@ public class PartyCreateGui extends PartyGui
 	{
 		switch(slot)
 		{
-			case CREATE:
+			case TICKET:
 			{
-				String pname = getButtonName(CREATE);
-				if(inst.getParties().findParty(pname) != null)
+				update();
+				String pname = getButtonName(TICKET);
+				if(pname == null)
 				{
-					new PartyCreateGui(inst, player, pname, null).show();
 					return;
 				}
 				Party p = inst.getParties().add(pname, player);
@@ -169,10 +176,14 @@ public class PartyCreateGui extends PartyGui
 	@Override
 	protected void onClose()
 	{
-		Party.Member m = inst.getParties().findMember(player.getUniqueId());
-		if(m == null || !m.getParty().getName().equals(getButtonName(CREATE)))
+		String pname = getButtonName(TICKET);
+		if(pname != null)
 		{
-			inst.tellMessage(player, "create-cancelled");
+			Party.Member m = inst.getParties().findMember(player.getUniqueId());
+			if(m == null || !m.getParty().getName().equals(pname))
+			{
+				inst.tellMessage(player, "create-cancelled");
+			}
 		}
 	}
 }

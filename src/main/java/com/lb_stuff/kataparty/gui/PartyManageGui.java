@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
-public class PartyManageGui extends PartyGui
+public final class PartyManageGui extends PartyGui
 {
-	private static final int LEAVE = 0;
+	private static final int TICKET = 0;
 	private static final int MEMBERS = 1;
 	private static final int TELEPORTS = 2;
 	private static final int PVP = 3;
@@ -31,6 +31,18 @@ public class PartyManageGui extends PartyGui
 	{
 		super(plugin, plr, 2, plugin.getMessage("manage-gui-title", p.getName()));
 		party = p;
+	}
+
+	@Override
+	protected void update()
+	{
+		clearButtons();
+
+		if(!inst.getParties().contains(party))
+		{
+			hide();
+			return;
+		}
 
 		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
@@ -52,7 +64,7 @@ public class PartyManageGui extends PartyGui
 		final boolean isPartyAdmin = is_partyAdmin;
 		final boolean isPartyMod = is_partyMod;
 
-		addButton(LEAVE, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
+		addButton(TICKET, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
 		{
 			if(isMember)
 			{
@@ -177,9 +189,9 @@ public class PartyManageGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		if(inst.getParties().findParty(party.getName()) == null)
+		update();
+		if(getButtonName(TICKET) == null)
 		{
-			hide();
 			return;
 		}
 
@@ -205,7 +217,7 @@ public class PartyManageGui extends PartyGui
 
 		switch(slot)
 		{
-			case LEAVE:
+			case TICKET:
 			{
 				switch(click)
 				{
@@ -245,7 +257,6 @@ public class PartyManageGui extends PartyGui
 				if(isAdmin || (player.hasPermission("KataParty.teleport.disable") && isPartyMod))
 				{
 					party.setTp(!party.canTp());
-					new PartyManageGui(inst, player, party).show();
 				}
 			} break;
 			case PVP:
@@ -253,7 +264,6 @@ public class PartyManageGui extends PartyGui
 				if(isAdmin || isPartyMod)
 				{
 					party.setPvp(!party.canPvp());
-					new PartyManageGui(inst, player, party).show();
 				}
 			} break;
 			case INVENTORY:
@@ -268,7 +278,6 @@ public class PartyManageGui extends PartyGui
 					{
 						party.disableInventory(player);
 					}
-					new PartyManageGui(inst, player, party).show();
 				}
 			} break;
 			case VISIBLE:
@@ -276,7 +285,6 @@ public class PartyManageGui extends PartyGui
 				if(isAdmin || (player.hasPermission("KataParty.hide") && isPartyAdmin))
 				{
 					party.setVisible(!party.isVisible());
-					new PartyManageGui(inst, player, party).show();
 				}
 			} break;
 			case DISBAND:
@@ -313,13 +321,9 @@ public class PartyManageGui extends PartyGui
 				if(isMember && player.hasPermission("KataParty.teleport.disallow"))
 				{
 					mt.setTp(!mt.canTp());
-					new PartyManageGui(inst, player, party).show();
 				}
 			} break;
-			default:
-			{
-				new PartyManageGui(inst, player, party).show();
-			} break;
+			default: break;
 		}
 	}
 }

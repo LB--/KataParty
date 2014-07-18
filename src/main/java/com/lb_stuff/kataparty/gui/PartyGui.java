@@ -21,7 +21,7 @@ public abstract class PartyGui implements Listener
 {
 	protected final KataPartyPlugin inst;
 	protected final Player player;
-	private final Inventory inv;
+	private Inventory inv;
 	public PartyGui(KataPartyPlugin plugin, Player p, int guirows, String guiname)
 	{
 		inst = plugin;
@@ -34,6 +34,14 @@ public abstract class PartyGui implements Listener
 		player = p;
 		inv = inventory;
 	}
+	protected final void rename(String guiname)
+	{
+		Inventory newinv = Bukkit.createInventory(null, inv.getSize(), guiname);
+		newinv.setContents(inv.getContents());
+		inv = newinv;
+	}
+
+	protected abstract void update();
 
 	protected final void addButton(int slot, String name, Material icon, List<String> info)
 	{
@@ -100,10 +108,19 @@ public abstract class PartyGui implements Listener
 		i.setItemMeta(m);
 		inv.setItem(slot, i);
 	}
+	protected final void removeButton(int slot)
+	{
+		inv.clear(slot);
+	}
+	protected final void clearButtons()
+	{
+		inv.clear();
+	}
 	protected abstract void onButton(int slot, ClickType click);
 
 	public final void show()
 	{
+		update();
 		final PartyGui This = this;
 		inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
 		{
@@ -114,6 +131,7 @@ public abstract class PartyGui implements Listener
 	}
 	public final void hide()
 	{
+		clearButtons();
 		inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
 		{
 			player.closeInventory();
@@ -124,19 +142,24 @@ public abstract class PartyGui implements Listener
 	{
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public final void onInvClick(InventoryClickEvent e)
 	{
-		if(e.getWhoClicked() == player && e.getRawSlot() < e.getView().getTopInventory().getSize())
+		if(e.getWhoClicked() == player)
 		{
-			e.setCancelled(true);
-			if(!e.getSlotType().equals(SlotType.OUTSIDE))
+			if(e.getRawSlot() < e.getView().getTopInventory().getSize())
 			{
-				onButton(e.getSlot(), e.getClick());
+				e.setCancelled(true);
+				if(!e.getSlotType().equals(SlotType.OUTSIDE) && inv.getItem(e.getSlot()) != null)
+				{
+					onButton(e.getSlot(), e.getClick());
+				}
 			}
+			update();
+			e.getView().getTopInventory().setContents(inv.getContents());
 		}
 	}
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public final void OnInvDrag(InventoryDragEvent e)
 	{
 		if(e.getWhoClicked() == player)
@@ -149,6 +172,8 @@ public abstract class PartyGui implements Listener
 					return;
 				}
 			}
+			update();
+			e.getView().getTopInventory().setContents(inv.getContents());
 		}
 	}
 	@EventHandler

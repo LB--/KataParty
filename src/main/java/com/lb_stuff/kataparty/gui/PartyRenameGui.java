@@ -11,13 +11,25 @@ import org.bukkit.event.inventory.InventoryType;
 
 import java.util.ArrayList;
 
-public class PartyRenameGui extends PartyGui
+public final class PartyRenameGui extends PartyGui
 {
 	private final Party party;
 	public PartyRenameGui(KataPartyPlugin plugin, Player plr, Party p)
 	{
 		super(plugin, plr, Bukkit.createInventory(null, InventoryType.ANVIL, plugin.getMessage("rename-gui-title")));
 		party = p;
+	}
+
+	@Override
+	protected void update()
+	{
+		clearButtons();
+
+		if(!inst.getParties().contains(party))
+		{
+			hide();
+			return;
+		}
 
 		addButton(0, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
 		{
@@ -28,11 +40,12 @@ public class PartyRenameGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		if(inst.getParties().findParty(party.getName()) == null)
+		update();
+		if(getButtonName(0) == null)
 		{
-			hide();
 			return;
 		}
+
 		party.rename(getButtonName(2));
 		hide();
 	}
