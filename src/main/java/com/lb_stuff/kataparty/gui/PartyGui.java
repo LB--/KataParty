@@ -50,7 +50,9 @@ public abstract class PartyGui implements Listener
 		m.setDisplayName(name);
 		m.setLore(info);
 		i.setItemMeta(m);
+		inst.getLogger().info("######## item is null = "+(i == null)+", slot = "+slot);
 		inv.setItem(slot, i);
+		inst.getLogger().info("######## slot is null = "+(inv.getItem(slot) == null)+", slot = "+slot);
 	}
 	protected final void addButton(int slot, ItemStack button)
 	{
