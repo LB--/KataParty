@@ -4,17 +4,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,8 +23,6 @@ import static org.bukkit.ChatColor.*;
 
 import java.util.List;
 import java.util.ArrayList;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryType;
 
 public class PartyTicketManager implements Listener
 {
@@ -122,7 +120,15 @@ public class PartyTicketManager implements Listener
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onInteract(PlayerInteractEntityEvent e)
+	{
+		if(isTicket(e.getPlayer().getItemInHand()))
+		{
+			e.setCancelled(true);
+		}
+	}
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onInteract(final PlayerInteractEvent e)
 	{
 		final ItemStack is = e.getItem();
