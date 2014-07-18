@@ -87,7 +87,7 @@ public final class PartyListGui extends PartyGui
 			case LEFT:
 			{
 				Party.Member m = inst.getParties().findMember(player.getUniqueId());
-				if(m == null || (m != null && m.getParty() != p))
+				if(m == null || m.getParty() != p)
 				{
 					if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
 					{

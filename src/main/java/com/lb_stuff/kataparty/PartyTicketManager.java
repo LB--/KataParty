@@ -7,15 +7,20 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Item;
 import static org.bukkit.ChatColor.*;
 
+import java.util.List;
 import java.util.ArrayList;
+import org.bukkit.event.block.Action;
 
 public class PartyTicketManager implements Listener
 {
@@ -42,7 +47,7 @@ public class PartyTicketManager implements Listener
 	}
 	public boolean isTicket(ItemStack is)
 	{
-		if(is.getType().equals(Material.NAME_TAG))
+		if(is != null && is.getType() != null && is.getType().equals(Material.NAME_TAG) && is.hasItemMeta())
 		{
 			ItemMeta im = is.getItemMeta();
 			if(im.hasDisplayName() && im.hasLore() && im.getLore().size() == 3)
@@ -64,6 +69,18 @@ public class PartyTicketManager implements Listener
 		}
 		return null;
 	}
+	public void removeTickets(Player p)
+	{
+		Inventory inv = p.getInventory();
+		for(int i = 0; i < inv.getSize(); ++i)
+		{
+			ItemStack is = inv.getItem(i);
+			if(isTicket(is))
+			{
+				inv.setItem(i, null);
+			}
+		}
+	}
 	public boolean wasTicketGiven(ItemStack is)
 	{
 		if(!isTicket(is))
@@ -78,7 +95,11 @@ public class PartyTicketManager implements Listener
 		if(!wasTicketGiven(is))
 		{
 			ItemMeta im = is.getItemMeta();
-			im.getLore().set(0, im.getLore().get(0)+RESET);
+			List<String> lore = im.getLore();
+			lore.set(0, im.getLore().get(0)+RESET);
+			lore.set(1, inst.getMessage("ticket-receiver-instructions-1"));
+			lore.set(2, inst.getMessage("ticket-receiver-instructions-2"));
+			im.setLore(lore);
 			is.setItemMeta(im);
 		}
 	}
@@ -86,24 +107,44 @@ public class PartyTicketManager implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onInvClick(InventoryClickEvent e)
 	{
-		if(isTicket(e.getCurrentItem()))
+		ItemStack is = e.getCurrentItem();
+		if(isTicket(is))
 		{
 			//
 		}
 	}
 	@EventHandler(ignoreCancelled = true)
-	public void onInteract(PlayerInteractEvent e)
+	public void onInteract(final PlayerInteractEvent e)
 	{
-		if(isTicket(e.getItem()))
+		final ItemStack is = e.getItem();
+		if(isTicket(is))
 		{
 			e.setCancelled(true);
-			//
+			if(e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+			{
+				final Player player = e.getPlayer();
+				final Party p = getTicketParty(is);
+				if(p != null && wasTicketGiven(is))
+				{
+					Party.Member m = inst.getParties().findMember(player.getUniqueId());
+					if(m == null || m.getParty() != p)
+					{
+						inst.tellMessage(player, "ticket-accept-inform", p.getName());
+						p.addMember(player.getUniqueId());
+					}
+				}
+				inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
+				{
+					removeTickets(player);
+				}});
+			}
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onDrop(PlayerDropItemEvent e)
+	public void onDrop(final PlayerDropItemEvent e)
 	{
-		ItemStack is = e.getItemDrop().getItemStack();
+		final Item i = e.getItemDrop();
+		final ItemStack is = i.getItemStack();
 		if(isTicket(is))
 		{
 			if(wasTicketGiven(is))
@@ -118,7 +159,15 @@ public class PartyTicketManager implements Listener
 			}
 			else
 			{
-				setTicketGiven(is);
+				e.setCancelled(true);
+				inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
+				{
+					ItemStack is2 = new ItemStack(is);
+					setTicketGiven(is2);
+					inst.getLogger().info("######## isTicket? "+isTicket(is2));
+					i.getWorld().dropItem(i.getLocation(), is2).setVelocity(i.getVelocity());
+					removeTickets(e.getPlayer());
+				}});
 			}
 		}
 	}
@@ -142,13 +191,6 @@ public class PartyTicketManager implements Listener
 	@EventHandler
 	public void onLeave(PlayerQuitEvent e)
 	{
-		for(ItemStack is : e.getPlayer().getInventory().getContents())
-		{
-			if(isTicket(is))
-			{
-				is.setType(Material.AIR);
-				is.setAmount(0);
-			}
-		}
+		removeTickets(e.getPlayer());
 	}
 }

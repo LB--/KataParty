@@ -71,6 +71,14 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 						p.getInventory().setItem(i, items.get(i));
 					}
 				}
+				if(ps.contains("invite-only"))
+				{
+					p.setInviteOnly(ps.getBoolean("invite-only"));
+				}
+				else
+				{
+					p.setInviteOnly(false);
+				}
 				if(!ps.isBoolean("health"))
 				{
 					p.setHealth(ps.getDouble("health"));
@@ -142,6 +150,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 			{
 				ps.set("inventory", p.getInventory().getContents());
 			}
+			ps.set("invite-only", p.isInviteOnly());
 			if(p.getHealth() == null)
 			{
 				ps.set("health", false);
