@@ -149,7 +149,7 @@ public final class PartyManageGui extends PartyGui
 			}
 		}});
 		setButton(VISIBLE, (party.isVisible()? 2 : 1));
-		addButton(INVITES, inst.getMessage(party.isInviteOnly()? "manage-invites-enabled" : "manage-invites-disabled"), (party.isInviteOnly()? Material.IRON_DOOR : Material.WOODEN_DOOR), new ArrayList<String>(){
+		addButton(INVITES, inst.getMessage(party.isInviteOnly()? "manage-invites-enabled" : "manage-invites-disabled"), (party.isInviteOnly()? Material.IRON_DOOR : Material.WOOD_DOOR), new ArrayList<String>(){
 		{
 			if(isAdmin || (player.hasPermission("KataParty.invite.enforce") && isPartyAdmin))
 			{
