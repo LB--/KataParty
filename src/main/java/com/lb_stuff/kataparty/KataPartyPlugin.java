@@ -104,6 +104,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 
 		getServer().getPluginManager().registerEvents(this, this);
 		getServer().getPluginManager().registerEvents(filter, this);
+		getServer().getPluginManager().registerEvents(tickets, this);
 	}
 	@Override
 	public FileConfiguration getConfig()

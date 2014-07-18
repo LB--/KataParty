@@ -23,8 +23,6 @@ public class PartyTicketManager implements Listener
 	public PartyTicketManager(KataPartyPlugin plugin)
 	{
 		inst = plugin;
-
-		inst.getServer().getPluginManager().registerEvents(this, inst);
 	}
 
 	private final String PREFIX = ""+RESET+"KataParty: "+AQUA;
