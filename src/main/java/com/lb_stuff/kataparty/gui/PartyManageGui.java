@@ -326,6 +326,7 @@ public final class PartyManageGui extends PartyGui
 			{
 				if(isAdmin || (player.hasPermission("KataParty.invite.create") && isPartyAdmin))
 				{
+					inst.getTicketManager().removeTickets(player.getInventory());
 					player.getWorld().dropItem(player.getLocation(), inst.getTicketManager().generateTicket(party)).setPickupDelay(0);
 				}
 			} break;

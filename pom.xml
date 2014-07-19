@@ -42,6 +42,11 @@
 		</resources>
 		<finalName>${project.name}-${project.version}</finalName>
 	</build>
+	<scm>
+		<connection>scm:git:git://github.com/LB--/KataParty.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/LB--/KataParty.git</developerConnection>
+		<url>https://github.com/LB--/KataParty</url>
+	</scm>
 	<repositories>
 		<repository>
 			<id>bukkit-repo</id>

@@ -1,5 +1,7 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.TicketHolder;
+
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -71,9 +73,8 @@ public class PartyTicketManager implements Listener
 		}
 		return null;
 	}
-	public void removeTickets(Player p)
+	public void removeTickets(Inventory inv)
 	{
-		Inventory inv = p.getInventory();
 		for(int i = 0; i < inv.getSize(); ++i)
 		{
 			ItemStack is = inv.getItem(i);
@@ -113,10 +114,17 @@ public class PartyTicketManager implements Listener
 		Inventory top = e.getView().getTopInventory();
 		if(top != null)
 		{
-			if((isTicket(e.getCursor()) && e.getRawSlot() < top.getSize())
-			|| (isTicket(e.getCurrentItem()) && e.getAction().equals(e.getAction().MOVE_TO_OTHER_INVENTORY)))
+			if(top instanceof TicketHolder)
 			{
-				e.setCancelled(true);
+				removeTickets(top);
+			}
+			else
+			{
+				if((isTicket(e.getCursor()) && e.getRawSlot() < top.getSize())
+				|| (isTicket(e.getCurrentItem()) && e.getAction().equals(e.getAction().MOVE_TO_OTHER_INVENTORY)))
+				{
+					e.setCancelled(true);
+				}
 			}
 		}
 	}
@@ -150,7 +158,7 @@ public class PartyTicketManager implements Listener
 				}
 				inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
 				{
-					removeTickets(player);
+					removeTickets(player.getInventory());
 				}});
 			}
 		}
@@ -181,7 +189,7 @@ public class PartyTicketManager implements Listener
 					ItemStack is2 = new ItemStack(is);
 					setTicketGiven(is2);
 					i.getWorld().dropItem(i.getLocation(), is2).setVelocity(i.getVelocity());
-					removeTickets(e.getPlayer());
+					removeTickets(e.getPlayer().getInventory());
 				}});
 			}
 		}
@@ -214,16 +222,16 @@ public class PartyTicketManager implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onJoin(PlayerJoinEvent e)
 	{
-		removeTickets(e.getPlayer());
+		removeTickets(e.getPlayer().getInventory());
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onKick(PlayerKickEvent e)
 	{
-		removeTickets(e.getPlayer());
+		removeTickets(e.getPlayer().getInventory());
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onLeave(PlayerQuitEvent e)
 	{
-		removeTickets(e.getPlayer());
+		removeTickets(e.getPlayer().getInventory());
 	}
 }
