@@ -28,7 +28,7 @@ messages:
   party-does-not-exist: "No KataParty named &c%1$s&r"
   join-already-member: "You are &aalready&r a member of &b%1$s&r"
   party-join-invite-only-fail: "&b%1$s&r is &cinvite-only&r; request an &binvitiation ticket"
-  not-in-party: "You &care&r not in &oany&r KataParty"
+  not-in-party: "You &care not&r in &oany&r KataParty"
   missing-disband-permission: "You &cdo not&r have permission to disband your KataParty"
   party-teleports-disabled: "Your KataParty &cdoes not&r allow teleportations"
   member-teleported-to: "You were &bteleported&r to %1$s"
