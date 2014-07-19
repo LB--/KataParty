@@ -1,6 +1,6 @@
 package com.lb_stuff.kataparty;
 
-import com.lb_stuff.kataparty.api.TicketHolder;
+import com.lb_stuff.kataparty.api.TicketInventoryEvent;
 
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
@@ -112,12 +112,30 @@ public class PartyTicketManager implements Listener
 	public void onInvClick(InventoryClickEvent e)
 	{
 		Inventory top = e.getView().getTopInventory();
-		if(top != null && !(top instanceof TicketHolder))
+		if(top != null)
 		{
-			if((isTicket(e.getCursor()) && e.getRawSlot() < top.getSize())
-			|| (isTicket(e.getCurrentItem()) && e.getAction().equals(e.getAction().MOVE_TO_OTHER_INVENTORY)))
+			TicketInventoryEvent tie = null;
+			if(isTicket(e.getCursor()))
 			{
-				e.setCancelled(true);
+				tie = new TicketInventoryEvent(top, e.getCursor());
+				if(e.getRawSlot() < top.getSize())
+				{
+					e.setCancelled(true);
+				}
+			}
+			if(isTicket(e.getCurrentItem()))
+			{
+				tie = new TicketInventoryEvent(top, e.getCurrentItem());
+				if(e.getAction().equals(e.getAction().MOVE_TO_OTHER_INVENTORY))
+				{
+					e.setCancelled(true);
+				}
+			}
+			if(tie != null)
+			{
+				tie.setCancelled(e.isCancelled());
+				inst.getServer().getPluginManager().callEvent(tie);
+				e.setCancelled(tie.isCancelled());
 			}
 		}
 	}

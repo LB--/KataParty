@@ -4,6 +4,7 @@ import com.lb_stuff.command.*;
 import com.lb_stuff.kataparty.command.*;
 import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 import com.lb_stuff.kataparty.config.*;
+import com.lb_stuff.kataparty.api.PartyTicketService;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,6 +21,7 @@ import org.bukkit.configuration.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.projectiles.ProjectileSource;
 import static org.bukkit.ChatColor.*;
+import org.bukkit.plugin.ServicePriority;
 
 import java.util.*;
 import java.io.*;
@@ -113,6 +115,8 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		getServer().getPluginManager().registerEvents(this, this);
 		getServer().getPluginManager().registerEvents(filter, this);
 		getServer().getPluginManager().registerEvents(tickets, this);
+
+		getServer().getServicesManager().register(PartyTicketService.class, ticketserv, this, ServicePriority.Highest);
 	}
 	@Override
 	public FileConfiguration getConfig()
@@ -194,6 +198,12 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 	public PartyTicketManager getTicketManager()
 	{
 		return tickets;
+	}
+
+	private final PartyTicketService ticketserv = new PartyTicketService(this);
+	public PartyTicketService getTicketService()
+	{
+		return ticketserv;
 	}
 
 	@Override
