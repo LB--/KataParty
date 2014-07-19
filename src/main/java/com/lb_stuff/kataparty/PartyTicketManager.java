@@ -112,19 +112,12 @@ public class PartyTicketManager implements Listener
 	public void onInvClick(InventoryClickEvent e)
 	{
 		Inventory top = e.getView().getTopInventory();
-		if(top != null)
+		if(top != null && !(top instanceof TicketHolder))
 		{
-			if(top instanceof TicketHolder)
+			if((isTicket(e.getCursor()) && e.getRawSlot() < top.getSize())
+			|| (isTicket(e.getCurrentItem()) && e.getAction().equals(e.getAction().MOVE_TO_OTHER_INVENTORY)))
 			{
-				removeTickets(top);
-			}
-			else
-			{
-				if((isTicket(e.getCursor()) && e.getRawSlot() < top.getSize())
-				|| (isTicket(e.getCurrentItem()) && e.getAction().equals(e.getAction().MOVE_TO_OTHER_INVENTORY)))
-				{
-					e.setCancelled(true);
-				}
+				e.setCancelled(true);
 			}
 		}
 	}
