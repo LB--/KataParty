@@ -1,4 +1,4 @@
-package com.lb_stuff.kataparty.api;
+package com.lb_stuff.kataparty.api.event;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.Cancellable;

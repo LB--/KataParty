@@ -1,6 +1,6 @@
 package com.lb_stuff.kataparty;
 
-import com.lb_stuff.kataparty.api.TicketInventoryEvent;
+import com.lb_stuff.kataparty.api.event.TicketInventoryEvent;
 import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.event.Listener;
