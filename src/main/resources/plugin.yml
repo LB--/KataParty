@@ -8,110 +8,97 @@ description: "A party chat plugin made for Katatunka"
 website: http://dev.bukkit.org/bukkit-plugins/kataparty/
 
 commands:
-  kataparty:
+  KataParty:
     description: "Display info about KataParty"
     usage: "/kataparty"
-    permission: KataParty.generic
-    permission-message: "You should have permission to do that but don't for some reason."
+    permission: KataParty.info
+    permission-message: "missing-commnd-perm.info"
     aliases:
       - kp
+      - kpi
+      - kpinfo
+      - kpv
+      - kpver
+      - kpversion
+      - kata
+      - katatunka
+      - katatunkaparty
+      - party
+      - partychat
+      - pc
+  kptoggle:
+    description: "Toggle chat filtering between your party and global chat"
+    usage: "/kptoggle"
+    permission: KataParty.toggle
+    permission-message: "missing-commnd-perm.toggle"
   kpcreate:
     description: "Create a KataParty via GUI"
     usage: "/kpcreate <KataParty-name>"
     permission: KataParty.create
-    permission-message: "You don't have the KataParty.create permisson :("
-    aliases:
-      - katacreate
+    permission-message: "missing-commnd-perm.create"
   kplist:
     description: "Show a GUI with a list of available KataParties"
     usage: "/kplist"
     permission: KataParty.list
-    permission-message: "You don't have the KataParty.list permission :\\"
-    aliases:
-      - katalist
+    permission-message: "missing-commnd-perm.list"
   kpjoin:
     description: "Join a KataParty by name instead of via /kplist"
     usage: "/kpjoin <KataParty-name>"
     permission: KataParty.join
-    permission-message: "You don't have the KataParty.join permission :'("
-    aliases:
-      - katajoin
-  kpleave:
-    description: "Leave the KataParty you are in instead of via /kpmanage"
-    usage: "/kpleave"
-    permission: KataParty.join
-    permission-message: "You don't have the KataParty.join permission (required to leave)"
-    aliases:
-      - kataleave
-  kpdisband:
-    description: "Disband your KataParty instead of via /kpmanage"
-    usage: "/kpdisband"
-    permission: KataParty.disband
-    permission-message: "You don't have the KataParty.disband permission >:)"
-    aliases:
-      - katadisband
-  kpclose:
-    description: "Force a KataParty to close (for admins)"
-    usage: "/kpclose <KataParty-name>"
-    permission: KataParty.close
-    permission-message: "You don't have the KataParty.close permission >:("
-    aliases:
-      - kataclose
+    permission-message: "missing-commnd-perm.join"
   kpmanage:
     description: "Manage your personal KataParty settings, or the party-wide settings"
     usage: "/kpmanage"
     permission: KataParty.manage
-    permission-message: "You don't have the KataParty.manage permission :("
-    aliases:
-      - katamanage
-  kpadmin:
-    description: "Manage a specific KataParty's settings (for admins)"
-    usage: "/kpadmin <KataParty-name>"
-    permission: KataParty.admin
-    permission-message: "You don't have the KataParty.admin permission >:\\"
-    aliases:
-      - kataadmin
+    permission-message: "missing-commnd-perm.manage"
   kptp:
     description: "Teleport to someone in your KataParty via GUI or username"
     usage: "/kptp [optional-username]"
     permission: KataParty.teleport.do
-    permission-message: "You don't have the KataParty.teleport.do permission..."
-    aliases:
-      - katatp
+    permission-message: "missing-commnd-perm.tp"
   kpshare:
     description: "Open the shared inventory for your KataParty"
     usage: "/kpshare"
     permission: KataParty.inventory.use
-    permission-message: "You don't have the KataParty.inventory.use permission..."
-    aliases:
-      - katashare
-  kptoggle:
-    description: "Toggle filtered chat between your party and global chat"
-    usage: "/kptoggle"
-    permission: KataParty.generic
-    permission-message: "You should have permission to do that but don't for some reason."
-    aliases:
-      - katatoggle
+    permission-message: "missing-commnd-perm.share"
+  kpleave:
+    description: "Leave the KataParty you are in instead of via /kpmanage"
+    usage: "/kpleave"
+    permission: KataParty.leave
+    permission-message: "missing-commnd-perm.leave"
+  kpdisband:
+    description: "Disband your KataParty instead of via /kpmanage"
+    usage: "/kpdisband"
+    permission: KataParty.disband
+    permission-message: "missing-commnd-perm.disband"
+  kpclose:
+    description: "Force a KataParty to close (for admins)"
+    usage: "/kpclose <KataParty-name>"
+    permission: KataParty.close
+    permission-message: "missing-commnd-perm.close"
+  kpadmin:
+    description: "Manage a specific KataParty's settings (for admins)"
+    usage: "/kpadmin <KataParty-name>"
+    permission: KataParty.admin
+    permission-message: "missing-commnd-perm.admin"
   kpreload:
     description: "Reload and regenerate the config file"
     usage: "/kpreload"
     permission: KataParty.reload
-    permission-message: "You don't have the KataParty.reload permission!"
-    aliases:
-      - katareload
+    permission-message: "missing-commnd-perm.reload"
 
 permissions:
-  KataParty.generic:
-    description: "This permission node is for things that players should always have access to."
-    default: true
   KataParty.*:
     description: "Gives access to all KataParty permissions (for admins)"
     children:
+      KataParty.info: true
+      KataParty.toggle: true
       KataParty.create: true
       KataParty.hide: true
       KataParty.seehidden: true
       KataParty.list: true
       KataParty.join: true
+      KataParty.leave: true
       KataParty.disband: true
       KataParty.manage: true
       KataParty.admin: true
@@ -137,6 +124,12 @@ permissions:
       KataParty.invite.enforce: true
       KataParty.invite.create: true
       KataParty.invite.accept: true
+  KataParty.info:
+    description: "See version/author infrmation about KataParty"
+    default: true
+  KataParty.toggle:
+    description: "Toggle chat filtering for one's self"
+    default: true
   KataParty.create:
     description: "Allows creation of a KataParty"
     default: true
