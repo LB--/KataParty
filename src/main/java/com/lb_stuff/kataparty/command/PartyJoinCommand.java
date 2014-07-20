@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -21,7 +21,7 @@ public class PartyJoinCommand extends TabbablePartyCommand
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		List<String> ret = new ArrayList<>();
-		for(Party p : inst.getParties())
+		for(IParty p : inst.getParties())
 		{
 			if(p.isVisible() && p.getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 			{
@@ -39,14 +39,14 @@ public class PartyJoinCommand extends TabbablePartyCommand
 			Player player = (Player)sender;
 			if(args.length == 1)
 			{
-				Party p = inst.getParties().findParty(args[0]);
+				IParty p = inst.getParties().findParty(args[0]);
 				if(p == null)
 				{
 					inst.tellMessage(player, "party-does-not-exist", args[0]);
 				}
 				else
 				{
-					Party.Member m = inst.getParties().findMember(player.getUniqueId());
+					IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
 					if(m == null || m.getParty() != p)
 					{
 						if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))

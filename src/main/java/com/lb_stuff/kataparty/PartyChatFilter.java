@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty;
 
 import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 import static com.lb_stuff.kataparty.ChatFilterPref.*;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -220,7 +221,7 @@ public class PartyChatFilter implements Listener
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
 		Player p = e.getPlayer();
-		Party.Member m = inst.getParties().findMember(p.getUniqueId());
+		IParty.IMember m = inst.getParties().findMember(p.getUniqueId());
 		if(m != null)
 		{
 			inst.tellMessage(p, "party-member-inform", m.getParty().getName());

@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.gui.PartyManageGui;
 
 import org.bukkit.command.Command;
@@ -23,7 +23,7 @@ public class PartyManageCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0)
 			{
-				Party.Member m = inst.getParties().findMember(player.getUniqueId());
+				IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
 				if(m == null)
 				{
 					inst.tellMessage(player, "not-in-party");

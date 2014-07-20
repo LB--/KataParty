@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty;
 
 import static com.lb_stuff.kataparty.ChatFilterPref.*;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.entity.Player;
 
@@ -42,7 +43,7 @@ public class PartySet implements Iterable<Party>
 		}
 		return null;
 	}
-	public void remove(Party p, Player player)
+	public void remove(IParty p, Player player)
 	{
 		p.disableInventory(player);
 		p.disband();
@@ -150,11 +151,11 @@ public class PartySet implements Iterable<Party>
 		return pms;
 	}
 
-	public Party.Member findMember(UUID uuid)
+	public IParty.IMember findMember(UUID uuid)
 	{
 		for(Party p : parties)
 		{
-			for(Party.Member m : p)
+			for(IParty.IMember m : p)
 			{
 				if(m.getUuid().equals(uuid))
 				{
@@ -175,7 +176,7 @@ public class PartySet implements Iterable<Party>
 		}
 		return null;
 	}
-	public boolean contains(Party p)
+	public boolean contains(IParty p)
 	{
 		return parties.contains(p);
 	}

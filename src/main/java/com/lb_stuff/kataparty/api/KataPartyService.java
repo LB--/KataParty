@@ -5,10 +5,10 @@ import com.lb_stuff.kataparty.PartyTicketManager;
 
 import org.bukkit.inventory.ItemStack;
 
-public class PartyTicketService
+public class KataPartyService
 {
 	private final KataPartyPlugin inst;
-	public PartyTicketService(KataPartyPlugin plugin)
+	public KataPartyService(KataPartyPlugin plugin)
 	{
 		inst = plugin;
 	}

@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,8 +13,8 @@ import java.util.ArrayList;
 
 public final class PartyRenameGui extends PartyGui
 {
-	private final Party party;
-	public PartyRenameGui(KataPartyPlugin plugin, Player plr, Party p)
+	private final IParty party;
+	public PartyRenameGui(KataPartyPlugin plugin, Player plr, IParty p)
 	{
 		super(plugin, plr, Bukkit.createInventory(null, InventoryType.ANVIL, plugin.getMessage("rename-gui-title")));
 		party = p;

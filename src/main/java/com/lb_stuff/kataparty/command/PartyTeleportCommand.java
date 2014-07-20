@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.gui.PartyTeleportGui;
 
 import org.bukkit.command.Command;
@@ -26,10 +26,10 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 		if(args.length == 1 && sender instanceof Player)
 		{
 			Player player = (Player)sender;
-			Party.Member m = inst.getParties().findMember(player.getUniqueId());
+			IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
 			if(m != null)
 			{
-				for(Party.Member o : m.getParty())
+				for(IParty.IMember o : m.getParty())
 				{
 					OfflinePlayer offp = inst.getServer().getOfflinePlayer(o.getUuid());
 					Player onp = offp.getPlayer();
@@ -54,7 +54,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0 || args.length == 1)
 			{
-				Party.Member m = inst.getParties().findMember(player.getUniqueId());
+				IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
 				if(!m.getParty().canTp())
 				{
 					inst.tellMessage(player, "party-teleports-disabled");
@@ -68,7 +68,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 					Player tp = inst.getServer().getPlayer(args[0]);
 					if(tp != null && player.canSee(tp))
 					{
-						Party.Member t = inst.getParties().findMember(tp.getUniqueId());
+						IParty.IMember t = inst.getParties().findMember(tp.getUniqueId());
 						if(t != null && t.getParty() == m.getParty())
 						{
 							if(m.getParty().canTp() && t.canTp())

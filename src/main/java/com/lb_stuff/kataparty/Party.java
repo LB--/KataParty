@@ -1,5 +1,8 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.IParty;
+import static com.lb_stuff.kataparty.api.IParty.IMember;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -8,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class Party implements Iterable<Party.Member>
+public class Party implements IParty
 {
 	private final PartySet parties;
 	private final Messenger messenger;
@@ -33,23 +36,25 @@ public class Party implements Iterable<Party.Member>
 	@Deprecated
 	public void informMembers(String message)
 	{
-		for(Member m : this)
+		for(Member m : members)
 		{
 			m.inform(message);
 		}
 	}
 	public void informMembersMessage(String name, Object... parameters)
 	{
-		for(Member m : this)
+		for(Member m : members)
 		{
 			m.informMessage(name, parameters);
 		}
 	}
 
+	@Override
 	public String getName()
 	{
 		return name;
 	}
+	@Override
 	public void rename(String n)
 	{
 		for(Map.Entry<UUID, PartySet.MemberSettings> e : parties.getPartyMembers())
@@ -87,18 +92,22 @@ public class Party implements Iterable<Party.Member>
 		return true;
 	}
 
+	@Override
 	public Member addMember(UUID uuid)
 	{
 		if(disbanded)
 		{
 			return null;
 		}
-		Member m;
-		while((m = parties.findMember(uuid)) != null)
 		{
-			m.getParty().removeMember(uuid);
+			IMember m;
+			while((m = parties.findMember(uuid)) != null)
+			{
+				m.getParty().removeMember(uuid);
+			}
 		}
-		members.add(m = new Member(uuid));
+		Member m = new Member(uuid);
+		members.add(m);
 		parties.addSettings(uuid, name);
 		OfflinePlayer offp = Bukkit.getOfflinePlayer(uuid);
 		if(offp.isOnline())
@@ -114,6 +123,7 @@ public class Party implements Iterable<Party.Member>
 		m.setTp(parties.defaultSelfTeleports());
 		return m;
 	}
+	@Override
 	public void removeMember(UUID uuid)
 	{
 		final boolean hadmembers = (numMembers() > 0);
@@ -145,6 +155,7 @@ public class Party implements Iterable<Party.Member>
 			}
 		}
 	}
+	@Override
 	public Member findMember(UUID uuid)
 	{
 		for(Member m : members)
@@ -156,6 +167,7 @@ public class Party implements Iterable<Party.Member>
 		}
 		return null;
 	}
+	@Override
 	public Member findMember(String name)
 	{
 		for(Member m : members)
@@ -169,18 +181,22 @@ public class Party implements Iterable<Party.Member>
 		return null;
 	}
 	@Override
-	public Iterator<Member> iterator()
+	public Iterator<IMember> iterator()
 	{
-		return members.iterator();
+		Set<IMember> mems = new HashSet<IMember>();
+		mems.addAll(members);
+		return mems.iterator();
 	}
+	@Override
 	public int numMembers()
 	{
 		return members.size();
 	}
-	public Set<Member> getMembersOnline()
+	@Override
+	public Set<IMember> getMembersOnline()
 	{
-		Set<Member> mems = new HashSet<>();
-		for(Member m : this)
+		Set<IMember> mems = new HashSet<>();
+		for(IMember m : this)
 		{
 			if(Bukkit.getOfflinePlayer(m.getUuid()).isOnline())
 			{
@@ -189,10 +205,11 @@ public class Party implements Iterable<Party.Member>
 		}
 		return mems;
 	}
-	public Set<Member> getMembersAlive()
+	@Override
+	public Set<IMember> getMembersAlive()
 	{
-		Set<Member> mems = new HashSet<>();
-		for(Member m : this)
+		Set<IMember> mems = new HashSet<>();
+		for(IMember m : this)
 		{
 			OfflinePlayer offp = Bukkit.getOfflinePlayer(m.getUuid());
 			if(offp.isOnline() && !offp.getPlayer().isDead())
@@ -202,10 +219,11 @@ public class Party implements Iterable<Party.Member>
 		}
 		return mems;
 	}
-	public Set<Member> getMembersRanked(Rank r)
+	@Override
+	public Set<IMember> getMembersRanked(Rank r)
 	{
-		Set<Member> mems = new HashSet<>();
-		for(Member m : this)
+		Set<IMember> mems = new HashSet<>();
+		for(IMember m : this)
 		{
 			if(m.getRank().equals(r))
 			{
@@ -216,6 +234,7 @@ public class Party implements Iterable<Party.Member>
 	}
 
 	private boolean disbanded = false;
+	@Override
 	public void disband()
 	{
 		disbanded = true;
@@ -226,10 +245,12 @@ public class Party implements Iterable<Party.Member>
 		}
 	}
 
+	@Override
 	public boolean canTp()
 	{
 		return tp;
 	}
+	@Override
 	public void setTp(boolean v)
 	{
 		tp = v;
@@ -243,10 +264,12 @@ public class Party implements Iterable<Party.Member>
 		}
 	}
 
+	@Override
 	public boolean canPvp()
 	{
 		return pvp;
 	}
+	@Override
 	public void setPvp(boolean v)
 	{
 		pvp = v;
@@ -260,10 +283,12 @@ public class Party implements Iterable<Party.Member>
 		}
 	}
 
+	@Override
 	public boolean isVisible()
 	{
 		return visible;
 	}
+	@Override
 	public void setVisible(boolean v)
 	{
 		visible = v;
@@ -277,6 +302,7 @@ public class Party implements Iterable<Party.Member>
 		}
 	}
 
+	@Override
 	public void enableInventory()
 	{
 		if(inv == null)
@@ -285,10 +311,12 @@ public class Party implements Iterable<Party.Member>
 			informMembersMessage("party-inventory-enable-inform");
 		}
 	}
+	@Override
 	public Inventory getInventory()
 	{
 		return inv;
 	}
+	@Override
 	public void disableInventory(Player p)
 	{
 		if(inv != null)
@@ -305,10 +333,12 @@ public class Party implements Iterable<Party.Member>
 		}
 	}
 
+	@Override
 	public boolean isInviteOnly()
 	{
 		return invite;
 	}
+	@Override
 	public void setInviteOnly(boolean only)
 	{
 		if(only)
@@ -322,10 +352,12 @@ public class Party implements Iterable<Party.Member>
 		invite = only;
 	}
 
+	@Override
 	public boolean isSticky()
 	{
 		return sticky;
 	}
+	@Override
 	public void setSticky(boolean stick)
 	{
 		sticky = stick;
@@ -337,9 +369,9 @@ public class Party implements Iterable<Party.Member>
 	}
 	public void enableHealth()
 	{
-		Set<Member> mems = getMembersAlive();
+		Set<IMember> mems = getMembersAlive();
 		health = 1.0*mems.size();
-		for(Member m : mems)
+		for(IMember m : mems)
 		{
 			Bukkit.getPlayer(m.getUuid()).setMaxHealth(20.0*mems.size());
 		}
@@ -348,7 +380,7 @@ public class Party implements Iterable<Party.Member>
 	public void disableHealth()
 	{
 		health = null;
-		for(Member m : getMembersOnline())
+		for(IMember m : getMembersOnline())
 		{
 			Bukkit.getPlayer(m.getUuid()).resetMaxHealth();
 		}
@@ -380,19 +412,7 @@ public class Party implements Iterable<Party.Member>
 		}
 	}
 
-	public static enum Rank
-	{
-		ADMIN,
-		MODERATOR,
-		MEMBER;
-
-		@Override
-		@Deprecated
-		public String toString()
-		{
-			return super.toString();
-		}
-	}
+	@Override
 	public String rankName(Rank r)
 	{
 		switch(r)
@@ -403,7 +423,7 @@ public class Party implements Iterable<Party.Member>
 			default: throw new IllegalStateException();
 		}
 	}
-	public class Member
+	public class Member implements IMember
 	{
 		private final UUID uuid;
 		private Rank rank = Rank.MEMBER;
@@ -432,11 +452,13 @@ public class Party implements Iterable<Party.Member>
 			}
 		}
 
+		@Override
 		public Party getParty()
 		{
 			return Party.this;
 		}
 
+		@Override
 		public UUID getUuid()
 		{
 			return uuid;
@@ -465,24 +487,29 @@ public class Party implements Iterable<Party.Member>
 			return true;
 		}
 
+		@Override
 		public Rank getRank()
 		{
 			return rank;
 		}
+		@Override
 		public String getRankName()
 		{
 			return rankName(getRank());
 		}
+		@Override
 		public void setRank(Rank r)
 		{
 			rank = r;
 			informMessage("party-rank-inform", rankName(r));
 		}
 
+		@Override
 		public boolean canTp()
 		{
 			return tp;
 		}
+		@Override
 		public void setTp(boolean v)
 		{
 			tp = v;

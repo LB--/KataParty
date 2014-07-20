@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -234,7 +235,7 @@ public final class PartyCreateGui extends PartyGui
 		String pname = getButtonName(TICKET);
 		if(pname != null)
 		{
-			Party.Member m = inst.getParties().findMember(player.getUniqueId());
+			IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
 			if(m == null || !m.getParty().getName().equals(pname))
 			{
 				inst.tellMessage(player, "create-cancelled");

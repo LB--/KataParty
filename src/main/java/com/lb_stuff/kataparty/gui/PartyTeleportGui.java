@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,8 +14,8 @@ import java.util.ArrayList;
 public final class PartyTeleportGui extends PartyGui
 {
 	private static final int TICKET = 0;
-	private final Party party;
-	public PartyTeleportGui(KataPartyPlugin plugin, Player plr, Party p)
+	private final IParty party;
+	public PartyTeleportGui(KataPartyPlugin plugin, Player plr, IParty p)
 	{
 		super(plugin, plr, 6, plugin.getMessage("teleport-gui-title"));
 		party = p;
@@ -35,7 +35,7 @@ public final class PartyTeleportGui extends PartyGui
 		addButton(TICKET, party.getName(), Material.NAME_TAG, new ArrayList<String>());
 
 		int buttons = 0;
-		for(final Party.Member m : party)
+		for(final IParty.IMember m : party)
 		{
 			if(m.getUuid().equals(player.getUniqueId()))
 			{
@@ -74,7 +74,7 @@ public final class PartyTeleportGui extends PartyGui
 			hide();
 			return;
 		}
-		Party.Member m = party.findMember(getButtonName(slot));
+		IParty.IMember m = party.findMember(getButtonName(slot));
 		if(m == null || m.getParty() != party)
 		{
 			return;

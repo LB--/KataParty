@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.TicketInventoryEvent;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
@@ -35,7 +36,7 @@ public class PartyTicketManager implements Listener
 	}
 
 	private final String PREFIX = ""+RESET+"KataParty: "+AQUA;
-	public ItemStack generateTicket(final Party p)
+	public ItemStack generateTicket(final IParty p)
 	{
 		ItemStack is = new ItemStack(Material.NAME_TAG);
 		ItemMeta im = is.getItemMeta();
@@ -160,7 +161,7 @@ public class PartyTicketManager implements Listener
 				final Party p = getTicketParty(is);
 				if(p != null && wasTicketGiven(is))
 				{
-					Party.Member m = inst.getParties().findMember(player.getUniqueId());
+					IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
 					if(m == null || m.getParty() != p)
 					{
 						inst.tellMessage(player, "ticket-accept-inform", p.getName());
@@ -186,7 +187,7 @@ public class PartyTicketManager implements Listener
 			{
 				e.getItemDrop().remove();
 				Party p = getTicketParty(is);
-				Party.Member m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+				IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
 				if(p != null && (m == null || m.getParty() != p))
 				{
 					inst.tellMessage(e.getPlayer(), "ticket-reject-inform", p.getName());

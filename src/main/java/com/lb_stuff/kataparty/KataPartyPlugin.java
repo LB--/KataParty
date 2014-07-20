@@ -4,7 +4,8 @@ import com.lb_stuff.command.PluginInfoCommand;
 import com.lb_stuff.command.PluginReloadCommand;
 import com.lb_stuff.kataparty.command.*;
 import com.lb_stuff.kataparty.config.MainConfig;
-import com.lb_stuff.kataparty.api.PartyTicketService;
+import com.lb_stuff.kataparty.api.KataPartyService;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.command.CommandExecutor;
@@ -124,7 +125,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		getServer().getPluginManager().registerEvents(filter, this);
 		getServer().getPluginManager().registerEvents(tickets, this);
 
-		getServer().getServicesManager().register(PartyTicketService.class, ticketserv, this, ServicePriority.Highest);
+		getServer().getServicesManager().register(KataPartyService.class, service, this, ServicePriority.Highest);
 	}
 	@Override
 	public FileConfiguration getConfig()
@@ -174,7 +175,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 			}
 			ps.set("potions", p.arePotionsSmart());
 			ConfigurationSection pms = ps.createSection("members");
-			for(Party.Member m : p)
+			for(IParty.IMember m : p)
 			{
 				ConfigurationSection ms = pms.createSection(m.getUuid().toString());
 				ms.set("rank", m.getRank().toString());
@@ -209,10 +210,10 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		return tickets;
 	}
 
-	private final PartyTicketService ticketserv = new PartyTicketService(this);
-	public PartyTicketService getTicketService()
+	private final KataPartyService service = new KataPartyService(this);
+	public KataPartyService getService()
 	{
-		return ticketserv;
+		return service;
 	}
 
 	@Override

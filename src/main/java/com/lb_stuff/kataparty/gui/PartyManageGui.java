@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -29,8 +29,8 @@ public final class PartyManageGui extends PartyGui
 	private static final int DISBAND = 9;
 	private static final int TPALL = 10;
 	private static final int SELFTP = 11;
-	private final Party party;
-	public PartyManageGui(KataPartyPlugin plugin, Player plr, Party p)
+	private final IParty party;
+	public PartyManageGui(KataPartyPlugin plugin, Player plr, IParty p)
 	{
 		super(plugin, plr, 2, plugin.getMessage("manage-gui-title", p.getName()));
 		party = p;
@@ -47,7 +47,7 @@ public final class PartyManageGui extends PartyGui
 			return;
 		}
 
-		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
+		final IParty.IMember mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -55,8 +55,8 @@ public final class PartyManageGui extends PartyGui
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.getRank() == Party.Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == Party.Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == IParty.Rank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == IParty.Rank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -91,13 +91,13 @@ public final class PartyManageGui extends PartyGui
 		setButton(MEMBERS, inst.getMessage("manage-members"), new ArrayList<String>(){
 		{
 			add(inst.getMessage("manage-members-online", party.getMembersOnline().size(), party.numMembers()));
-			Set<Party.Member> mods = party.getMembersRanked(Party.Rank.MODERATOR);
-			Set<Party.Member> onmods = new HashSet<>();
+			Set<IParty.IMember> mods = party.getMembersRanked(IParty.Rank.MODERATOR);
+			Set<IParty.IMember> onmods = new HashSet<>();
 			onmods.addAll(mods);
 			onmods.retainAll(party.getMembersOnline());
 			add(inst.getMessage("manage-mods-online", onmods.size(), mods.size()));
-			Set<Party.Member> admins = party.getMembersRanked(Party.Rank.ADMIN);
-			Set<Party.Member> onadmins = new HashSet<>();
+			Set<IParty.IMember> admins = party.getMembersRanked(IParty.Rank.ADMIN);
+			Set<IParty.IMember> onadmins = new HashSet<>();
 			onadmins.addAll(admins);
 			onadmins.retainAll(party.getMembersOnline());
 			add(inst.getMessage("manage-admins-online", onadmins.size(), admins.size()));
@@ -232,7 +232,7 @@ public final class PartyManageGui extends PartyGui
 			return;
 		}
 
-		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
+		final IParty.IMember mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -240,8 +240,8 @@ public final class PartyManageGui extends PartyGui
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.getRank() == Party.Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == Party.Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == IParty.Rank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == IParty.Rank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -358,7 +358,7 @@ public final class PartyManageGui extends PartyGui
 			{
 				if(isAdmin || (player.hasPermission("KataParty.teleport.do") && isPartyAdmin))
 				{
-					for(Party.Member mem : party)
+					for(IParty.IMember mem : party)
 					{
 						if(!mem.getUuid().equals(player.getUniqueId()) && mem.canTp())
 						{

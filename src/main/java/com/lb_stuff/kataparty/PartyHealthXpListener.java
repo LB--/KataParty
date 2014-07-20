@@ -1,5 +1,7 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.IParty;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
@@ -24,7 +26,7 @@ public class PartyHealthXpListener implements Listener
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
 		final Player p = e.getPlayer();
-		Party.Member m = inst.getParties().findMember(p.getUniqueId());
+		IParty.IMember m = inst.getParties().findMember(p.getUniqueId());
 		if(m != null)
 		{
 			//TODO: shared health stuff
@@ -33,7 +35,7 @@ public class PartyHealthXpListener implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLeave(PlayerQuitEvent e)
 	{
-		Party.Member m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+		IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
 			//TODO: shared health stuff
@@ -44,8 +46,8 @@ public class PartyHealthXpListener implements Listener
 	{
 		if(e.getEntity() instanceof Player)
 		{
-			Party.Member m = inst.getParties().findMember(e.getEntity().getUniqueId());
-			if(m != null && m.getParty().getHealth() != null)
+			IParty.IMember m = inst.getParties().findMember(e.getEntity().getUniqueId());
+//			if(m != null && m.getParty().getHealth() != null)
 			{
 				//TODO: shared health stuff
 			}
@@ -56,8 +58,8 @@ public class PartyHealthXpListener implements Listener
 	{
 		if(e.getEntity() instanceof Player)
 		{
-			Party.Member m = inst.getParties().findMember(e.getEntity().getUniqueId());
-			if(m != null && m.getParty().getHealth() != null)
+			IParty.IMember m = inst.getParties().findMember(e.getEntity().getUniqueId());
+//			if(m != null && m.getParty().getHealth() != null)
 			{
 				//TODO: shared health stuff
 			}
@@ -68,8 +70,8 @@ public class PartyHealthXpListener implements Listener
 	{
 		if(e.getEntity() instanceof Player)
 		{
-			Party.Member m = inst.getParties().findMember(e.getEntity().getUniqueId());
-			if(m != null && m.getParty().getHealth() != null)
+			IParty.IMember m = inst.getParties().findMember(e.getEntity().getUniqueId());
+//			if(m != null && m.getParty().getHealth() != null)
 			{
 				//TODO: shared health stuff
 			}
@@ -78,8 +80,8 @@ public class PartyHealthXpListener implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onRespawn(PlayerRespawnEvent e)
 	{
-		Party.Member m = inst.getParties().findMember(e.getPlayer().getUniqueId());
-		if(m != null && m.getParty().getHealth() != null)
+		IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+//		if(m != null && m.getParty().getHealth() != null)
 		{
 			//TODO: shared health stuff
 		}
@@ -87,8 +89,8 @@ public class PartyHealthXpListener implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onXp(PlayerExpChangeEvent e)
 	{
-		Party.Member m = inst.getParties().findMember(e.getPlayer().getUniqueId());
-		if(m != null && m.getParty().getHealth() != null)
+		IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+//		if(m != null && m.getParty().getHealth() != null)
 		{
 			//TODO: shared health stuff
 		}

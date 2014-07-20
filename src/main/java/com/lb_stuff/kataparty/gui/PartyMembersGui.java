@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,8 +14,8 @@ import java.util.ArrayList;
 public final class PartyMembersGui extends PartyGui
 {
 	private static final int TICKET = 0;
-	private final Party party;
-	public PartyMembersGui(KataPartyPlugin plugin, Player plr, Party p)
+	private final IParty party;
+	public PartyMembersGui(KataPartyPlugin plugin, Player plr, IParty p)
 	{
 		super(plugin, plr, 6, plugin.getMessage("members-gui-title", p.getName()));
 		party = p;
@@ -32,7 +32,7 @@ public final class PartyMembersGui extends PartyGui
 			return;
 		}
 
-		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
+		final IParty.IMember mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -40,8 +40,8 @@ public final class PartyMembersGui extends PartyGui
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.getRank() == Party.Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == Party.Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == IParty.Rank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == IParty.Rank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -58,11 +58,11 @@ public final class PartyMembersGui extends PartyGui
 		}});
 
 		int buttons = 0;
-		for(final Party.Member m : party)
+		for(final IParty.IMember m : party)
 		{
 			final OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
 			final Player onp = offp.getPlayer();
-			addButton(++buttons, new ItemStack(Material.SKULL_ITEM, (m.getRank().equals(Party.Rank.MODERATOR)? 2 : (m.getRank().equals(Party.Rank.ADMIN)? 3 : 1)), (short)3));
+			addButton(++buttons, new ItemStack(Material.SKULL_ITEM, (m.getRank().equals(IParty.Rank.MODERATOR)? 2 : (m.getRank().equals(IParty.Rank.ADMIN)? 3 : 1)), (short)3));
 			setButton(buttons, (offp.getName() != null ? offp.getName() : m.getUuid().toString()), new ArrayList<String>(){
 			{
 				if(offp.getName() == null)
@@ -128,13 +128,13 @@ public final class PartyMembersGui extends PartyGui
 			new PartyManageGui(inst, player, party).show();
 			return;
 		}
-		Party.Member target = party.findMember(getButtonName(slot));
+		IParty.IMember target = party.findMember(getButtonName(slot));
 		if(target == null || target.getParty() != party)
 		{
 			return;
 		}
 
-		final Party.Member mt = inst.getParties().findMember(player.getUniqueId());
+		final IParty.IMember mt = inst.getParties().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -142,8 +142,8 @@ public final class PartyMembersGui extends PartyGui
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.getRank() == Party.Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == Party.Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == IParty.Rank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == IParty.Rank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -164,14 +164,14 @@ public final class PartyMembersGui extends PartyGui
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							target.setRank(Party.Rank.MODERATOR);
+							target.setRank(IParty.Rank.MODERATOR);
 						}
 					} break;
 					case MODERATOR:
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							target.setRank(Party.Rank.ADMIN);
+							target.setRank(IParty.Rank.ADMIN);
 						}
 					} break;
 					default: break;
@@ -192,14 +192,14 @@ public final class PartyMembersGui extends PartyGui
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							target.setRank(Party.Rank.MEMBER);
+							target.setRank(IParty.Rank.MEMBER);
 						}
 					} break;
 					case ADMIN:
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							target.setRank(Party.Rank.MODERATOR);
+							target.setRank(IParty.Rank.MODERATOR);
 						}
 					} break;
 					default: break;

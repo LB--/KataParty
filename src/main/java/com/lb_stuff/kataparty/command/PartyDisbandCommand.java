@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,14 +22,14 @@ public class PartyDisbandCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0)
 			{
-				Party.Member m = inst.getParties().findMember(player.getUniqueId());
+				IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
 				if(m == null)
 				{
 					inst.tellMessage(player, "not-in-party");
 				}
-				else if(m.getRank() == Party.Rank.ADMIN)
+				else if(m.getRank() == IParty.Rank.ADMIN)
 				{
-					Party p = m.getParty();
+					IParty p = m.getParty();
 					inst.getParties().remove(p, player);
 				}
 				else

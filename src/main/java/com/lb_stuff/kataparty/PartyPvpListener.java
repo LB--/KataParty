@@ -1,5 +1,7 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.IParty;
+
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -18,8 +20,8 @@ public class PartyPvpListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onDamageBy(EntityDamageByEntityEvent e)
 	{
-		Party.Member a = inst.getParties().findMember(e.getDamager().getUniqueId());
-		Party.Member b = inst.getParties().findMember(e.getEntity().getUniqueId());
+		IParty.IMember a = inst.getParties().findMember(e.getDamager().getUniqueId());
+		IParty.IMember b = inst.getParties().findMember(e.getEntity().getUniqueId());
 		if(a != null && !a.getParty().canPvp())
 		{
 			if(b != null && a.getParty() == b.getParty())
@@ -62,8 +64,8 @@ public class PartyPvpListener implements Listener
 			AnimalTamer owner = ((Wolf)e.getEntity()).getOwner();
 			if(owner != null)
 			{
-				Party.Member a = inst.getParties().findMember(owner.getUniqueId());
-				Party.Member b = inst.getParties().findMember(e.getTarget().getUniqueId());
+				IParty.IMember a = inst.getParties().findMember(owner.getUniqueId());
+				IParty.IMember b = inst.getParties().findMember(e.getTarget().getUniqueId());
 				if(a != null && b != null && a.getParty() == b.getParty() && !a.getParty().canPvp())
 				{
 					e.setCancelled(true); //member's wolf targets member

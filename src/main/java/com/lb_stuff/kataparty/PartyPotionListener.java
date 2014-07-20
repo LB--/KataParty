@@ -1,5 +1,7 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.IParty;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
@@ -21,8 +23,8 @@ public class PartyPotionListener implements Listener
 		ProjectileSource ps = e.getPotion().getShooter();
 		if(ps instanceof Player)
 		{
-			Party.Member thrower = inst.getParties().findMember(((Player)ps).getUniqueId());
-			if(thrower != null && thrower.getParty().arePotionsSmart())
+			IParty.IMember thrower = inst.getParties().findMember(((Player)ps).getUniqueId());
+//			if(thrower != null && thrower.getParty().arePotionsSmart())
 			{
 				//
 			}
