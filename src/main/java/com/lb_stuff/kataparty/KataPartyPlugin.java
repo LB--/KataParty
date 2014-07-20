@@ -7,6 +7,8 @@ import com.lb_stuff.kataparty.config.MainConfig;
 import com.lb_stuff.kataparty.api.PartyTicketService;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -21,11 +23,11 @@ import java.io.*;
 
 public final class KataPartyPlugin extends JavaPlugin implements Messenger
 {
-	private void implementCommand(String name, PartyCommand command)
+	private void implementCommand(String name, CommandExecutor command)
 	{
 		getCommand(name).setExecutor(command);
 	}
-	private void implementCommand(String name, TabbablePartyCommand command)
+	private void implementCommand(String name, TabExecutor command)
 	{
 		getCommand(name).setTabCompleter(command);
 		getCommand(name).setExecutor(command);
@@ -94,8 +96,8 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 
 		parties.keepEmptyParties(!config.getBoolean("remove-empty-parties"));
 
-		getCommand("kataparty").setExecutor(new PluginInfoCommand(this));
-		getCommand("kpreload").setExecutor(new PluginReloadCommand(this));
+		implementCommand("kataparty", new PluginInfoCommand(this));
+		implementCommand("kpreload", new PluginReloadCommand(this));
 		implementCommand("kpcreate", new PartyCreateCommand(this));
 		implementCommand("kplist", new PartyListCommand(this));
 		implementCommand("kpjoin", new PartyJoinCommand(this));
