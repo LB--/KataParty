@@ -251,24 +251,12 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		Party.Member m = getParties().findMember(p.getUniqueId());
 		if(m != null)
 		{
-			tellMessage(p, "party-member-inform", m.getParty().getName());
-			MemberSettings ms = getParties().getSettings(p.getUniqueId());
-			if(ms != null)
-			{
-				ms.setPref(filter.getDefaultFilterPref("on-join-server"));
-				filter.tellFilterPref(p);
-			}
 			//TODO: shared health stuff
-		}
-		else
-		{
-			tellMessage(p, "party-introvert-inform");
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLeave(PlayerQuitEvent e)
 	{
-		e.getPlayer().closeInventory();
 		Party.Member m = getParties().findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{

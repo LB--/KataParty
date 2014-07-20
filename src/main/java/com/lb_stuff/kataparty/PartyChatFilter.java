@@ -4,10 +4,11 @@ import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 import static com.lb_stuff.kataparty.ChatFilterPref.*;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.Set;
 import java.util.UUID;
@@ -214,5 +215,29 @@ public class PartyChatFilter implements Listener
 		}
 
 		e.setCancelled(true);
+	}
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerJoin(PlayerJoinEvent e)
+	{
+		Player p = e.getPlayer();
+		Party.Member m = inst.getParties().findMember(p.getUniqueId());
+		if(m != null)
+		{
+			inst.tellMessage(p, "party-member-inform", m.getParty().getName());
+			MemberSettings ms = getSettings(p.getUniqueId());
+			if(ms != null)
+			{
+				ms.setPref(getDefaultFilterPref("on-join-server"));
+				tellFilterPref(p);
+			}
+			else
+			{
+				inst.getLogger().warning(p.getName()+" does not have a MemberSettings but they're in a party!");
+			}
+		}
+		else
+		{
+			inst.tellMessage(p, "party-introvert-inform");
+		}
 	}
 }

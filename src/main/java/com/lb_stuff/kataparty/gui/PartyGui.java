@@ -5,12 +5,17 @@ import com.lb_stuff.kataparty.KataPartyPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
+import org.bukkit.event.Listener;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -142,7 +147,7 @@ public abstract class PartyGui implements Listener
 	{
 	}
 
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onInvClick(InventoryClickEvent e)
 	{
 		if(e.getWhoClicked() == player)
@@ -159,7 +164,7 @@ public abstract class PartyGui implements Listener
 			e.getView().getTopInventory().setContents(inv.getContents());
 		}
 	}
-	@EventHandler(ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void OnInvDrag(InventoryDragEvent e)
 	{
 		if(e.getWhoClicked() == player)
@@ -176,7 +181,7 @@ public abstract class PartyGui implements Listener
 			e.getView().getTopInventory().setContents(inv.getContents());
 		}
 	}
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public final void onInvClose(InventoryCloseEvent e)
 	{
 		if(e.getPlayer() == player)
@@ -184,5 +189,15 @@ public abstract class PartyGui implements Listener
 			HandlerList.unregisterAll(this);
 			onClose();
 		}
+	}
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onKick(PlayerKickEvent e)
+	{
+		e.getPlayer().closeInventory();
+	}
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onLeave(PlayerQuitEvent e)
+	{
+		e.getPlayer().closeInventory();
 	}
 }
