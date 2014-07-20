@@ -41,6 +41,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 	private final File configFile = new File(getDataFolder(), "config.yml");
 	private final File partiesFile = new File(getDataFolder(), "parties.yml");
 	private MainConfig config;
+	private final PartyPvpListener pvp = new PartyPvpListener(this);
 	@Override
 	public void onEnable()
 	{
@@ -113,6 +114,7 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		implementCommand("kptoggle", new PartyChatToggleCommand(this));
 
 		getServer().getPluginManager().registerEvents(this, this);
+		getServer().getPluginManager().registerEvents(pvp, this);
 		getServer().getPluginManager().registerEvents(filter, this);
 		getServer().getPluginManager().registerEvents(tickets, this);
 
@@ -271,62 +273,6 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		if(m != null)
 		{
 			//TODO: shared health stuff
-		}
-	}
-	@EventHandler(ignoreCancelled = true)
-	public void onDamageBy(EntityDamageByEntityEvent e)
-	{
-		Party.Member a = getParties().findMember(e.getDamager().getUniqueId());
-		Party.Member b = getParties().findMember(e.getEntity().getUniqueId());
-		if(a != null && !a.getParty().canPvp())
-		{
-			if(b != null && a.getParty() == b.getParty())
-			{
-				e.setCancelled(true); //member attacks member
-			}
-			else if(e.getEntity() instanceof Wolf)
-			{
-				AnimalTamer owner = ((Wolf)e.getEntity()).getOwner();
-				if(owner != null)
-				{
-					b = getParties().findMember(owner.getUniqueId());
-					if(a != b && a.getParty() == b.getParty())
-					{
-						e.setCancelled(true); //member attacks wolf of member
-					}
-				}
-			}
-		}
-		else if(b != null && !b.getParty().canPvp() && e.getDamager() instanceof Wolf)
-		{
-			Wolf w = (Wolf)e.getDamager();
-			AnimalTamer owner = w.getOwner();
-			if(owner != null)
-			{
-				a = getParties().findMember(owner.getUniqueId());
-				if(a != null && a.getParty() == b.getParty())
-				{
-					e.setCancelled(true); //member's wolf attacks member
-					w.setTarget(null);
-				}
-			}
-		}
-	}
-	@EventHandler(ignoreCancelled = true)
-	public void onTarget(EntityTargetEvent e)
-	{
-		if(e.getEntity() instanceof Wolf && (e.getReason() == TargetReason.TARGET_ATTACKED_OWNER || e.getReason() == TargetReason.OWNER_ATTACKED_TARGET))
-		{
-			AnimalTamer owner = ((Wolf)e.getEntity()).getOwner();
-			if(owner != null)
-			{
-				Party.Member a = getParties().findMember(owner.getUniqueId());
-				Party.Member b = getParties().findMember(e.getTarget().getUniqueId());
-				if(a != null && b != null && a.getParty() == b.getParty() && !a.getParty().canPvp())
-				{
-					e.setCancelled(true); //member's wolf targets member
-				}
-			}
 		}
 	}
 	@EventHandler(ignoreCancelled = true)
