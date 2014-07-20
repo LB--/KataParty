@@ -65,7 +65,7 @@ public class PartyTicketManager implements Listener
 		}
 		return false;
 	}
-	public Party getTicketParty(ItemStack is)
+	public IParty getTicketParty(ItemStack is)
 	{
 		if(isTicket(is))
 		{
@@ -158,7 +158,7 @@ public class PartyTicketManager implements Listener
 			if(e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
 			{
 				final Player player = e.getPlayer();
-				final Party p = getTicketParty(is);
+				final IParty p = getTicketParty(is);
 				if(p != null && wasTicketGiven(is))
 				{
 					IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
@@ -186,7 +186,7 @@ public class PartyTicketManager implements Listener
 			if(wasTicketGiven(is))
 			{
 				e.getItemDrop().remove();
-				Party p = getTicketParty(is);
+				IParty p = getTicketParty(is);
 				IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
 				if(p != null && (m == null || m.getParty() != p))
 				{

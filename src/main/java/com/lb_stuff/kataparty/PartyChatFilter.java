@@ -1,7 +1,8 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.ChatFilterPref;
 import static com.lb_stuff.kataparty.PartySet.MemberSettings;
-import static com.lb_stuff.kataparty.ChatFilterPref.*;
+import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.entity.Player;

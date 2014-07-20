@@ -1,6 +1,10 @@
 package com.lb_stuff.kataparty;
 
-import static com.lb_stuff.kataparty.ChatFilterPref.*;
+import com.lb_stuff.kataparty.api.ChatFilterPref;
+import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
+import com.lb_stuff.kataparty.api.Messenger;
+import com.lb_stuff.kataparty.api.IPartySet;
+import static com.lb_stuff.kataparty.api.IPartySet.IMemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.entity.Player;
@@ -8,10 +12,10 @@ import org.bukkit.entity.Player;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-public class PartySet implements Iterable<Party>
+public class PartySet implements IPartySet
 {
 	private final KataPartyPlugin inst;
-	private final Set<Party> parties = new HashSet<>();
+	private final Set<IParty> parties = new HashSet<>();
 	private boolean keep_empty = false;
 	public PartySet(KataPartyPlugin plugin)
 	{
@@ -28,36 +32,28 @@ public class PartySet implements Iterable<Party>
 		return inst;
 	}
 
-	public Party add(String pname, Player creator)
+	@Override
+	public void add(IParty p)
 	{
-		if(findParty(pname) == null)
-		{
-			Party p = new Party(this, pname);
-			parties.add(p);
-			if(creator != null)
-			{
-				p.addMember(creator.getUniqueId()).setRank(Party.Rank.ADMIN);
-				getSettings(creator.getUniqueId()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
-			}
-			return p;
-		}
-		return null;
+		parties.add(p);
 	}
+	@Override
 	public void remove(IParty p, Player player)
 	{
 		p.disableInventory(player);
 		p.disband();
 		parties.remove(p);
 	}
+	@Override
 	public void keepEmptyParties(boolean keep)
 	{
 		keep_empty = keep;
 		if(!keep)
 		{
-			Iterator<Party> it = iterator();
+			Iterator<IParty> it = iterator();
 			while(it.hasNext())
 			{
-				Party p = it.next();
+				IParty p = it.next();
 				if(!p.isSticky() && p.numMembers() == 0)
 				{
 					it.remove();
@@ -65,18 +61,21 @@ public class PartySet implements Iterable<Party>
 			}
 		}
 	}
+	@Override
 	public boolean keepEmptyParties()
 	{
 		return keep_empty;
 	}
 
 	@Override
-	public Iterator<Party> iterator()
+	public Iterator<IParty> iterator()
 	{
-		return parties.iterator();
+		Set<IParty> copy = new HashSet<>();
+		copy.addAll(parties);
+		return copy.iterator();
 	}
 
-	public static class MemberSettings
+	public static class MemberSettings implements IMemberSettings
 	{
 		private String partyname;
 		private ChatFilterPref pref = PREFER_PARTY;
@@ -85,23 +84,28 @@ public class PartySet implements Iterable<Party>
 			partyname = pname;
 		}
 
+		@Override
 		public String getPartyName()
 		{
 			return partyname;
 		}
+		@Override
 		public void setPartyName(String partyname)
 		{
 			this.partyname = partyname;
 		}
 
+		@Override
 		public ChatFilterPref getPref()
 		{
 			return pref;
 		}
+		@Override
 		public void setPref(ChatFilterPref cfp)
 		{
 			pref = cfp;
 		}
+		@Override
 		public void togglePref()
 		{
 			switch(pref)
@@ -119,14 +123,17 @@ public class PartySet implements Iterable<Party>
 		}
 	}
 	private final ConcurrentSkipListMap<UUID, MemberSettings> partiers = new ConcurrentSkipListMap<>();
+	@Override
 	public void addSettings(UUID uuid, String pname)
 	{
 		partiers.put(uuid, new MemberSettings(pname));
 	}
+	@Override
 	public MemberSettings getSettings(UUID uuid)
 	{
 		return partiers.get(uuid);
 	}
+	@Override
 	public void removeSettings(UUID uuid)
 	{
 		partiers.remove(uuid);
@@ -137,23 +144,30 @@ public class PartySet implements Iterable<Party>
 		return inst.getFilter().getDefaultFilterPref("on-party-join");
 	}
 
-	private class PartyMembers implements Iterable<Map.Entry<UUID, MemberSettings>>
+	private class PartyMembers implements Iterable<Map.Entry<UUID, IMemberSettings>>
 	{
 		@Override
-		public Iterator<Map.Entry<UUID, MemberSettings>> iterator()
+		public Iterator<Map.Entry<UUID, IMemberSettings>> iterator()
 		{
-			return partiers.entrySet().iterator();
+			Map<UUID, IMemberSettings> mems = new HashMap<>();
+			for(Map.Entry<UUID, MemberSettings> m : partiers.entrySet())
+			{
+				mems.put(m.getKey(), m.getValue());
+			}
+			return mems.entrySet().iterator();
 		}
 	}
-	private PartyMembers pms = new PartyMembers();
-	public Iterable<Map.Entry<UUID, MemberSettings>> getPartyMembers()
+	private final PartyMembers pms = new PartyMembers();
+	@Override
+	public Iterable<Map.Entry<UUID, IMemberSettings>> getPartyMembers()
 	{
 		return pms;
 	}
 
+	@Override
 	public IParty.IMember findMember(UUID uuid)
 	{
-		for(Party p : parties)
+		for(IParty p : this)
 		{
 			for(IParty.IMember m : p)
 			{
@@ -165,9 +179,10 @@ public class PartySet implements Iterable<Party>
 		}
 		return null;
 	}
-	public Party findParty(String name)
+	@Override
+	public IParty findParty(String name)
 	{
-		for(Party p : parties)
+		for(IParty p : this)
 		{
 			if(p.getName().equalsIgnoreCase(name))
 			{
@@ -176,6 +191,7 @@ public class PartySet implements Iterable<Party>
 		}
 		return null;
 	}
+	@Override
 	public boolean contains(IParty p)
 	{
 		return parties.contains(p);

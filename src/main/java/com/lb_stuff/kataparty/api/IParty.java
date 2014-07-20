@@ -8,6 +8,8 @@ import java.util.Set;
 
 public interface IParty extends Iterable<IParty.IMember>
 {
+	void informMembers(String message);
+	void informMembersMessage(String name, Object... parameters);
 	String getName();
 	void rename(String name);
 	@Override
@@ -47,6 +49,8 @@ public interface IParty extends Iterable<IParty.IMember>
 
 	public interface IMember
 	{
+		void inform(String message);
+		void informMessage(String name, Object... parameters);
 		@Override
 		int hashCode();
 		@Override

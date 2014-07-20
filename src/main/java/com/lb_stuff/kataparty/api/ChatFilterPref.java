@@ -1,4 +1,4 @@
-package com.lb_stuff.kataparty;
+package com.lb_stuff.kataparty.api;
 
 public enum ChatFilterPref
 {

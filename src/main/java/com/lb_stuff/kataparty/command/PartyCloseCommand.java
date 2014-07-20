@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
+import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,7 +25,7 @@ public class PartyCloseCommand extends PartyAdminCommand
 			Player player = (Player)sender;
 			if(args.length == 1)
 			{
-				Party p = inst.getParties().findParty(args[0]);
+				IParty p = inst.getParties().findParty(args[0]);
 				if(p == null)
 				{
 					inst.tellMessage(player, "party-does-not-exist", args[0]);

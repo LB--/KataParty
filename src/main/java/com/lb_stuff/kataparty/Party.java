@@ -1,5 +1,6 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.Messenger;
 import com.lb_stuff.kataparty.api.IParty;
 import static com.lb_stuff.kataparty.api.IParty.IMember;
 
@@ -33,7 +34,7 @@ public class Party implements IParty
 		name = pname;
 	}
 
-	@Deprecated
+	@Override @Deprecated
 	public void informMembers(String message)
 	{
 		for(Member m : members)
@@ -41,6 +42,7 @@ public class Party implements IParty
 			m.inform(message);
 		}
 	}
+	@Override
 	public void informMembersMessage(String name, Object... parameters)
 	{
 		for(Member m : members)
@@ -57,7 +59,7 @@ public class Party implements IParty
 	@Override
 	public void rename(String n)
 	{
-		for(Map.Entry<UUID, PartySet.MemberSettings> e : parties.getPartyMembers())
+		for(Map.Entry<UUID, PartySet.IMemberSettings> e : parties.getPartyMembers())
 		{
 			if(e.getValue().getPartyName().equals(name))
 			{
@@ -434,7 +436,7 @@ public class Party implements IParty
 			uuid = id;
 		}
 
-		@Deprecated
+		@Override @Deprecated
 		public void inform(String message)
 		{
 			OfflinePlayer offp = Bukkit.getOfflinePlayer(uuid);
@@ -443,6 +445,7 @@ public class Party implements IParty
 				offp.getPlayer().sendMessage("[KataParty] "+message);
 			}
 		}
+		@Override
 		public void informMessage(String name, Object... parameters)
 		{
 			OfflinePlayer offp = Bukkit.getOfflinePlayer(uuid);

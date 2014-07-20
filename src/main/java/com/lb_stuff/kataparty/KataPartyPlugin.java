@@ -4,6 +4,7 @@ import com.lb_stuff.command.PluginInfoCommand;
 import com.lb_stuff.command.PluginReloadCommand;
 import com.lb_stuff.kataparty.command.*;
 import com.lb_stuff.kataparty.config.MainConfig;
+import com.lb_stuff.kataparty.api.Messenger;
 import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.kataparty.api.IParty;
 
@@ -59,7 +60,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 			for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 			{
 				ConfigurationSection ps = (ConfigurationSection)e.getValue();
-				Party p = getParties().add(e.getKey(), null);
+				Party p = addParty(e.getKey(), null);
 				p.setTp(ps.getBoolean("tp"));
 				p.setPvp(ps.getBoolean("pvp"));
 				p.setVisible(ps.getBoolean("visible"));
@@ -149,7 +150,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 	{
 		YamlConfiguration conf = new YamlConfiguration();
 		ConfigurationSection cp = conf.createSection("parties");
-		for(Party p : getParties())
+		for(IParty p : getParties())
 		{
 			ConfigurationSection ps = cp.createSection(p.getName());
 			ps.set("tp", p.canTp());
@@ -165,15 +166,15 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 			}
 			ps.set("invite-only", p.isInviteOnly());
 			ps.set("stickied", p.isSticky());
-			if(p.getHealth() == null)
+//			if(p.getHealth() == null)
 			{
 				ps.set("health", false);
 			}
-			else
+//			else
 			{
-				ps.set("health", p.getHealth());
+//				ps.set("health", p.getHealth());
 			}
-			ps.set("potions", p.arePotionsSmart());
+			ps.set("potions", false/*p.arePotionsSmart()*/);
 			ConfigurationSection pms = ps.createSection("members");
 			for(IParty.IMember m : p)
 			{
@@ -196,6 +197,21 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 	public PartySet getParties()
 	{
 		return parties;
+	}
+	public Party addParty(String pname, Player creator)
+	{
+		if(getParties().findParty(pname) == null)
+		{
+			Party p = new Party(getParties(), pname);
+			getParties().add(p);
+			if(creator != null)
+			{
+				p.addMember(creator.getUniqueId()).setRank(Party.Rank.ADMIN);
+				getParties().getSettings(creator.getUniqueId()).setPref(getFilter().getDefaultFilterPref("on-party-create"));
+			}
+			return p;
+		}
+		return null;
 	}
 
 	private final PartyChatFilter filter = new PartyChatFilter(this);

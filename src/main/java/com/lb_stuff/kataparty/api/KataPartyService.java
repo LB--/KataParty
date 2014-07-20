@@ -13,6 +13,15 @@ public class KataPartyService
 		inst = plugin;
 	}
 
+	public Messenger getMessenger()
+	{
+		return inst;
+	}
+	public IPartySet getPartySet()
+	{
+		return inst.getParties();
+	}
+
 	private PartyTicketManager getTicketManager()
 	{
 		return inst.getTicketManager();

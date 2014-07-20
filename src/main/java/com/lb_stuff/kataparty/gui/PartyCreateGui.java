@@ -1,7 +1,6 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.Party;
 import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.Material;
@@ -119,7 +118,7 @@ public final class PartyCreateGui extends PartyGui
 				{
 					return;
 				}
-				Party p = inst.getParties().add(pname, player);
+				IParty p = inst.addParty(pname, player);
 				p.setTp(getButton(TELEPORTS) != 1);
 				p.setPvp(getButton(PVP) != 1);
 				if(getButton(INVENTORY) != 1)
