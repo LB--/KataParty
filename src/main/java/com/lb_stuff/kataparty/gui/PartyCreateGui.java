@@ -22,6 +22,7 @@ public final class PartyCreateGui extends PartyGui
 	private static final int INVENTORY = 4;
 	private static final int VISIBLE = 5;
 	private static final int INVITES = 6;
+	private static final int STICKY = 8;
 	public PartyCreateGui(KataPartyPlugin plugin, Player p, String pname)
 	{
 		super(plugin, p, 1, plugin.getMessage("create-gui-title", pname));
@@ -84,6 +85,13 @@ public final class PartyCreateGui extends PartyGui
 			}
 		}});
 		setButton(INVITES, (getDefault("invite-only")? 2 : 1));
+		if(!inst.getParties().keepEmptyParties() && player.hasPermission("KataParty.stick"))
+		{
+			addButton(STICKY, inst.getMessage("manage-sticky-disabled"), Material.STICK, new ArrayList<String>(){
+			{
+				add(inst.getMessage("manage-click-to-change"));
+			}});
+		}
 	}
 
 	@Override
@@ -119,6 +127,7 @@ public final class PartyCreateGui extends PartyGui
 				}
 				p.setVisible(getButton(VISIBLE) != 1);
 				p.setInviteOnly(getButton(INVITES) != 1);
+				p.setSticky(getButton(STICKY) != 1);
 				inst.getFilter().tellFilterPref(player);
 				hide();
 			} break;
@@ -198,7 +207,23 @@ public final class PartyCreateGui extends PartyGui
 						setButton(INVITES, inst.getMessage("manage-invites-enabled"));
 					}
 				}
-			}
+			} break;
+			case STICKY:
+			{
+				if(!inst.getParties().keepEmptyParties() && player.hasPermission("KataParty.stick"))
+				{
+					if(getButton(STICKY) != 1)
+					{
+						setButton(STICKY, 1);
+						setButton(STICKY, inst.getMessage("manage-sticky-disabled"));
+					}
+					else
+					{
+						setButton(STICKY, 2);
+						setButton(STICKY, inst.getMessage("manage-sticky-enabled"));
+					}
+				}
+			} break;
 			default: break;
 		}
 	}

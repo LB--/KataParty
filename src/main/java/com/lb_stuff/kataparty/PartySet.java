@@ -57,7 +57,7 @@ public class PartySet implements Iterable<Party>
 			while(it.hasNext())
 			{
 				Party p = it.next();
-				if(p.numMembers() == 0)
+				if(!p.isSticky() && p.numMembers() == 0)
 				{
 					it.remove();
 				}

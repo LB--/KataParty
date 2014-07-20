@@ -79,6 +79,14 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 				{
 					p.setInviteOnly(false);
 				}
+				if(ps.contains("stickied"))
+				{
+					p.setSticky(ps.getBoolean("stickied"));
+				}
+				else
+				{
+					p.setSticky(false);
+				}
 				if(!ps.isBoolean("health"))
 				{
 					p.setHealth(ps.getDouble("health"));
@@ -155,6 +163,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 				ps.set("inventory", p.getInventory().getContents());
 			}
 			ps.set("invite-only", p.isInviteOnly());
+			ps.set("stickied", p.isSticky());
 			if(p.getHealth() == null)
 			{
 				ps.set("health", false);

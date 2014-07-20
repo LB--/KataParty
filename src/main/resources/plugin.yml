@@ -96,6 +96,7 @@ permissions:
       KataParty.create: true
       KataParty.hide: true
       KataParty.seehidden: true
+      KataParty.stick: true
       KataParty.list: true
       KataParty.join: true
       KataParty.leave: true
@@ -138,6 +139,9 @@ permissions:
     default: op
   KataParty.seehidden:
     description: "Allows for seeing hidden KataParties in the list"
+    default: op
+  KataParty.stick:
+    description: "Allows to toggle the sticky setting for KataParties"
     default: op
   KataParty.list:
     description: "Allows viewing a list of KataParties"

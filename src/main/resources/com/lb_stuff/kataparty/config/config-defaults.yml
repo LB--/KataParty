@@ -71,6 +71,8 @@ messages:
   manage-visibility-disabled: "&cWill not&r be visible in list"
   manage-invites-enabled: "&rYour KataParty is &binvite-only"
   manage-invites-disabled: "&r&oAnyone&r can join your KataParty"
+  manage-sticky-enabled: "&rThis &bKataParty&r will stick around with no members"
+  manage-sticky-disabled: "&rThis &bKataParty&r will close when the last member leaves"
   manage-generate-ticket: "&rGenerate an &binvite ticket"
   manage-disband: "&cDisband&r your KataParty"
   manage-close: "&cClose&r this KataParty"

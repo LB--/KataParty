@@ -97,6 +97,8 @@ messages:
   manage-visibility-disabled: "[%messages.manage-visibility-disabled%]"
   manage-invites-enabled: "[%messages.manage-invites-enabled%]"
   manage-invites-disabled: "[%messages.manage-invites-disabled%]"
+  manage-sticky-enabled: "[%messages.manage-sticky-enabled%]"
+  manage-sticky-disabled: "[%messages.manage-sticky-disabled%]"
   manage-generate-ticket: "[%messages.manage-generate-ticket%]"
   manage-disband: "[%messages.manage-disband%]"
   manage-close: "[%messages.manage-close%]"

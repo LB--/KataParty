@@ -19,6 +19,7 @@ public class Party implements Iterable<Party.Member>
 	private boolean visible = true;
 	private Inventory inv = null;
 	private boolean invite = false;
+	private boolean sticky = false;
 	private Double health = null;
 	private boolean potions = false;
 
@@ -134,7 +135,7 @@ public class Party implements Iterable<Party.Member>
 		if(!disbanded)
 		{
 			informMembersMessage("party-leave-inform", Bukkit.getOfflinePlayer(uuid).getName());
-			if(hadmembers && numMembers() == 0 && !parties.keepEmptyParties())
+			if(hadmembers && numMembers() == 0 && !parties.keepEmptyParties() && !sticky)
 			{
 				parties.remove(this, Bukkit.getPlayer(uuid));
 				if(m  != null)
@@ -319,6 +320,15 @@ public class Party implements Iterable<Party.Member>
 			informMembersMessage("party-public-inform");
 		}
 		invite = only;
+	}
+
+	public boolean isSticky()
+	{
+		return sticky;
+	}
+	public void setSticky(boolean stick)
+	{
+		sticky = stick;
 	}
 
 	public Double getHealth()

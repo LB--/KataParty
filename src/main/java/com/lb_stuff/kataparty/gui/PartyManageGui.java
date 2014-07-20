@@ -25,6 +25,7 @@ public final class PartyManageGui extends PartyGui
 	private static final int VISIBLE = 5;
 	private static final int INVITES = 6;
 	private static final int TICKETS = 7;
+	private static final int STICKY = 8;
 	private static final int DISBAND = 9;
 	private static final int TPALL = 10;
 	private static final int SELFTP = 11;
@@ -174,6 +175,14 @@ public final class PartyManageGui extends PartyGui
 					add(inst.getMessage("manage-cannot-use"));
 				}
 			}});
+		}
+		if(!inst.getParties().keepEmptyParties() && player.hasPermission("KataParty.stick"))
+		{
+			addButton(STICKY, inst.getMessage(party.isSticky()? "manage-sticky-enabled" : "manage-sticky-disabled"), Material.STICK, new ArrayList<String>(){
+			{
+				add(inst.getMessage("manage-click-to-change"));
+			}});
+			setButton(STICKY, (party.isSticky()? 2 : 1));
 		}
 		addButton(DISBAND, inst.getMessage(isMember? "manage-disband" : "manage-close"), Material.TNT, new ArrayList<String>(){
 		{
@@ -328,6 +337,13 @@ public final class PartyManageGui extends PartyGui
 				{
 					inst.getTicketManager().removeTickets(player.getInventory());
 					player.getWorld().dropItem(player.getLocation(), inst.getTicketManager().generateTicket(party)).setPickupDelay(0);
+				}
+			} break;
+			case STICKY:
+			{
+				if(!inst.getParties().keepEmptyParties() && player.hasPermission("KataParty.stick"))
+				{
+					party.setSticky(!party.isSticky());
 				}
 			} break;
 			case DISBAND:
