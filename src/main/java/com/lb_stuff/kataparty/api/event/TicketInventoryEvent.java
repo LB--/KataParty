@@ -1,12 +1,10 @@
 package com.lb_stuff.kataparty.api.event;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class TicketInventoryEvent extends Event implements Cancellable
+public class TicketInventoryEvent extends CancellableKataPartyEvent
 {
 	private final Inventory inv;
 	private final ItemStack ticket;
@@ -23,18 +21,6 @@ public class TicketInventoryEvent extends Event implements Cancellable
 	public ItemStack getTicket()
 	{
 		return ticket;
-	}
-
-	private boolean cancelled = false;
-	@Override
-	public boolean isCancelled()
-	{
-		return cancelled;
-	}
-	@Override
-	public void setCancelled(boolean c)
-	{
-		cancelled = c;
 	}
 
 	private static final HandlerList handlers = new HandlerList();

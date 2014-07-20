@@ -109,7 +109,7 @@ public class PartyTicketManager implements Listener
 	}
 
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInvClick(InventoryClickEvent e)
 	{
 		Inventory top = e.getView().getTopInventory();
@@ -140,7 +140,7 @@ public class PartyTicketManager implements Listener
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInteract(PlayerInteractEntityEvent e)
 	{
 		if(isTicket(e.getPlayer().getItemInHand()))
@@ -148,7 +148,7 @@ public class PartyTicketManager implements Listener
 			e.setCancelled(true);
 		}
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
 	public void onInteract(final PlayerInteractEvent e)
 	{
 		final ItemStack is = e.getItem();
@@ -176,7 +176,7 @@ public class PartyTicketManager implements Listener
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onDrop(final PlayerDropItemEvent e)
 	{
 		final Item i = e.getItemDrop();
@@ -207,7 +207,7 @@ public class PartyTicketManager implements Listener
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPickup(InventoryPickupItemEvent e)
 	{
 		if(isTicket(e.getItem().getItemStack()))
@@ -215,7 +215,7 @@ public class PartyTicketManager implements Listener
 			e.setCancelled(true);
 		}
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPickup(PlayerPickupItemEvent e)
 	{
 		ItemStack is = e.getItem().getItemStack();
