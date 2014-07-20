@@ -1,32 +1,25 @@
 package com.lb_stuff.kataparty;
 
-import com.lb_stuff.command.*;
+import com.lb_stuff.command.PluginInfoCommand;
+import com.lb_stuff.command.PluginReloadCommand;
 import com.lb_stuff.kataparty.command.*;
-import static com.lb_stuff.kataparty.PartySet.MemberSettings;
-import com.lb_stuff.kataparty.config.*;
+import com.lb_stuff.kataparty.config.MainConfig;
 import com.lb_stuff.kataparty.api.PartyTicketService;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.event.Listener;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.*;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
-import org.bukkit.event.EventPriority;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.configuration.*;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.projectiles.ProjectileSource;
 import static org.bukkit.ChatColor.*;
 import org.bukkit.plugin.ServicePriority;
 
 import java.util.*;
 import java.io.*;
 
-public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
+public final class KataPartyPlugin extends JavaPlugin implements Messenger
 {
 	private void implementCommand(String name, PartyCommand command)
 	{
@@ -42,6 +35,8 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 	private final File partiesFile = new File(getDataFolder(), "parties.yml");
 	private MainConfig config;
 	private final PartyPvpListener pvp = new PartyPvpListener(this);
+	private final PartyPotionListener potions = new PartyPotionListener(this);
+	private final PartyHealthXpListener shxp = new PartyHealthXpListener(this);
 	@Override
 	public void onEnable()
 	{
@@ -113,8 +108,9 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 		implementCommand("kpshare", new PartyInventoryCommand(this));
 		implementCommand("kptoggle", new PartyChatToggleCommand(this));
 
-		getServer().getPluginManager().registerEvents(this, this);
 		getServer().getPluginManager().registerEvents(pvp, this);
+		getServer().getPluginManager().registerEvents(potions, this);
+		getServer().getPluginManager().registerEvents(shxp, this);
 		getServer().getPluginManager().registerEvents(filter, this);
 		getServer().getPluginManager().registerEvents(tickets, this);
 
@@ -242,92 +238,5 @@ public class KataPartyPlugin extends JavaPlugin implements Listener, Messenger
 	public void tellMessage(Player p, String name, Object... parameters)
 	{
 		tell(p, getMessage(name, parameters));
-	}
-
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerJoin(PlayerJoinEvent e)
-	{
-		final Player p = e.getPlayer();
-		Party.Member m = getParties().findMember(p.getUniqueId());
-		if(m != null)
-		{
-			//TODO: shared health stuff
-		}
-	}
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerLeave(PlayerQuitEvent e)
-	{
-		Party.Member m = getParties().findMember(e.getPlayer().getUniqueId());
-		if(m != null)
-		{
-			//TODO: shared health stuff
-		}
-	}
-	@EventHandler(ignoreCancelled = true)
-	public void onSplash(PotionSplashEvent e)
-	{
-		ProjectileSource ps = e.getPotion().getShooter();
-		if(ps instanceof Player)
-		{
-			Party.Member thrower = getParties().findMember(((Player)ps).getUniqueId());
-			if(thrower != null && thrower.getParty().arePotionsSmart())
-			{
-				//
-			}
-		}
-	}
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onDamage(EntityDamageEvent e)
-	{
-		if(e.getEntity() instanceof Player)
-		{
-			Party.Member m = getParties().findMember(e.getEntity().getUniqueId());
-			if(m != null && m.getParty().getHealth() != null)
-			{
-				//TODO: shared health stuff
-			}
-		}
-	}
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onDeath(EntityDeathEvent e)
-	{
-		if(e.getEntity() instanceof Player)
-		{
-			Party.Member m = getParties().findMember(e.getEntity().getUniqueId());
-			if(m != null && m.getParty().getHealth() != null)
-			{
-				//TODO: shared health stuff
-			}
-		}
-	}
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onHeal(EntityRegainHealthEvent e)
-	{
-		if(e.getEntity() instanceof Player)
-		{
-			Party.Member m = getParties().findMember(e.getEntity().getUniqueId());
-			if(m != null && m.getParty().getHealth() != null)
-			{
-				//TODO: shared health stuff
-			}
-		}
-	}
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onRespawn(PlayerRespawnEvent e)
-	{
-		Party.Member m = getParties().findMember(e.getPlayer().getUniqueId());
-		if(m != null && m.getParty().getHealth() != null)
-		{
-			//TODO: shared health stuff
-		}
-	}
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onXp(PlayerExpChangeEvent e)
-	{
-		Party.Member m = getParties().findMember(e.getPlayer().getUniqueId());
-		if(m != null && m.getParty().getHealth() != null)
-		{
-			//TODO: shared health stuff
-		}
 	}
 }
