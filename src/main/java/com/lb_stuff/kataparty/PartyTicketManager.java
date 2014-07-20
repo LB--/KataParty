@@ -147,7 +147,7 @@ public class PartyTicketManager implements Listener
 			e.setCancelled(true);
 		}
 	}
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onInteract(final PlayerInteractEvent e)
 	{
 		final ItemStack is = e.getItem();
@@ -165,6 +165,7 @@ public class PartyTicketManager implements Listener
 					{
 						inst.tellMessage(player, "ticket-accept-inform", p.getName());
 						p.addMember(player.getUniqueId());
+						inst.getFilter().tellFilterPref(player);
 					}
 				}
 				inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()

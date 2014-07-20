@@ -40,13 +40,13 @@ public final class PartyListGui extends PartyGui
 					add(inst.getMessage("list-teleports", p.canTp()));
 					add(inst.getMessage("list-inventory", (p.getInventory() != null)));
 					add(inst.getMessage("list-invite-only", p.isInviteOnly()));
-					if(!same)
-					{
-						add(inst.getMessage("list-join"));
-					}
-					else
+					if(same)
 					{
 						add(inst.getMessage("list-member"));
+					}
+					else if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
+					{
+						add(inst.getMessage("list-join"));
 					}
 					if(player.hasPermission("KataParty.admin"))
 					{
