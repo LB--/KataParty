@@ -11,6 +11,8 @@ commands:
   kataparty:
     description: "Display info about KataParty"
     usage: "/kataparty"
+    permission: KataParty.generic
+    permission-message: "You should have permission to do that but don't for some reason."
     aliases:
       - kp
   kpcreate:
@@ -86,6 +88,8 @@ commands:
   kptoggle:
     description: "Toggle filtered chat between your party and global chat"
     usage: "/kptoggle"
+    permission: KataParty.generic
+    permission-message: "You should have permission to do that but don't for some reason."
     aliases:
       - katatoggle
   kpreload:
@@ -97,6 +101,9 @@ commands:
       - katareload
 
 permissions:
+  KataParty.generic:
+    description: "This permission node is for things that players should always have access to."
+    default: true
   KataParty.*:
     description: "Gives access to all KataParty permissions (for admins)"
     children:
