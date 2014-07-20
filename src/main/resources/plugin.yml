@@ -9,10 +9,10 @@ website: http://dev.bukkit.org/bukkit-plugins/kataparty/
 
 commands:
   KataParty:
-    description: "Display info about KataParty"
+    description: "Display \xa7ainfo\xa7r about \xa7bKataParty"
     usage: "/kataparty"
     permission: KataParty.info
-    permission-message: "missing-commnd-perm.info"
+    permission-message: "\xa7cYou do not have permission."
     aliases:
       - kp
       - kpi
@@ -27,65 +27,65 @@ commands:
       - partychat
       - pc
   kptoggle:
-    description: "Toggle chat filtering between your party and global chat"
+    description: "Toggle \xa7bchat filtering\xa7r between \xa7byour party\xa7r and \xa7bglobal chat"
     usage: "/kptoggle"
     permission: KataParty.toggle
-    permission-message: "missing-commnd-perm.toggle"
+    permission-message: "\xa7cYou do not have permission."
   kpcreate:
-    description: "Create a KataParty via GUI"
+    description: "\xa7aCreate\xa7r a \xa7bKataParty\xa7r via a \xa7bGUI"
     usage: "/kpcreate <KataParty-name>"
     permission: KataParty.create
-    permission-message: "missing-commnd-perm.create"
+    permission-message: "\xa7cYou do not have permission to create KataParties."
   kplist:
-    description: "Show a GUI with a list of available KataParties"
+    description: "Show a \xa7bGUI\xa7r with a \xa7blist\xa7r of available \xa7bKataParties"
     usage: "/kplist"
     permission: KataParty.list
-    permission-message: "missing-commnd-perm.list"
+    permission-message: "\xa7cYou do not have permission to list KataParties."
   kpjoin:
-    description: "Join a KataParty by name instead of via /kplist"
+    description: "\xa7aJoin\xa7r a \xa7bKataParty\xa7r by name instead of \xa7bvia /kplist"
     usage: "/kpjoin <KataParty-name>"
     permission: KataParty.join
-    permission-message: "missing-commnd-perm.join"
+    permission-message: "\xa7cYou do not have permission to join KataParties."
   kpmanage:
-    description: "Manage your personal KataParty settings, or the party-wide settings"
+    description: "\xa7aManage\xa7r your \xa7bpersonal settings\xa7r, or the \xa7bparty-wide settings"
     usage: "/kpmanage"
     permission: KataParty.manage
-    permission-message: "missing-commnd-perm.manage"
+    permission-message: "\xa7cYou do not have permission to manage your KataParty's settings."
   kptp:
-    description: "Teleport to someone in your KataParty via GUI or username"
+    description: "\xa7aTeleport\xa7r to someone \xa7bvia GUI\xa7r or username"
     usage: "/kptp [optional-username]"
     permission: KataParty.teleport.do
-    permission-message: "missing-commnd-perm.tp"
+    permission-message: "\xa7cYou do not have permission to teleport to KataParty members."
   kpshare:
-    description: "Open the shared inventory for your KataParty"
+    description: "\xa7aOpen\xa7r the \xa7bshared inventory\xa7r for your \xa7bKataParty\xa7r"
     usage: "/kpshare"
     permission: KataParty.inventory.use
-    permission-message: "missing-commnd-perm.share"
+    permission-message: "\xa7cYou do not have permission to access your KataParty's shared inventory."
   kpleave:
-    description: "Leave the KataParty you are in instead of via /kpmanage"
+    description: "\xa7cLeave\xa7r the \xa7bKataParty\xa7b you are in instead of \xa7bvia /kpmanage"
     usage: "/kpleave"
     permission: KataParty.leave
-    permission-message: "missing-commnd-perm.leave"
+    permission-message: "\xa7cYou do not have permission to leave your KataParty."
   kpdisband:
-    description: "Disband your KataParty instead of via /kpmanage"
+    description: "\xa7cDisband\xa7r your \xa7bKataParty\xa7r instead of \xa7bvia /kpmanage"
     usage: "/kpdisband"
     permission: KataParty.disband
-    permission-message: "missing-commnd-perm.disband"
+    permission-message: "\xa7cYou do not have permission to disband your KataParty."
   kpclose:
-    description: "Force a KataParty to close (for admins)"
+    description: "\xa7dForce a\xa7r \xa7bKataParty\xa7r \xa7dto close"
     usage: "/kpclose <KataParty-name>"
     permission: KataParty.close
-    permission-message: "missing-commnd-perm.close"
+    permission-message: "\xa7cYou do not have permission to force-close KataParties."
   kpadmin:
-    description: "Manage a specific KataParty's settings (for admins)"
+    description: "\xa7dManage a specific\xa7r \xa7bKataParty\xa7r\xa7d's settings"
     usage: "/kpadmin <KataParty-name>"
     permission: KataParty.admin
-    permission-message: "missing-commnd-perm.admin"
+    permission-message: "\xa7cYou do not have permission to edit the settings of other KataParties."
   kpreload:
-    description: "Reload and regenerate the config file"
+    description: "\xa7dReload and regenerate the config file"
     usage: "/kpreload"
     permission: KataParty.reload
-    permission-message: "missing-commnd-perm.reload"
+    permission-message: "You do not have permission."
 
 permissions:
   KataParty.*:
