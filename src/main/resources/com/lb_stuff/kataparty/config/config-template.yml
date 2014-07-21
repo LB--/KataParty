@@ -5,7 +5,8 @@
 # will be re-generated keeping your existing settings and defaulting
 # any missing settings. Any comments you make are erased, however.
 
-# Set this to false to disable use of Gravity's auto-updster
+# Set this to false to disable use of Gravity's Updater
+# http://forums.bukkit.org/threads/Gravity-Updater.96681/
 auto-updater: [%auto-updater%]
 
 # Here, you can change the default settings for newly created parties.
