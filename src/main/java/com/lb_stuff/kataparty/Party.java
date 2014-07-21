@@ -47,16 +47,9 @@ public final class Party extends PartySettings implements IParty
 		Object inventory = data.get("inv");
 		if(!(inventory instanceof Boolean))
 		{
-			if(inventory instanceof ItemStack[])
-			{
-				enableInventory();
-				inv.setContents((ItemStack[])inventory);
-				data.put("inv", true);
-			}
-			else
-			{
-				throw new IllegalArgumentException();
-			}
+			enableInventory();
+			inv.setContents(((List<ItemStack>)inventory).toArray(new ItemStack[0]));
+			data.put("inv", true);
 		}
 		super.apply(PartySettings.deserialize(data));
 		List<IMember> mems = (List<IMember>)data.get("members");

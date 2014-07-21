@@ -13,6 +13,7 @@ import net.gravitydevelopment.updater.Updater;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -116,10 +117,15 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 
 		if(partiesFile.exists())
 		{
-			YamlConfiguration conf = YamlConfiguration.loadConfiguration(partiesFile);
+			final YamlConfiguration conf = YamlConfiguration.loadConfiguration(partiesFile);
 			if(conf.contains("party-set"))
 			{
-				conf.get("party-set");
+				Bukkit.getScheduler().runTask(this, new Runnable(){@Override public void run()
+				{
+					getLogger().info("Loading parties...");
+					conf.get("party-set");
+					getLogger().info("Done loading parties.");
+				}});
 			}
 			else //compatibiity with pre-v1.2.3
 			{
