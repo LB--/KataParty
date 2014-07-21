@@ -3,6 +3,7 @@ package com.lb_stuff.kataparty.gui;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -263,7 +264,7 @@ public final class PartyManageGui extends PartyGui
 					{
 						if(isMember)
 						{
-							party.removeMember(player.getUniqueId());
+							party.removeMember(player.getUniqueId(), PartyMemberLeaveEvent.Reason.VOLUNTARY);
 							hide();
 						}
 					} break;

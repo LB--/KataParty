@@ -5,6 +5,7 @@ import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 import static com.lb_stuff.kataparty.api.IPartySet.IMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
 import org.bukkit.entity.Player;
 
@@ -44,7 +45,7 @@ public class PartySet implements IPartySet
 				parties.add(p);
 				if(creator != null)
 				{
-					p.addMember(creator.getUniqueId()).setRank(Party.Rank.ADMIN);
+					p.addMember(creator.getUniqueId(), PartyMemberJoinEvent.Reason.CREATOR).setRank(Party.Rank.ADMIN);
 					getSettings(creator.getUniqueId()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
 				}
 				return p;
@@ -212,17 +213,14 @@ public class PartySet implements IPartySet
 		return null;
 	}
 	@Override
-	@SuppressWarnings("element-type-mismatch")
+	@SuppressWarnings("IncompatibleEquals")
 	public IParty findParty(String name)
 	{
-		if(parties.contains(name))
+		for(IParty p : this)
 		{
-			for(IParty p : this)
+			if(p.equals(name))
 			{
-				if(p.getName().equalsIgnoreCase(name))
-				{
-					return p;
-				}
+				return p;
 			}
 		}
 		return null;

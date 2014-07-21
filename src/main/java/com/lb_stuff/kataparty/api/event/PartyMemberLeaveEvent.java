@@ -8,6 +8,7 @@ public class PartyMemberLeaveEvent extends CancellableKataPartyEvent
 {
 	public enum Reason
 	{
+		SWITCH_PARTIES,
 		VOLUNTARY,
 		KICKED,
 		DISBAND,

@@ -3,20 +3,22 @@ package com.lb_stuff.kataparty.api.event;
 import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.event.HandlerList;
-import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class PartyMemberJoinEvent extends CancellableKataPartyEvent
 {
 	public enum Reason
 	{
+		CREATOR,
 		VOLUNTARY,
 		INVITATION,
 		OTHER
 	}
 	private final IParty party;
-	private final Player player;
+	private final UUID player;
 	private final Reason reason;
-	public PartyMemberJoinEvent(IParty p, Player applicant, Reason r)
+	public PartyMemberJoinEvent(IParty p, UUID applicant, Reason r)
 	{
 		party = p;
 		player = applicant;
@@ -27,7 +29,7 @@ public class PartyMemberJoinEvent extends CancellableKataPartyEvent
 	{
 		return party;
 	}
-	public Player getPlayer()
+	public UUID getPlayerUuid()
 	{
 		return player;
 	}

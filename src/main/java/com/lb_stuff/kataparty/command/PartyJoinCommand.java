@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -51,7 +52,10 @@ public class PartyJoinCommand extends TabbablePartyCommand
 					{
 						if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
 						{
-							p.addMember(player.getUniqueId());
+							if(p.addMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
+							{
+								inst.getFilter().tellFilterPref(player);
+							}
 						}
 						else
 						{

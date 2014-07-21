@@ -1,6 +1,8 @@
 package com.lb_stuff.kataparty.api;
 
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -19,8 +21,8 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	void informMembers(String message);
 	void informMembersMessage(String name, Object... parameters);
 	IPartySet getPartySet();
-	IMember addMember(UUID uuid);
-	void removeMember(UUID uuid);
+	IMember addMember(UUID uuid, PartyMemberJoinEvent.Reason r);
+	void removeMember(UUID uuid, PartyMemberLeaveEvent.Reason r);
 	IMember findMember(UUID uuid);
 	IMember findMember(String name);
 	int numMembers();

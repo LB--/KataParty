@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.event.TicketInventoryEvent;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
@@ -164,9 +165,11 @@ public class PartyTicketManager implements Listener
 					IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
 					if(m == null || m.getParty() != p)
 					{
-						inst.tellMessage(player, "ticket-accept-inform", p.getName());
-						p.addMember(player.getUniqueId());
-						inst.getFilter().tellFilterPref(player);
+						if(p.addMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.INVITATION) != null)
+						{
+							inst.tellMessage(player, "ticket-accept-inform", p.getName());
+							inst.getFilter().tellFilterPref(player);
+						}
 					}
 				}
 				inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()

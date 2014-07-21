@@ -2,7 +2,7 @@ package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
-import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -92,8 +92,10 @@ public final class PartyListGui extends PartyGui
 				{
 					if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
 					{
-						p.addMember(player.getUniqueId());
-						inst.getFilter().tellFilterPref(player);
+						if(p.addMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
+						{
+							inst.getFilter().tellFilterPref(player);
+						}
 						hide();
 					}
 				}

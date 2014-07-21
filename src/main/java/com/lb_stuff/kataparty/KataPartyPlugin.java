@@ -94,19 +94,11 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 			for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 			{
 				ConfigurationSection ps = (ConfigurationSection)e.getValue();
-				IParty p = getParties().newParty(null, new PartySettings());
+				PartySettings p = new PartySettings();
+				p.setName(e.getKey());
 				p.setTp(ps.getBoolean("tp"));
 				p.setPvp(ps.getBoolean("pvp"));
 				p.setVisible(ps.getBoolean("visible"));
-				if(!ps.isBoolean("inventory"))
-				{
-					List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
-					p.enableInventory();
-					for(int i = 0; i < items.size() && i < p.getInventory().getSize(); ++i)
-					{
-						p.getInventory().setItem(i, items.get(i));
-					}
-				}
 				if(ps.contains("invite-only"))
 				{
 					p.setInviteOnly(ps.getBoolean("invite-only"));
@@ -128,10 +120,20 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 //					p.setHealth(ps.getDouble("health"));
 				}
 //				p.setPotionsSmart(ps.getBoolean("potions"));
+				IParty party = getParties().newParty(null, p);
+				if(!ps.isBoolean("inventory"))
+				{
+					List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
+					party.enableInventory();
+					for(int i = 0; i < items.size() && i < party.getInventory().getSize(); ++i)
+					{
+						party.getInventory().setItem(i, items.get(i));
+					}
+				}
 				for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
 				{
 					ConfigurationSection ms = (ConfigurationSection)me.getValue();
-					IParty.IMember m = p.addMember(UUID.fromString(me.getKey()));
+					IParty.IMember m = party.addMember(UUID.fromString(me.getKey()), null);
 					m.setRank(Party.Rank.valueOf(ms.getString("rank")));
 					m.setTp(ms.getBoolean("tp"));
 				}

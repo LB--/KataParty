@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -29,7 +30,7 @@ public class PartyLeaveCommand extends PartyCommand
 				}
 				else
 				{
-					m.getParty().removeMember(m.getUuid());
+					m.getParty().removeMember(m.getUuid(), PartyMemberLeaveEvent.Reason.VOLUNTARY);
 				}
 				return true;
 			}

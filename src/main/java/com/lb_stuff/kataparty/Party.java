@@ -5,6 +5,8 @@ import com.lb_stuff.kataparty.api.IParty;
 import static com.lb_stuff.kataparty.api.IParty.IMember;
 import com.lb_stuff.kataparty.api.IPartySettings;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -98,17 +100,28 @@ public final class Party extends PartySettings implements IParty
 	}
 
 	@Override
-	public Member addMember(UUID uuid)
+	public Member addMember(UUID uuid, PartyMemberJoinEvent.Reason r)
 	{
 		if(disbanded)
 		{
 			return null;
 		}
+
+		if(r != null)
+		{
+			PartyMemberJoinEvent pmje = new PartyMemberJoinEvent(this, uuid, r);
+			Bukkit.getServer().getPluginManager().callEvent(pmje);
+			if(pmje.isCancelled())
+			{
+				return null;
+			}
+		}
+
 		{
 			IMember m;
 			while((m = parties.findMember(uuid)) != null)
 			{
-				m.getParty().removeMember(uuid);
+				m.getParty().removeMember(uuid, PartyMemberLeaveEvent.Reason.SWITCH_PARTIES);
 			}
 		}
 		Member m = new Member(uuid);
@@ -129,7 +142,7 @@ public final class Party extends PartySettings implements IParty
 		return m;
 	}
 	@Override
-	public void removeMember(UUID uuid)
+	public void removeMember(UUID uuid, PartyMemberLeaveEvent.Reason r)
 	{
 		final boolean hadmembers = (numMembers() > 0);
 		Member m = null;
@@ -138,6 +151,12 @@ public final class Party extends PartySettings implements IParty
 			m = it.next();
 			if(m.getUuid().equals(uuid))
 			{
+				PartyMemberLeaveEvent pmle = new PartyMemberLeaveEvent(m, r);
+				Bukkit.getServer().getPluginManager().callEvent(pmle);
+				if(pmle.isCancelled())
+				{
+					continue;
+				}
 				if(!disbanded)
 				{
 					m.informMessage("party-left-inform");
@@ -250,7 +269,7 @@ public final class Party extends PartySettings implements IParty
 			for(Member m : this.members.toArray(new Member[0]))
 			{
 				m.informMessage("party-disband-inform");
-				removeMember(m.getUuid());
+				removeMember(m.getUuid(), PartyMemberLeaveEvent.Reason.DISBAND);
 			}
 			return true;
 		}

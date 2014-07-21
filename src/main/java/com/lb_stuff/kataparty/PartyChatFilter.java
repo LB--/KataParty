@@ -235,7 +235,7 @@ public class PartyChatFilter implements Listener
 
 		if(sourcepref != null && sourcepref.equals(PREFER_PARTY) && !prefswap && sourcesettings.isAlone())
 		{
-			Bukkit.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
+			Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
 			{
 				inst.tellMessage(source, "chat-filtering-alone", getSwap());
 			}});

@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -185,7 +186,7 @@ public final class PartyMembersGui extends PartyGui
 					{
 						if(isAdmin || (isMember && isPartyMod))
 						{
-							party.removeMember(target.getUuid());
+							party.removeMember(target.getUuid(), PartyMemberLeaveEvent.Reason.KICKED);
 						}
 					} break;
 					case MODERATOR:
