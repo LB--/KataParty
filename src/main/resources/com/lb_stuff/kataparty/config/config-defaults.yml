@@ -43,6 +43,7 @@ messages:
   chat-filtering-party: "You talk in &bparty chat&r, start message &bwith \"%1$s\"&r to speak globally"
   chat-filtering-global: "You talk in &bglobal chat&r, start message &bwith \"%1$s\"&r to speak in party"
   chat-filtering-howto: "Use &b/kptoggle&r to change this preference"
+  chat-filtering-alone: "You are &calone&r, use &b\"%1$s\"&r or &b/kptoggle&r to speak in global chat"
   create-gui-title: "Create KataParty &3%1$s&r"
   create-create: "&bClick&r to create with these settings"
   create-cancel: "&bClose&r this inventory screen to &ccancel&r"

@@ -71,6 +71,7 @@ messages:
   chat-filtering-party: "[%messages.chat-filtering-party%]"
   chat-filtering-global: "[%messages.chat-filtering-global%]"
   chat-filtering-howto: "[%messages.chat-filtering-howto%]"
+  chat-filtering-alone: "[%messages.chat-filtering-alone%]"
   create-gui-title: "[%messages.create-gui-title%]"
   create-create: "[%messages.create-create%]"
   create-cancel: "[%messages.create-cancel%]"

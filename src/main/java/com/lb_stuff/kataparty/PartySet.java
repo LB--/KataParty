@@ -101,6 +101,7 @@ public class PartySet implements IPartySet
 	{
 		private String partyname;
 		private ChatFilterPref pref = PREFER_PARTY;
+		private boolean alone = true;
 		public MemberSettings(String pname)
 		{
 			partyname = pname;
@@ -142,6 +143,15 @@ public class PartySet implements IPartySet
 				} break;
 				default: throw new IllegalStateException();
 			}
+		}
+
+		public boolean isAlone()
+		{
+			return alone;
+		}
+		public void setAlone(boolean isalone)
+		{
+			alone = isalone;
 		}
 	}
 	private final ConcurrentSkipListMap<UUID, MemberSettings> partiers = new ConcurrentSkipListMap<>();

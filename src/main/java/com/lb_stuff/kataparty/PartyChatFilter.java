@@ -5,12 +5,15 @@ import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 import com.lb_stuff.kataparty.api.IParty;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Set;
 import java.util.UUID;
@@ -90,12 +93,24 @@ public class PartyChatFilter implements Listener
 		}
 	}
 
+	private void updateAlone(final IParty p)
+	{
+		inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
+		{
+			Set<IParty.IMember> online = p.getMembersOnline();
+			for(IParty.IMember m : p)
+			{
+				getSettings(m.getUuid()).setAlone(online.size() == 1);
+			}
+		}});
+	}
+
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) //highest executed last
 	public void onPlayerChat(AsyncPlayerChatEvent e)
 	{
 		String msg = e.getMessage();
 		String fmt = e.getFormat();
-		Player source = e.getPlayer();
+		final Player source = e.getPlayer();
 		Set<Player> targets = e.getRecipients();
 
 		boolean prefswap = msg.startsWith(getSwap());
@@ -216,13 +231,21 @@ public class PartyChatFilter implements Listener
 			}
 		}
 
+		if(sourcepref != null && sourcepref.equals(PREFER_PARTY) && !prefswap && sourcesettings.isAlone())
+		{
+			Bukkit.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
+			{
+				inst.tellMessage(source, "chat-filtering-alone", getSwap());
+			}});
+		}
+
 		e.setCancelled(true);
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
 		Player p = e.getPlayer();
-		IParty.IMember m = inst.getParties().findMember(p.getUniqueId());
+		final IParty.IMember m = inst.getParties().findMember(p.getUniqueId());
 		if(m != null)
 		{
 			inst.tellMessage(p, "party-member-inform", m.getParty().getName());
@@ -236,10 +259,29 @@ public class PartyChatFilter implements Listener
 			{
 				inst.getLogger().warning(p.getName()+" does not have a MemberSettings but they're in a party!");
 			}
+			updateAlone(m.getParty());
 		}
 		else
 		{
 			inst.tellMessage(p, "party-introvert-inform");
+		}
+	}
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerKick(PlayerKickEvent e)
+	{
+		final IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+		if(m != null)
+		{
+			updateAlone(m.getParty());
+		}
+	}
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerQuit(PlayerQuitEvent e)
+	{
+		final IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+		if(m != null)
+		{
+			updateAlone(m.getParty());
 		}
 	}
 }
