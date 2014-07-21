@@ -2,13 +2,11 @@ package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PartyCloseCommand extends PartyAdminCommand
 {
@@ -32,7 +30,7 @@ public class PartyCloseCommand extends PartyAdminCommand
 				}
 				else
 				{
-					inst.getParties().remove(p, player);
+					inst.getParties().remove(p, PartyDisbandEvent.Reason.SERVER_ADMIN_CLOSE, player);
 				}
 				return true;
 			}

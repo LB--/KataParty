@@ -1,5 +1,8 @@
 package com.lb_stuff.kataparty.api;
 
+import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
+
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.Location;
 
@@ -24,7 +27,7 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	Set<IMember> getMembersOnline();
 	Set<IMember> getMembersAlive();
 	Set<IMember> getMembersRanked(Rank r);
-	void disband();
+	boolean disband(PartyDisbandEvent.Reason r, Player p);
 	boolean isDisbanded();
 	void enableInventory();
 	Inventory getInventory();

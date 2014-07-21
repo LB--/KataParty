@@ -4,6 +4,7 @@ import com.lb_stuff.kataparty.api.Messenger;
 import com.lb_stuff.kataparty.api.IParty;
 import static com.lb_stuff.kataparty.api.IParty.IMember;
 import com.lb_stuff.kataparty.api.IPartySettings;
+import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -151,7 +152,7 @@ public final class Party extends PartySettings implements IParty
 			informMembersMessage("party-leave-inform", Bukkit.getOfflinePlayer(uuid).getName());
 			if(hadmembers && numMembers() == 0 && !parties.keepEmptyParties() && !isSticky())
 			{
-				parties.remove(this, Bukkit.getPlayer(uuid));
+				parties.remove(this, PartyDisbandEvent.Reason.AUTOMATIC_CLOSE, Bukkit.getPlayer(uuid));
 				if(m  != null)
 				{
 					m.informMessage("party-closed-on-leave-inform", getName());
@@ -239,14 +240,21 @@ public final class Party extends PartySettings implements IParty
 
 	private boolean disbanded = false;
 	@Override
-	public void disband()
+	public boolean disband(PartyDisbandEvent.Reason r, Player p)
 	{
-		disbanded = true;
-		for(Member m : this.members.toArray(new Member[0]))
+		PartyDisbandEvent pde = new PartyDisbandEvent(this, r, p);
+		Bukkit.getServer().getPluginManager().callEvent(pde);
+		if(!pde.isCancelled())
 		{
-			m.informMessage("party-disband-inform");
-			removeMember(m.getUuid());
+			disbanded = true;
+			for(Member m : this.members.toArray(new Member[0]))
+			{
+				m.informMessage("party-disband-inform");
+				removeMember(m.getUuid());
+			}
+			return true;
 		}
+		return false;
 	}
 	@Override
 	public boolean isDisbanded()

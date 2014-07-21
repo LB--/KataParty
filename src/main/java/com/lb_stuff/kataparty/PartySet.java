@@ -3,6 +3,8 @@ package com.lb_stuff.kataparty;
 import com.lb_stuff.kataparty.api.*;
 import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 import static com.lb_stuff.kataparty.api.IPartySet.IMemberSettings;
+import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
+import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 
 import org.bukkit.entity.Player;
 
@@ -34,14 +36,19 @@ public class PartySet implements IPartySet
 	{
 		if(findParty(settings.getName()) == null)
 		{
-			Party p = new Party(this, settings);
-			parties.add(p);
-			if(creator != null)
+			PartyCreateEvent pce = new PartyCreateEvent(creator, settings);
+			inst.getServer().getPluginManager().callEvent(pce);
+			if(!pce.isCancelled())
 			{
-				p.addMember(creator.getUniqueId()).setRank(Party.Rank.ADMIN);
-				getSettings(creator.getUniqueId()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
+				Party p = new Party(this, settings);
+				parties.add(p);
+				if(creator != null)
+				{
+					p.addMember(creator.getUniqueId()).setRank(Party.Rank.ADMIN);
+					getSettings(creator.getUniqueId()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
+				}
+				return p;
 			}
-			return p;
 		}
 		return null;
 	}
@@ -51,11 +58,13 @@ public class PartySet implements IPartySet
 		return parties.add(p);
 	}
 	@Override
-	public void remove(IParty p, Player player)
+	public void remove(IParty p, PartyDisbandEvent.Reason r, Player player)
 	{
-		p.disableInventory(player.getEyeLocation());
-		p.disband();
-		parties.remove(p);
+		if(p.disband(r, player))
+		{
+			p.disableInventory(player.getEyeLocation());
+			parties.remove(p);
+		}
 	}
 	@Override
 	public void keepEmptyParties(boolean keep)
@@ -69,7 +78,7 @@ public class PartySet implements IPartySet
 				IParty p = it.next();
 				if(!p.isSticky() && p.numMembers() == 0)
 				{
-					it.remove();
+					remove(p, PartyDisbandEvent.Reason.AUTOMATIC_CLOSE, null);
 				}
 			}
 		}

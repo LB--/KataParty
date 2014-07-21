@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -350,7 +351,7 @@ public final class PartyManageGui extends PartyGui
 			{
 				if(isAdmin || (player.hasPermission("KataParty.disband") && isPartyAdmin))
 				{
-					inst.getParties().remove(party, player);
+					inst.getParties().remove(party, PartyDisbandEvent.Reason.PARTY_ADMIN_DISBAND, player);
 					hide();
 				}
 			} break;

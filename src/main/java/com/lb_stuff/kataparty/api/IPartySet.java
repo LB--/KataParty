@@ -1,5 +1,7 @@
 package com.lb_stuff.kataparty.api;
 
+import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
+
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -9,7 +11,7 @@ public interface IPartySet extends Iterable<IParty>
 {
 	IParty newParty(Player creator, IPartySettings settings);
 	boolean add(IParty p);
-	void remove(IParty p, Player player);
+	void remove(IParty p, PartyDisbandEvent.Reason r, Player player);
 	void keepEmptyParties(boolean keep);
 	boolean keepEmptyParties();
 	interface IMemberSettings
