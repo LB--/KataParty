@@ -1,6 +1,5 @@
 package com.lb_stuff.kataparty.api.event;
 
-import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings;
 
 import org.bukkit.event.HandlerList;

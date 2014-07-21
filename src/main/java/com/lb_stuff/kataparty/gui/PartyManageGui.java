@@ -313,7 +313,7 @@ public final class PartyManageGui extends PartyGui
 					}
 					else
 					{
-						party.disableInventory(player);
+						party.disableInventory(player.getEyeLocation());
 					}
 				}
 			} break;

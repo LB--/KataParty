@@ -10,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.*;
@@ -315,7 +316,7 @@ public final class Party extends PartySettings implements IParty
 		return inv;
 	}
 	@Override
-	public void disableInventory(Player p)
+	public void disableInventory(Location droploc)
 	{
 		if(inv != null)
 		{
@@ -323,9 +324,9 @@ public final class Party extends PartySettings implements IParty
 			{
 				if(i != null)
 				{
-					if(p != null)
+					if(droploc != null)
 					{
-						p.getWorld().dropItem(p.getLocation(), i).setPickupDelay(0);
+						droploc.getWorld().dropItem(droploc, i).setPickupDelay(0);
 					}
 					else
 					{

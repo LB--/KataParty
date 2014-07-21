@@ -53,7 +53,7 @@ public class PartySet implements IPartySet
 	@Override
 	public void remove(IParty p, Player player)
 	{
-		p.disableInventory(player);
+		p.disableInventory(player.getEyeLocation());
 		p.disband();
 		parties.remove(p);
 	}

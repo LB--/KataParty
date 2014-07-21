@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.api;
 
 import org.bukkit.inventory.Inventory;
-import org.bukkit.entity.Player;
+import org.bukkit.Location;
 
 import java.util.UUID;
 import java.util.Set;
@@ -28,7 +28,7 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	boolean isDisbanded();
 	void enableInventory();
 	Inventory getInventory();
-	void disableInventory(Player disabler);
+	void disableInventory(Location droploc);
 	@Override @Deprecated
 	void setInventory(boolean enabled);
 
