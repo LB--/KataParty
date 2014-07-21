@@ -6,13 +6,13 @@ import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
+import static com.lb_stuff.kataparty.api.ChatFilterService.AsyncMessage;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -107,15 +107,16 @@ public class PartyChatFilter implements Listener
 		}});
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) //highest executed last
-	public void onPlayerChat(AsyncPlayerChatEvent e)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onMessage(final AsyncMessage m)
 	{
-		String msg = e.getMessage();
-		String fmt = e.getFormat();
-		final Player source = e.getPlayer();
-		Set<Player> targets = e.getRecipients();
+		if(!(m.getSource() instanceof Player))
+		{
+			return;
+		}
 
-		boolean prefswap = msg.startsWith(getSwap());
+		Player source = (Player)m.getSource();
+		boolean prefswap = m.getMessage().startsWith(getSwap());
 		String sourceparty = null;
 		ChatFilterPref sourcepref = null;
 		MemberSettings sourcesettings = getSettings(source.getUniqueId());
@@ -129,52 +130,34 @@ public class PartyChatFilter implements Listener
 		{
 			if(prefswap)
 			{
-				msg = msg.substring(getSwap().length());
+				m.setMessage(m.getMessage().substring(getSwap().length()));
 			}
 		}
 
-		final String normalmsg = String.format(fmt, source.getDisplayName(), msg);
-		final String filtermsg = String.format(fmt, source.getDisplayName(), getFilterFormat()+msg);
-
-		//need to manually send to console since we are cancelling the event
-		if(sourcepref != null)
+		if(!(m.getTarget() instanceof Player))
 		{
-			if(sourcepref.equals(PREFER_GLOBAL))
+			String prefix = String.format(getPartyPrefix(PREFER_PARTY), sourceparty);
+			if(sourcepref != null)
 			{
-				if(prefswap)
+				if(sourcepref.equals(PREFER_GLOBAL))
 				{
-					inst.getServer().getConsoleSender().sendMessage
-					(
-						String.format(getPartyPrefix(PREFER_PARTY), sourceparty)+normalmsg
-					);
+					if(prefswap)
+					{
+						m.setFormat(prefix+m.getFormat());
+					}
 				}
-				else
+				else if(sourcepref.equals(PREFER_PARTY))
 				{
-					inst.getServer().getConsoleSender().sendMessage(normalmsg);
-				}
-			}
-			else if(sourcepref.equals(PREFER_PARTY))
-			{
-				if(prefswap)
-				{
-					inst.getServer().getConsoleSender().sendMessage(normalmsg);
-				}
-				else
-				{
-					inst.getServer().getConsoleSender().sendMessage
-					(
-						String.format(getPartyPrefix(PREFER_PARTY), sourceparty)+normalmsg
-					);
+					if(!prefswap)
+					{
+						m.setFormat(prefix+m.getFormat());
+					}
 				}
 			}
 		}
 		else
 		{
-			inst.getServer().getConsoleSender().sendMessage(normalmsg);
-		}
-
-		for(Player target : targets)
-		{
+			Player target = (Player)m.getTarget();
 			String targetparty = null;
 			ChatFilterPref targetpref = null;
 			MemberSettings targetsettings = getSettings(target.getUniqueId());
@@ -184,64 +167,69 @@ public class PartyChatFilter implements Listener
 				targetpref = targetsettings.getPref();
 			}
 
-			if(sourcepref == null)
+			if(targetpref != null)
 			{
-				if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
+				if(sourcepref == null)
 				{
-					target.sendMessage(normalmsg);
+					if(targetpref.equals(PREFER_PARTY))
+					{
+						m.setMessage(getFilterFormat()+m.getMessage());
+					}
 				}
 				else
 				{
-					target.sendMessage(filtermsg);
+					if(sourcepref.equals(PREFER_PARTY))
+					{
+						if(prefswap)
+						{
+							if(targetpref.equals(PREFER_PARTY))
+							{
+								m.setMessage(getFilterFormat()+m.getMessage());
+							}
+						}
+						else if(targetparty.equals(sourceparty))
+						{
+							m.setFormat(String.format(getPartyPrefix(targetpref), sourceparty)+m.getFormat());
+						}
+						else
+						{
+							m.setCancelled(true);
+						}
+					}
+					else if(sourcepref.equals(PREFER_GLOBAL))
+					{
+						if(!prefswap)
+						{
+							if(targetpref.equals(PREFER_PARTY))
+							{
+								m.setMessage(getFilterFormat()+m.getMessage());
+							}
+						}
+						else if(targetparty.equals(sourceparty))
+						{
+							m.setFormat(String.format(getPartyPrefix(targetpref), sourceparty)+m.getFormat());
+							m.setMessage(getFilterFormat()+m.getMessage());
+						}
+						else
+						{
+							m.setCancelled(true);
+						}
+					}
 				}
 			}
-			else if(sourcepref.equals(PREFER_PARTY))
+			else
 			{
-				if(prefswap)
-				{
-					if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
-					{
-						target.sendMessage(normalmsg);
-					}
-					else if(targetpref.equals(PREFER_PARTY))
-					{
-						target.sendMessage(filtermsg);
-					}
-				}
-				else if(targetpref != null && targetparty.equals(sourceparty))
-				{
-					target.sendMessage(String.format(getPartyPrefix(targetpref), sourceparty)+normalmsg);
-				}
+				m.setCancelled(true);
 			}
-			else if(sourcepref.equals(PREFER_GLOBAL))
+
+			if(sourcepref != null && sourcepref.equals(PREFER_PARTY) && !prefswap && sourcesettings.isAlone())
 			{
-				if(!prefswap)
+				Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
 				{
-					if(targetpref == null || targetpref.equals(PREFER_GLOBAL))
-					{
-						target.sendMessage(normalmsg);
-					}
-					else if(targetpref.equals(PREFER_PARTY))
-					{
-						target.sendMessage(filtermsg);
-					}
-				}
-				else if(targetpref != null && targetparty.equals(sourceparty))
-				{
-					target.sendMessage(String.format(getPartyPrefix(targetpref), sourceparty)+filtermsg);
-				}
+					inst.tellMessage((Player)m.getSource(), "chat-filtering-alone", getSwap());
+				}});
 			}
 		}
-
-		if(sourcepref != null && sourcepref.equals(PREFER_PARTY) && !prefswap && sourcesettings.isAlone())
-		{
-			Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
-			{
-				inst.tellMessage(source, "chat-filtering-alone", getSwap());
-			}});
-		}
-
-		e.setCancelled(true);
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(PlayerJoinEvent e)

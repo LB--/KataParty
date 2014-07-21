@@ -6,6 +6,7 @@ import com.lb_stuff.kataparty.command.*;
 import com.lb_stuff.kataparty.config.MainConfig;
 import com.lb_stuff.kataparty.api.Messenger;
 import com.lb_stuff.kataparty.api.KataPartyService;
+import com.lb_stuff.kataparty.api.ChatFilterService;
 import com.lb_stuff.kataparty.api.IParty;
 
 import net.gravitydevelopment.updater.Updater;
@@ -49,6 +50,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 	@Override
 	public void onEnable()
 	{
+		getServer().getServicesManager().register(ChatFilterService.class, filtserv, this, ServicePriority.Normal);
 		getServer().getServicesManager().register(KataPartyService.class, service, this, ServicePriority.Highest);
 
 		ConfigurationSerialization.registerClass(Party.class);
@@ -72,6 +74,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		getServer().getPluginManager().registerEvents(pvp, this);
 		getServer().getPluginManager().registerEvents(potions, this);
 		getServer().getPluginManager().registerEvents(shxp, this);
+		getServer().getPluginManager().registerEvents(filtserv, this);
 		getServer().getPluginManager().registerEvents(filter, this);
 		getServer().getPluginManager().registerEvents(tickets, this);
 
@@ -215,7 +218,12 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		return parties;
 	}
 
+	private final ChatFilterService filtserv = new ChatFilterService();
 	private final PartyChatFilter filter = new PartyChatFilter(this);
+	public ChatFilterService getFilterService()
+	{
+		return filtserv;
+	}
 	public PartyChatFilter getFilter()
 	{
 		return filter;
