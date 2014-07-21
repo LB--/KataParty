@@ -7,6 +7,7 @@ import com.lb_stuff.kataparty.config.MainConfig;
 import com.lb_stuff.kataparty.api.Messenger;
 import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.IPartySettings;
 
 import net.gravitydevelopment.updater.Updater;
 
@@ -93,7 +94,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 			for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 			{
 				ConfigurationSection ps = (ConfigurationSection)e.getValue();
-				Party p = addParty(e.getKey(), null);
+				IParty p = getParties().newParty(null, new PartySettings());
 				p.setTp(ps.getBoolean("tp"));
 				p.setPvp(ps.getBoolean("pvp"));
 				p.setVisible(ps.getBoolean("visible"));
@@ -124,13 +125,13 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 				}
 				if(!ps.isBoolean("health"))
 				{
-					p.setHealth(ps.getDouble("health"));
+//					p.setHealth(ps.getDouble("health"));
 				}
-				p.setPotionsSmart(ps.getBoolean("potions"));
+//				p.setPotionsSmart(ps.getBoolean("potions"));
 				for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
 				{
 					ConfigurationSection ms = (ConfigurationSection)me.getValue();
-					Party.Member m = p.addMember(UUID.fromString(me.getKey()));
+					IParty.IMember m = p.addMember(UUID.fromString(me.getKey()));
 					m.setRank(Party.Rank.valueOf(ms.getString("rank")));
 					m.setTp(ms.getBoolean("tp"));
 				}
@@ -230,21 +231,6 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 	public PartySet getParties()
 	{
 		return parties;
-	}
-	public Party addParty(String pname, Player creator)
-	{
-		if(getParties().findParty(pname) == null)
-		{
-			Party p = new Party(getParties(), pname);
-			getParties().add(p);
-			if(creator != null)
-			{
-				p.addMember(creator.getUniqueId()).setRank(Party.Rank.ADMIN);
-				getParties().getSettings(creator.getUniqueId()).setPref(getFilter().getDefaultFilterPref("on-party-create"));
-			}
-			return p;
-		}
-		return null;
 	}
 
 	private final PartyChatFilter filter = new PartyChatFilter(this);

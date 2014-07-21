@@ -3,35 +3,36 @@ package com.lb_stuff.kataparty;
 import com.lb_stuff.kataparty.api.Messenger;
 import com.lb_stuff.kataparty.api.IParty;
 import static com.lb_stuff.kataparty.api.IParty.IMember;
+import com.lb_stuff.kataparty.api.IPartySettings;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.World;
 
 import java.util.*;
 
-public class Party implements IParty
+public final class Party extends PartySettings implements IParty
 {
 	private final PartySet parties;
 	private final Messenger messenger;
-	private String name;
 	private final Set<Member> members = new HashSet<>();
-	private boolean tp = true;
-	private boolean pvp = false;
-	private boolean visible = true;
 	private Inventory inv = null;
-	private boolean invite = false;
-	private boolean sticky = false;
 	private Double health = null;
 	private boolean potions = false;
 
-	public Party(PartySet ps, String pname)
+	public Party(PartySet ps, IPartySettings settings)
 	{
+		super(settings);
 		parties = ps;
 		messenger = ps.getMessenger();
-		name = pname;
+
+		if(super.hasInventory())
+		{
+			enableInventory();
+		}
 	}
 
 	@Override @Deprecated
@@ -52,28 +53,29 @@ public class Party implements IParty
 	}
 
 	@Override
-	public String getName()
+	public PartySet getPartySet()
 	{
-		return name;
+		return parties;
 	}
+
 	@Override
-	public void rename(String n)
+	public void setName(String n)
 	{
 		for(Map.Entry<UUID, PartySet.IMemberSettings> e : parties.getPartyMembers())
 		{
-			if(e.getValue().getPartyName().equals(name))
+			if(e.getValue().getPartyName().equals(getName()))
 			{
 				e.getValue().setPartyName(n);
 			}
 		}
-		informMembersMessage("party-rename-inform", name, n);
-		name = n;
+		informMembersMessage("party-rename-inform", getName(), n);
+		super.setName(n);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return name.hashCode();
+		return getName().toLowerCase().hashCode();
 	}
 	@Override
 	public boolean equals(Object obj)
@@ -82,16 +84,15 @@ public class Party implements IParty
 		{
 			return false;
 		}
-		if(getClass() != obj.getClass())
+		if(obj instanceof IPartySettings)
 		{
-			return false;
+			return getName().equalsIgnoreCase(((IPartySettings)obj).getName());
 		}
-		final Party other = (Party)obj;
-		if(!Objects.equals(this.name, other.name))
+		else if(obj instanceof String)
 		{
-			return false;
+			return getName().equalsIgnoreCase((String)obj);
 		}
-		return true;
+		return false;
 	}
 
 	@Override
@@ -110,7 +111,7 @@ public class Party implements IParty
 		}
 		Member m = new Member(uuid);
 		members.add(m);
-		parties.addSettings(uuid, name);
+		parties.addSettings(uuid, getName());
 		OfflinePlayer offp = Bukkit.getOfflinePlayer(uuid);
 		if(offp.isOnline())
 		{
@@ -147,12 +148,12 @@ public class Party implements IParty
 		if(!disbanded)
 		{
 			informMembersMessage("party-leave-inform", Bukkit.getOfflinePlayer(uuid).getName());
-			if(hadmembers && numMembers() == 0 && !parties.keepEmptyParties() && !sticky)
+			if(hadmembers && numMembers() == 0 && !parties.keepEmptyParties() && !isSticky())
 			{
 				parties.remove(this, Bukkit.getPlayer(uuid));
 				if(m  != null)
 				{
-					m.informMessage("party-closed-on-leave-inform", name);
+					m.informMessage("party-closed-on-leave-inform", getName());
 				}
 			}
 		}
@@ -246,17 +247,16 @@ public class Party implements IParty
 			removeMember(m.getUuid());
 		}
 	}
+	@Override
+	public boolean isDisbanded()
+	{
+		return disbanded;
+	}
 
 	@Override
-	public boolean canTp()
+	public void setTp(boolean enabled)
 	{
-		return tp;
-	}
-	@Override
-	public void setTp(boolean v)
-	{
-		tp = v;
-		if(v)
+		if(enabled)
 		{
 			informMembersMessage("party-teleports-enabled-inform");
 		}
@@ -264,18 +264,13 @@ public class Party implements IParty
 		{
 			informMembersMessage("party-teleports-disabled-inform");
 		}
+		super.setTp(enabled);
 	}
 
 	@Override
-	public boolean canPvp()
+	public void setPvp(boolean enabled)
 	{
-		return pvp;
-	}
-	@Override
-	public void setPvp(boolean v)
-	{
-		pvp = v;
-		if(v)
+		if(enabled)
 		{
 			informMembersMessage("party-pvp-enabled-inform");
 		}
@@ -283,18 +278,13 @@ public class Party implements IParty
 		{
 			informMembersMessage("party-pvp-disabled-inform");
 		}
+		super.setPvp(enabled);
 	}
 
 	@Override
-	public boolean isVisible()
+	public void setVisible(boolean enabled)
 	{
-		return visible;
-	}
-	@Override
-	public void setVisible(boolean v)
-	{
-		visible = v;
-		if(v)
+		if(enabled)
 		{
 			informMembersMessage("party-visibility-enabled-inform");
 		}
@@ -302,14 +292,20 @@ public class Party implements IParty
 		{
 			informMembersMessage("party-visibility-disabled-inform");
 		}
+		super.setVisible(enabled);
 	}
 
+	@Override
+	public boolean hasInventory()
+	{
+		return inv != null;
+	}
 	@Override
 	public void enableInventory()
 	{
 		if(inv == null)
 		{
-			inv = Bukkit.createInventory(null, 4 * 9, messenger.getMessage("party-inventory-gui-title", name));
+			inv = Bukkit.createInventory(null, 4 * 9, messenger.getMessage("party-inventory-gui-title", getName()));
 			informMembersMessage("party-inventory-enable-inform");
 		}
 	}
@@ -327,19 +323,34 @@ public class Party implements IParty
 			{
 				if(i != null)
 				{
-					p.getWorld().dropItem(p.getLocation(), i).setPickupDelay(0);
+					if(p != null)
+					{
+						p.getWorld().dropItem(p.getLocation(), i).setPickupDelay(0);
+					}
+					else
+					{
+						World w = Bukkit.getServer().getWorlds().get(0);
+						w.dropItemNaturally(w.getSpawnLocation(), i);
+					}
 				}
 			}
 			inv = null;
 			informMembersMessage("party-inventory-disable-inform");
 		}
 	}
-
-	@Override
-	public boolean isInviteOnly()
+	@Override @Deprecated
+	public void setInventory(boolean enabled)
 	{
-		return invite;
+		if(enabled)
+		{
+			enableInventory();
+		}
+		else
+		{
+			disableInventory(null);
+		}
 	}
+
 	@Override
 	public void setInviteOnly(boolean only)
 	{
@@ -351,18 +362,7 @@ public class Party implements IParty
 		{
 			informMembersMessage("party-public-inform");
 		}
-		invite = only;
-	}
-
-	@Override
-	public boolean isSticky()
-	{
-		return sticky;
-	}
-	@Override
-	public void setSticky(boolean stick)
-	{
-		sticky = stick;
+		super.setInviteOnly(only);
 	}
 
 	public Double getHealth()
@@ -431,7 +431,7 @@ public class Party implements IParty
 		private Rank rank = Rank.MEMBER;
 		private boolean tp = true;
 
-		public Member(UUID id)
+		private Member(UUID id)
 		{
 			uuid = id;
 		}

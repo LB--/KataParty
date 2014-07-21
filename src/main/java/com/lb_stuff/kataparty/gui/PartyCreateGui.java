@@ -1,8 +1,8 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
+import com.lb_stuff.kataparty.PartySettings;
 import com.lb_stuff.kataparty.api.IParty;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -118,16 +118,15 @@ public final class PartyCreateGui extends PartyGui
 				{
 					return;
 				}
-				IParty p = inst.addParty(pname, player);
-				p.setTp(getButton(TELEPORTS) != 1);
-				p.setPvp(getButton(PVP) != 1);
-				if(getButton(INVENTORY) != 1)
-				{
-					p.enableInventory();
-				}
-				p.setVisible(getButton(VISIBLE) != 1);
-				p.setInviteOnly(getButton(INVITES) != 1);
-				p.setSticky(getButton(STICKY) != 1);
+				PartySettings ps = new PartySettings();
+				ps.setName(pname);
+				ps.setTp(getButton(TELEPORTS) != 1);
+				ps.setPvp(getButton(PVP) != 1);
+				ps.setInventory(getButton(INVENTORY) != 1);
+				ps.setVisible(getButton(VISIBLE) != 1);
+				ps.setInviteOnly(getButton(INVITES) != 1);
+				ps.setSticky(getButton(STICKY) != 1);
+				inst.getParties().newParty(player, ps);
 				inst.getFilter().tellFilterPref(player);
 				hide();
 			} break;

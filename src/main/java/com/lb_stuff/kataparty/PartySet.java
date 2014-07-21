@@ -1,11 +1,8 @@
 package com.lb_stuff.kataparty;
 
-import com.lb_stuff.kataparty.api.ChatFilterPref;
+import com.lb_stuff.kataparty.api.*;
 import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
-import com.lb_stuff.kataparty.api.Messenger;
-import com.lb_stuff.kataparty.api.IPartySet;
 import static com.lb_stuff.kataparty.api.IPartySet.IMemberSettings;
-import com.lb_stuff.kataparty.api.IParty;
 
 import org.bukkit.entity.Player;
 
@@ -33,9 +30,25 @@ public class PartySet implements IPartySet
 	}
 
 	@Override
-	public void add(IParty p)
+	public IParty newParty(Player creator, IPartySettings settings)
 	{
-		parties.add(p);
+		if(findParty(settings.getName()) == null)
+		{
+			Party p = new Party(this, settings);
+			parties.add(p);
+			if(creator != null)
+			{
+				p.addMember(creator.getUniqueId()).setRank(Party.Rank.ADMIN);
+				getSettings(creator.getUniqueId()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
+			}
+			return p;
+		}
+		return null;
+	}
+	@Override
+	public boolean add(IParty p)
+	{
+		return parties.add(p);
 	}
 	@Override
 	public void remove(IParty p, Player player)
@@ -180,13 +193,17 @@ public class PartySet implements IPartySet
 		return null;
 	}
 	@Override
+	@SuppressWarnings("element-type-mismatch")
 	public IParty findParty(String name)
 	{
-		for(IParty p : this)
+		if(parties.contains(name))
 		{
-			if(p.getName().equalsIgnoreCase(name))
+			for(IParty p : this)
 			{
-				return p;
+				if(p.getName().equalsIgnoreCase(name))
+				{
+					return p;
+				}
 			}
 		}
 		return null;

@@ -7,7 +7,8 @@ import java.util.Map;
 
 public interface IPartySet extends Iterable<IParty>
 {
-	void add(IParty p);
+	IParty newParty(Player creator, IPartySettings settings);
+	boolean add(IParty p);
 	void remove(IParty p, Player player);
 	void keepEmptyParties(boolean keep);
 	boolean keepEmptyParties();

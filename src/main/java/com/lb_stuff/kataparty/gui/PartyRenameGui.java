@@ -46,7 +46,7 @@ public final class PartyRenameGui extends PartyGui
 			return;
 		}
 
-		party.rename(getButtonName(2));
+		party.setName(getButtonName(2));
 		hide();
 	}
 }
