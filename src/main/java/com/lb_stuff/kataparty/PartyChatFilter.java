@@ -4,6 +4,8 @@ import com.lb_stuff.kataparty.api.ChatFilterPref;
 import static com.lb_stuff.kataparty.PartySet.MemberSettings;
 import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -283,5 +285,15 @@ public class PartyChatFilter implements Listener
 		{
 			updateAlone(m.getParty());
 		}
+	}
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onMemberJoin(PartyMemberJoinEvent e)
+	{
+		updateAlone(e.getParty());
+	}
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onMemberLeave(PartyMemberLeaveEvent e)
+	{
+		updateAlone(e.getMember().getParty());
 	}
 }
