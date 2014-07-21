@@ -152,18 +152,7 @@ public class PartySet implements IPartySet
 		@Override
 		public void togglePref()
 		{
-			switch(pref)
-			{
-				case PREFER_PARTY:
-				{
-					pref = PREFER_GLOBAL;
-				} break;
-				case PREFER_GLOBAL:
-				{
-					pref = PREFER_PARTY;
-				} break;
-				default: throw new IllegalStateException();
-			}
+			pref = pref.opposite();
 		}
 
 		public boolean isAlone()
