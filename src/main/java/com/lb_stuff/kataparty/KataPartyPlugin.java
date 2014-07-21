@@ -78,6 +78,8 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		getServer().getPluginManager().registerEvents(filter, this);
 		getServer().getPluginManager().registerEvents(tickets, this);
 
+		boolean firstrun = !configFile.exists();
+
 		try
 		{
 			getDataFolder().mkdirs();
@@ -87,7 +89,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		{
 			throw new RuntimeException(e);
 		}
-		if(config.getBoolean("auto-updater"))
+		if(!firstrun && config.getBoolean("auto-updater"))
 		{
 			updater = new Updater(this, 81209, getFile(), Updater.UpdateType.DEFAULT, false)
 			{
