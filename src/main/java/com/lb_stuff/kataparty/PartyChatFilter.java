@@ -124,35 +124,18 @@ public class PartyChatFilter implements Listener
 		{
 			sourceparty = sourcesettings.getPartyName();
 			sourcepref = sourcesettings.getPref();
-		}
-
-		if(sourcesettings != null)
-		{
 			if(prefswap)
 			{
 				m.setMessage(m.getMessage().substring(getSwap().length()));
+				sourcepref = sourcepref.opposite();
 			}
 		}
 
 		if(!(m.getTarget() instanceof Player))
 		{
-			String prefix = String.format(getPartyPrefix(PREFER_PARTY), sourceparty);
-			if(sourcepref != null)
+			if(sourcepref == PREFER_PARTY)
 			{
-				if(sourcepref.equals(PREFER_GLOBAL))
-				{
-					if(prefswap)
-					{
-						m.setFormat(prefix+m.getFormat());
-					}
-				}
-				else if(sourcepref.equals(PREFER_PARTY))
-				{
-					if(!prefswap)
-					{
-						m.setFormat(prefix+m.getFormat());
-					}
-				}
+				m.setFormat(String.format(getPartyPrefix(PREFER_PARTY), sourceparty)+m.getFormat());
 			}
 		}
 		else
@@ -167,62 +150,44 @@ public class PartyChatFilter implements Listener
 				targetpref = targetsettings.getPref();
 			}
 
-			if(targetpref != null)
+			final boolean sameparty = (targetparty != null && sourceparty != null && targetparty.equals(sourceparty));
+
+			if(targetpref == PREFER_PARTY)
 			{
-				if(sourcepref == null)
+				if(sourcepref == null || sourcepref == PREFER_GLOBAL)
 				{
-					if(targetpref.equals(PREFER_PARTY))
-					{
-						m.setMessage(getFilterFormat()+m.getMessage());
-					}
+					m.setMessage(getFilterFormat()+m.getMessage());
+				}
+				else if(sameparty)
+				{
+					m.setFormat(String.format(getPartyPrefix(targetpref), sourceparty)+m.getFormat());
 				}
 				else
 				{
-					if(sourcepref.equals(PREFER_PARTY))
+					m.setCancelled(true);
+				}
+			}
+			else if(targetpref == PREFER_GLOBAL)
+			{
+				if(sourcepref == PREFER_PARTY)
+				{
+					if(sameparty)
 					{
-						if(prefswap)
-						{
-							if(targetpref.equals(PREFER_PARTY))
-							{
-								m.setMessage(getFilterFormat()+m.getMessage());
-							}
-						}
-						else if(targetparty.equals(sourceparty))
-						{
-							m.setFormat(String.format(getPartyPrefix(targetpref), sourceparty)+m.getFormat());
-						}
-						else
-						{
-							m.setCancelled(true);
-						}
+						m.setFormat(String.format(getPartyPrefix(targetpref), sourceparty)+m.getFormat());
+						m.setMessage(getFilterFormat()+m.getMessage());
 					}
-					else if(sourcepref.equals(PREFER_GLOBAL))
+					else
 					{
-						if(!prefswap)
-						{
-							if(targetpref.equals(PREFER_PARTY))
-							{
-								m.setMessage(getFilterFormat()+m.getMessage());
-							}
-						}
-						else if(targetparty.equals(sourceparty))
-						{
-							m.setFormat(String.format(getPartyPrefix(targetpref), sourceparty)+m.getFormat());
-							m.setMessage(getFilterFormat()+m.getMessage());
-						}
-						else
-						{
-							m.setCancelled(true);
-						}
+						m.setCancelled(true);
 					}
 				}
 			}
-			else
+			else if(sourcepref == PREFER_PARTY)
 			{
 				m.setCancelled(true);
 			}
 
-			if(sourcepref != null && sourcepref.equals(PREFER_PARTY) && !prefswap && sourcesettings.isAlone())
+			if(sourcepref == PREFER_PARTY && sourcesettings.isAlone())
 			{
 				Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
 				{
