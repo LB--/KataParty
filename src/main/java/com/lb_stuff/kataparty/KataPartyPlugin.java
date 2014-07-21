@@ -7,7 +7,6 @@ import com.lb_stuff.kataparty.config.MainConfig;
 import com.lb_stuff.kataparty.api.Messenger;
 import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.kataparty.api.IParty;
-import com.lb_stuff.kataparty.api.IPartySettings;
 
 import net.gravitydevelopment.updater.Updater;
 
@@ -16,6 +15,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,6 +48,32 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 	@Override
 	public void onEnable()
 	{
+		getServer().getServicesManager().register(KataPartyService.class, service, this, ServicePriority.Highest);
+
+		ConfigurationSerialization.registerClass(Party.class);
+		ConfigurationSerialization.registerClass(Party.Member.class);
+		ConfigurationSerialization.registerClass(PartySet.class);
+
+		implementCommand("kataparty", new PluginInfoCommand(this));
+		implementCommand("kpreload", new PluginReloadCommand(this));
+		implementCommand("kpcreate", new PartyCreateCommand(this));
+		implementCommand("kplist", new PartyListCommand(this));
+		implementCommand("kpjoin", new PartyJoinCommand(this));
+		implementCommand("kpleave", new PartyLeaveCommand(this));
+		implementCommand("kpmanage", new PartyManageCommand(this));
+		implementCommand("kpdisband", new PartyDisbandCommand(this));
+		implementCommand("kpadmin", new PartyAdminCommand(this));
+		implementCommand("kpclose", new PartyCloseCommand(this));
+		implementCommand("kptp", new PartyTeleportCommand(this));
+		implementCommand("kpshare", new PartyInventoryCommand(this));
+		implementCommand("kptoggle", new PartyChatToggleCommand(this));
+
+		getServer().getPluginManager().registerEvents(pvp, this);
+		getServer().getPluginManager().registerEvents(potions, this);
+		getServer().getPluginManager().registerEvents(shxp, this);
+		getServer().getPluginManager().registerEvents(filter, this);
+		getServer().getPluginManager().registerEvents(tickets, this);
+
 		try
 		{
 			getDataFolder().mkdirs();
@@ -87,82 +113,63 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		{
 			getLogger().warning("Auto-updater disabled in config, you should manually check for updates.");
 		}
+
 		if(partiesFile.exists())
 		{
 			YamlConfiguration conf = YamlConfiguration.loadConfiguration(partiesFile);
-			ConfigurationSection cs = conf.getConfigurationSection("parties");
-			for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
+			if(conf.contains("party-set"))
 			{
-				ConfigurationSection ps = (ConfigurationSection)e.getValue();
-				PartySettings p = new PartySettings();
-				p.setName(e.getKey());
-				p.setTp(ps.getBoolean("tp"));
-				p.setPvp(ps.getBoolean("pvp"));
-				p.setVisible(ps.getBoolean("visible"));
-				if(ps.contains("invite-only"))
+				conf.get("party-set");
+			}
+			else //compatibiity with pre-v1.2.3
+			{
+				ConfigurationSection cs = conf.getConfigurationSection("parties");
+				for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 				{
-					p.setInviteOnly(ps.getBoolean("invite-only"));
-				}
-				else
-				{
-					p.setInviteOnly(false);
-				}
-				if(ps.contains("stickied"))
-				{
-					p.setSticky(ps.getBoolean("stickied"));
-				}
-				else
-				{
-					p.setSticky(false);
-				}
-				if(!ps.isBoolean("health"))
-				{
-//					p.setHealth(ps.getDouble("health"));
-				}
-//				p.setPotionsSmart(ps.getBoolean("potions"));
-				IParty party = getParties().newParty(null, p);
-				if(!ps.isBoolean("inventory"))
-				{
-					List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
-					party.enableInventory();
-					for(int i = 0; i < items.size() && i < party.getInventory().getSize(); ++i)
+					ConfigurationSection ps = (ConfigurationSection)e.getValue();
+					PartySettings p = new PartySettings();
+					p.setName(e.getKey());
+					p.setTp(ps.getBoolean("tp"));
+					p.setPvp(ps.getBoolean("pvp"));
+					p.setVisible(ps.getBoolean("visible"));
+					if(ps.contains("invite-only"))
 					{
-						party.getInventory().setItem(i, items.get(i));
+						p.setInviteOnly(ps.getBoolean("invite-only"));
 					}
-				}
-				for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
-				{
-					ConfigurationSection ms = (ConfigurationSection)me.getValue();
-					IParty.IMember m = party.addMember(UUID.fromString(me.getKey()), null);
-					m.setRank(Party.Rank.valueOf(ms.getString("rank")));
-					m.setTp(ms.getBoolean("tp"));
+					else
+					{
+						p.setInviteOnly(false);
+					}
+					if(ps.contains("stickied"))
+					{
+						p.setSticky(ps.getBoolean("stickied"));
+					}
+					else
+					{
+						p.setSticky(false);
+					}
+					IParty party = getParties().newParty(null, p);
+					if(!ps.isBoolean("inventory"))
+					{
+						List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
+						party.enableInventory();
+						for(int i = 0; i < items.size() && i < party.getInventory().getSize(); ++i)
+						{
+							party.getInventory().setItem(i, items.get(i));
+						}
+					}
+					for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
+					{
+						ConfigurationSection ms = (ConfigurationSection)me.getValue();
+						IParty.IMember m = party.newMember(UUID.fromString(me.getKey()), null);
+						m.setRank(Party.Rank.valueOf(ms.getString("rank")));
+						m.setTp(ms.getBoolean("tp"));
+					}
 				}
 			}
 		}
 
 		parties.keepEmptyParties(!config.getBoolean("remove-empty-parties"));
-
-		implementCommand("kataparty", new PluginInfoCommand(this));
-		implementCommand("kpreload", new PluginReloadCommand(this));
-		implementCommand("kpcreate", new PartyCreateCommand(this));
-		implementCommand("kplist", new PartyListCommand(this));
-		implementCommand("kpjoin", new PartyJoinCommand(this));
-		implementCommand("kpleave", new PartyLeaveCommand(this));
-		implementCommand("kpmanage", new PartyManageCommand(this));
-		implementCommand("kpdisband", new PartyDisbandCommand(this));
-		implementCommand("kpadmin", new PartyAdminCommand(this));
-		implementCommand("kpclose", new PartyCloseCommand(this));
-		implementCommand("kptp", new PartyTeleportCommand(this));
-		implementCommand("kpshare", new PartyInventoryCommand(this));
-		implementCommand("kptoggle", new PartyChatToggleCommand(this));
-
-		getServer().getPluginManager().registerEvents(pvp, this);
-		getServer().getPluginManager().registerEvents(potions, this);
-		getServer().getPluginManager().registerEvents(shxp, this);
-		getServer().getPluginManager().registerEvents(filter, this);
-		getServer().getPluginManager().registerEvents(tickets, this);
-
-		getServer().getServicesManager().register(KataPartyService.class, service, this, ServicePriority.Highest);
 	}
 	@Override
 	public FileConfiguration getConfig()
@@ -185,40 +192,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 	public void onDisable()
 	{
 		YamlConfiguration conf = new YamlConfiguration();
-		ConfigurationSection cp = conf.createSection("parties");
-		for(IParty p : getParties())
-		{
-			ConfigurationSection ps = cp.createSection(p.getName());
-			ps.set("tp", p.canTp());
-			ps.set("pvp", p.canPvp());
-			ps.set("visible", p.isVisible());
-			if(p.getInventory() == null)
-			{
-				ps.set("inventory", false);
-			}
-			else
-			{
-				ps.set("inventory", p.getInventory().getContents());
-			}
-			ps.set("invite-only", p.isInviteOnly());
-			ps.set("stickied", p.isSticky());
-//			if(p.getHealth() == null)
-			{
-				ps.set("health", false);
-			}
-//			else
-			{
-//				ps.set("health", p.getHealth());
-			}
-			ps.set("potions", false/*p.arePotionsSmart()*/);
-			ConfigurationSection pms = ps.createSection("members");
-			for(IParty.IMember m : p)
-			{
-				ConfigurationSection ms = pms.createSection(m.getUuid().toString());
-				ms.set("rank", m.getRank().toString());
-				ms.set("tp", m.canTp());
-			}
-		}
+		conf.set("party-set", parties);
 		try
 		{
 			conf.save(partiesFile);

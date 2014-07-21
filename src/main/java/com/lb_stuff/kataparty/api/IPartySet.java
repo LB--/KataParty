@@ -2,13 +2,15 @@ package com.lb_stuff.kataparty.api;
 
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 import java.util.Map;
 
-public interface IPartySet extends Iterable<IParty>
+public interface IPartySet extends Iterable<IParty>, ConfigurationSerializable
 {
+	Messenger getMessenger();
 	IParty newParty(Player creator, IPartySettings settings);
 	boolean add(IParty p);
 	void remove(IParty p, PartyDisbandEvent.Reason r, Player player);

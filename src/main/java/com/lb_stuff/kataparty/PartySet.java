@@ -7,6 +7,7 @@ import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -17,6 +18,24 @@ public class PartySet implements IPartySet
 	private final KataPartyPlugin inst;
 	private final Set<IParty> parties = new HashSet<>();
 	private boolean keep_empty = false;
+
+	@Override
+	public Map<String, Object> serialize()
+	{
+		Map<String, Object> data = new HashMap<>();
+		data.put("parties", parties.toArray(new IParty[0]));
+		return data;
+	}
+	public static PartySet deserialize(Map<String, Object> data)
+	{
+		KataPartyPlugin plugin = (KataPartyPlugin)Bukkit.getServicesManager().getRegistration(KataPartyService.class).getPlugin();
+		PartySet ps = plugin.getParties();
+		List<IParty> plist = (List<IParty>)data.get("parties");
+		ps.parties.addAll(plist);
+
+		return ps;
+	}
+
 	public PartySet(KataPartyPlugin plugin)
 	{
 		inst = plugin;
@@ -27,6 +46,7 @@ public class PartySet implements IPartySet
 		return inst.getConfig().getBoolean("party-defaults.self-teleports");
 	}
 
+	@Override
 	public Messenger getMessenger()
 	{
 		return inst;
@@ -45,7 +65,7 @@ public class PartySet implements IPartySet
 				parties.add(p);
 				if(creator != null)
 				{
-					p.addMember(creator.getUniqueId(), PartyMemberJoinEvent.Reason.CREATOR).setRank(Party.Rank.ADMIN);
+					p.newMember(creator.getUniqueId(), PartyMemberJoinEvent.Reason.CREATOR).setRank(Party.Rank.ADMIN);
 					getSettings(creator.getUniqueId()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
 				}
 				return p;

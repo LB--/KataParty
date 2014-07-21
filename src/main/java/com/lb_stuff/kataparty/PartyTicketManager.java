@@ -165,7 +165,7 @@ public class PartyTicketManager implements Listener
 					IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
 					if(m == null || m.getParty() != p)
 					{
-						if(p.addMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.INVITATION) != null)
+						if(p.newMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.INVITATION) != null)
 						{
 							inst.tellMessage(player, "ticket-accept-inform", p.getName());
 							inst.getFilter().tellFilterPref(player);

@@ -4,6 +4,7 @@ import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.Location;
@@ -21,7 +22,8 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	void informMembers(String message);
 	void informMembersMessage(String name, Object... parameters);
 	IPartySet getPartySet();
-	IMember addMember(UUID uuid, PartyMemberJoinEvent.Reason r);
+	IMember newMember(UUID uuid, PartyMemberJoinEvent.Reason r);
+	void add(IMember m);
 	void removeMember(UUID uuid, PartyMemberLeaveEvent.Reason r);
 	IMember findMember(UUID uuid);
 	IMember findMember(String name);
@@ -45,8 +47,10 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	}
 	String rankName(Rank r);
 
-	public interface IMember
+	public interface IMember extends ConfigurationSerializable
 	{
+		@Deprecated
+		void setParty(IParty p);
 		void inform(String message);
 		void informMessage(String name, Object... parameters);
 		@Override

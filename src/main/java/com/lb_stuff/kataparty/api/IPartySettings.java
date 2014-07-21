@@ -1,7 +1,10 @@
 package com.lb_stuff.kataparty.api;
 
-public interface IPartySettings
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
+public interface IPartySettings extends ConfigurationSerializable
 {
+	void apply(IPartySettings settings);
 	String getName();
 	void setName(String name);
 	boolean canTp();

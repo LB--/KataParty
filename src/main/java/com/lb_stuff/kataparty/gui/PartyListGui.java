@@ -92,7 +92,7 @@ public final class PartyListGui extends PartyGui
 				{
 					if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
 					{
-						if(p.addMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
+						if(p.newMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
 						{
 							inst.getFilter().tellFilterPref(player);
 						}
