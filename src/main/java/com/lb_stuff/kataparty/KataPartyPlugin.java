@@ -8,6 +8,8 @@ import com.lb_stuff.kataparty.api.Messenger;
 import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.kataparty.api.IParty;
 
+import net.gravitydevelopment.updater.Updater;
+
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabExecutor;
@@ -41,6 +43,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 	private final PartyPvpListener pvp = new PartyPvpListener(this);
 	private final PartyPotionListener potions = new PartyPotionListener(this);
 	private final PartyHealthXpListener shxp = new PartyHealthXpListener(this);
+	private Updater updater = null;
 	@Override
 	public void onEnable()
 	{
@@ -52,6 +55,36 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		catch(IOException|InvalidConfigurationException e)
 		{
 			throw new RuntimeException(e);
+		}
+		if(config.getBoolean("auto-updater"))
+		{
+			updater = new Updater(this, 81209, getFile(), Updater.UpdateType.DEFAULT, false)
+			{
+				@Override
+				public boolean shouldUpdate(String current, String potential)
+				{
+					String[] c = current.split("\\.");
+					String[] p = potential.split("\\.");
+					if(c.length < 3 || p.length < 3 || c.length != p.length)
+					{
+						return true;
+					}
+					for(int i = 0; i < c.length; ++i)
+					{
+						if(Integer.parseInt(c[i]) < Integer.parseInt(p[i]))
+						{
+							getLogger().warning("Out of date version (new version is v"+potential+")");
+							return true;
+						}
+					}
+					getLogger().info("Up to date.");
+					return false;
+				}
+			};
+		}
+		else
+		{
+			getLogger().warning("Auto-updater disabled in config, you should manually check for updates.");
 		}
 		if(partiesFile.exists())
 		{

@@ -1,6 +1,8 @@
 # This file contains the default values used to generate the config
 # from the template when the existing config is missing nodes
 
+auto-updater: true
+
 party-defaults:
   teleports: true
   pvp: false
