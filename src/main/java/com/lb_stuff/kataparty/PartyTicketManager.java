@@ -1,5 +1,6 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.IPartyTicketManager;
 import com.lb_stuff.kataparty.api.event.TicketInventoryEvent;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
@@ -28,7 +29,7 @@ import static org.bukkit.ChatColor.*;
 import java.util.List;
 import java.util.ArrayList;
 
-public class PartyTicketManager implements Listener
+public class PartyTicketManager implements IPartyTicketManager, Listener
 {
 	private final KataPartyPlugin inst;
 	public PartyTicketManager(KataPartyPlugin plugin)
@@ -37,6 +38,7 @@ public class PartyTicketManager implements Listener
 	}
 
 	private final String PREFIX = ""+RESET+"KataParty: "+AQUA;
+	@Override
 	public ItemStack generateTicket(final IParty p)
 	{
 		ItemStack is = new ItemStack(Material.NAME_TAG);
@@ -51,6 +53,7 @@ public class PartyTicketManager implements Listener
 		is.setItemMeta(im);
 		return is;
 	}
+	@Override
 	public boolean isTicket(ItemStack is)
 	{
 		if(is != null && is.getType() != null && is.getType().equals(Material.NAME_TAG) && is.hasItemMeta())
@@ -66,6 +69,7 @@ public class PartyTicketManager implements Listener
 		}
 		return false;
 	}
+	@Override
 	public IParty getTicketParty(ItemStack is)
 	{
 		if(isTicket(is))
@@ -75,6 +79,7 @@ public class PartyTicketManager implements Listener
 		}
 		return null;
 	}
+	@Override
 	public void removeTickets(Inventory inv)
 	{
 		for(int i = 0; i < inv.getSize(); ++i)
@@ -86,6 +91,7 @@ public class PartyTicketManager implements Listener
 			}
 		}
 	}
+	@Override
 	public boolean wasTicketGiven(ItemStack is)
 	{
 		if(!isTicket(is))
@@ -95,6 +101,7 @@ public class PartyTicketManager implements Listener
 		String pname = is.getItemMeta().getLore().get(0).substring(PREFIX.length());
 		return pname.endsWith(""+RESET);
 	}
+	@Override
 	public void setTicketGiven(ItemStack is)
 	{
 		if(!wasTicketGiven(is))

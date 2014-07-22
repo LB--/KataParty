@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 /**
  * Any class that will process requests to send messages to players.
  */
-public interface Messenger
+public interface IMessenger
 {
 	/**
 	 * Fetches a user-defined message from the config file.

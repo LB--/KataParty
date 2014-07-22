@@ -15,10 +15,10 @@ import java.util.Map;
 public interface IPartySet extends Iterable<IParty>, ConfigurationSerializable
 {
 	/**
-	 * Returns the {@link Messenger} for these parties.
-	 * @return The {@link Messenger} for these parties.
+	 * Returns the {@link IMessenger} for these parties.
+	 * @return The {@link IMessenger} for these parties.
 	 */
-	Messenger getMessenger();
+	IMessenger getMessenger();
 	/**
 	 * Creates and adds a new {@link IParty} if the
 	 * {@link com.lb_stuff.kataparty.api.event.PartyCreateEvent} is not

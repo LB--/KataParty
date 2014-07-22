@@ -4,7 +4,7 @@ import com.lb_stuff.command.PluginInfoCommand;
 import com.lb_stuff.command.PluginReloadCommand;
 import com.lb_stuff.kataparty.command.*;
 import com.lb_stuff.kataparty.config.MainConfig;
-import com.lb_stuff.kataparty.api.Messenger;
+import com.lb_stuff.kataparty.api.IMessenger;
 import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.service.ChatFilterService;
 import com.lb_stuff.kataparty.api.IParty;
@@ -28,7 +28,7 @@ import org.bukkit.plugin.ServicePriority;
 import java.util.*;
 import java.io.*;
 
-public final class KataPartyPlugin extends JavaPlugin implements Messenger
+public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 {
 	private void implementCommand(String name, CommandExecutor command)
 	{

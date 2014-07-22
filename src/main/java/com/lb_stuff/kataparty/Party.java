@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.KataPartyService;
-import com.lb_stuff.kataparty.api.Messenger;
+import com.lb_stuff.kataparty.api.IMessenger;
 import com.lb_stuff.kataparty.api.IParty;
 import static com.lb_stuff.kataparty.api.IParty.IMember;
 import com.lb_stuff.kataparty.api.IPartySettings;
@@ -22,7 +22,7 @@ import java.util.*;
 public final class Party extends PartySettings implements IParty
 {
 	private final PartySet parties;
-	private final Messenger messenger;
+	private final IMessenger messenger;
 	private final Set<IMember> members = new HashSet<>();
 	private Inventory inv = null;
 	private Double health = null;

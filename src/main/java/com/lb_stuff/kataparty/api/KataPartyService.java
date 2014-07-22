@@ -1,9 +1,6 @@
 package com.lb_stuff.kataparty.api;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.PartyTicketManager;
-
-import org.bukkit.inventory.ItemStack;
 
 /**
  * The main service for the KataParty API.
@@ -21,10 +18,10 @@ public class KataPartyService
 	}
 
 	/**
-	 * Get the {@link Messenger}.
-	 * @return The {@link Messenger}.
+	 * Get the {@link IMessenger}.
+	 * @return The {@link IMessenger}.
 	 */
-	public Messenger getMessenger()
+	public IMessenger getMessenger()
 	{
 		return inst;
 	}
@@ -36,29 +33,13 @@ public class KataPartyService
 	{
 		return inst.getParties();
 	}
-
-	private PartyTicketManager getTicketManager()
+	/**
+	 * Get the manager for invitation tickets.
+	 * @return The {@link ITicketManager} instance.
+	 */
+	public IPartyTicketManager getTicketManager()
 	{
 		return inst.getTicketManager();
-	}
-
-	/**
-	 * Checks if a given item is an invitation ticket.
-	 * @param is The item to check.
-	 * @return <code>true</code> if the item is an invitation ticket.
-	 */
-	public boolean isTicket(ItemStack is)
-	{
-		return getTicketManager().isTicket(is);
-	}
-	/**
-	 * Checks if an invitation ticket was thrown at the invited player.
-	 * @param is The item to check.
-	 * @return <code>true</code> if the item is an invitation ticket and was thrown.
-	 */
-	public boolean wasTicketGiven(ItemStack is)
-	{
-		return getTicketManager().wasTicketGiven(is);
 	}
 
 	//...

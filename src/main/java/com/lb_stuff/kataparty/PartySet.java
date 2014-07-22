@@ -47,7 +47,7 @@ public class PartySet implements IPartySet
 	}
 
 	@Override
-	public Messenger getMessenger()
+	public IMessenger getMessenger()
 	{
 		return inst;
 	}
