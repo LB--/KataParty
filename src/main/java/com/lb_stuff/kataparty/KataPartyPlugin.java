@@ -167,6 +167,20 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		parties.keepEmptyParties(!config.getBoolean("remove-empty-parties"));
 	}
 	@Override
+	public void onDisable()
+	{
+		YamlConfiguration conf = new YamlConfiguration();
+		conf.set("party-set", parties);
+		try
+		{
+			conf.save(partiesFile);
+		}
+		catch(IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+	@Override
 	public FileConfiguration getConfig()
 	{
 		return config;
@@ -184,18 +198,9 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		}
 	}
 	@Override
-	public void onDisable()
+	public void saveDefaultConfig()
 	{
-		YamlConfiguration conf = new YamlConfiguration();
-		conf.set("party-set", parties);
-		try
-		{
-			conf.save(partiesFile);
-		}
-		catch(IOException e)
-		{
-			throw new RuntimeException(e);
-		}
+		reloadConfig();
 	}
 
 	private final PartySet parties = new PartySet(this);
