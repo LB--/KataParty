@@ -6,18 +6,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
+import static org.bukkit.ChatColor.*;
 
 import java.io.File;
 
 public class KataPartyUpdater extends Updater
 {
 	private final KataPartyPlugin inst;
-	private final Updater.UpdateType type;
 	public KataPartyUpdater(KataPartyPlugin plugin, File file, Updater.UpdateType t)
 	{
 		super(plugin, 81209, file, t, false);
 		inst = plugin;
-		type = t;
 	}
 
 	@Override
@@ -45,14 +44,16 @@ public class KataPartyUpdater extends Updater
 							{
 								inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
 								{
+									Updater.UpdateResult result = getResult();
 									inst.tell(e.getPlayer(), "A new update is available: v"+current+" -> v"+potential);
-									if(type == Updater.UpdateType.DEFAULT)
+									if(result == Updater.UpdateResult.SUCCESS)
 									{
 										inst.tell(e.getPlayer(), "It should be automatically installed next restart.");
 									}
-									else
+									else if(result == Updater.UpdateResult.UPDATE_AVAILABLE)
 									{
-										inst.tell(e.getPlayer(), "It will need to be updated manually.");
+										inst.tell(e.getPlayer(), "It will need to be updated manually:");
+										inst.tell(e.getPlayer(), ""+AQUA+UNDERLINE+getLatestFileLink());
 									}
 								}});
 							}
