@@ -18,9 +18,7 @@ public interface Messenger
 	 * Tell a player a message that is not user-defined.
 	 * @param p The player to tell.
 	 * @param message The message to send to the player.
-	 * @deprecated Exists only for testing purposes.
 	 */
-	@Deprecated
 	void tell(Player p, String message);
 	/**
 	 * Tells a player a user-defined message from the config file.

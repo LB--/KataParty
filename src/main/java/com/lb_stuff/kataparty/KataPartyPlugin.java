@@ -252,7 +252,7 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		getLogger().warning("Missing translation string \""+name+"\"");
 		return "<Missing translation \""+name+"\">";
 	}
-	@Override @Deprecated
+	@Override
 	public void tell(Player p, String message)
 	{
 		p.sendMessage(""+AQUA+"[KataParty] "+RESET+message);
