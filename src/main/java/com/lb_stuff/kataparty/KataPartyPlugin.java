@@ -89,35 +89,19 @@ public final class KataPartyPlugin extends JavaPlugin implements Messenger
 		{
 			throw new RuntimeException(e);
 		}
-		if(!firstrun && config.getBoolean("auto-updater"))
+		if(!firstrun)
 		{
-			updater = new Updater(this, 81209, getFile(), Updater.UpdateType.DEFAULT, false)
+			Updater.UpdateType type = Updater.UpdateType.DEFAULT;
+			if(!config.getBoolean("auto-updater"))
 			{
-				@Override
-				public boolean shouldUpdate(String current, String potential)
-				{
-					String[] c = current.split("\\.");
-					String[] p = potential.split("\\.");
-					if(c.length < 3 || p.length < 3 || c.length != p.length)
-					{
-						return true;
-					}
-					for(int i = 0; i < c.length; ++i)
-					{
-						if(Integer.parseInt(c[i]) < Integer.parseInt(p[i]))
-						{
-							getLogger().warning("Out of date version (new version is v"+potential+")");
-							return true;
-						}
-					}
-					getLogger().info("Up to date.");
-					return false;
-				}
-			};
+				type = Updater.UpdateType.NO_DOWNLOAD;
+				getLogger().info("Automatic update downloading disabled in config");
+			}
+			updater = new KataPartyUpdater(this, getFile(), type);
 		}
 		else
 		{
-			getLogger().warning("Auto-updater disabled in config, you should manually check for updates.");
+			getLogger().warning("This plugin supports auto-updating - you may disable it in the config.");
 		}
 
 		if(partiesFile.exists())

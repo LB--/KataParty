@@ -104,6 +104,7 @@ permissions:
       KataParty.manage: true
       KataParty.admin: true
       KataParty.reload: true
+      KataParty.update-notify: true
       KataParty.teleport.*: true
       KataParty.inventory.*: true
       KataParty.invite.*: true
@@ -184,4 +185,7 @@ permissions:
     default: true
   KataParty.reload:
     description: "Allows use of the /kpreload command to reload and regenerate the config"
+    default: op
+  KataParty.update-notify:
+    description: "Players with this permission are notified of updates to KataParty"
     default: op

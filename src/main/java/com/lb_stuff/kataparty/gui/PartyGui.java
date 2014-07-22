@@ -126,11 +126,10 @@ public abstract class PartyGui implements Listener
 	public final void show()
 	{
 		update();
-		final PartyGui This = this;
 		inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
 		{
 			player.closeInventory();
-			inst.getServer().getPluginManager().registerEvents(This, inst);
+			inst.getServer().getPluginManager().registerEvents(PartyGui.this, inst);
 			player.openInventory(inv);
 		}});
 	}
