@@ -1,12 +1,12 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.ChatFilterPref;
-import static com.lb_stuff.kataparty.PartySet.MemberSettings;
+import static com.lb_stuff.kataparty.PartySet.AsyncMemberSettings;
 import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
-import static com.lb_stuff.kataparty.api.ChatFilterService.AsyncMessage;
+import static com.lb_stuff.service.ChatFilterService.AsyncMessage;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -28,7 +28,7 @@ public class PartyChatFilter implements Listener
 		inst = plugin;
 	}
 
-	private MemberSettings getSettings(UUID uuid)
+	private AsyncMemberSettings getSettings(UUID uuid)
 	{
 		return inst.getParties().getSettings(uuid);
 	}
@@ -72,7 +72,7 @@ public class PartyChatFilter implements Listener
 
 	public void tellFilterPref(Player p)
 	{
-		MemberSettings ms = inst.getParties().getSettings(p.getUniqueId());
+		AsyncMemberSettings ms = inst.getParties().getSettings(p.getUniqueId());
 		if(ms != null)
 		{
 			switch(ms.getPref())
@@ -119,7 +119,7 @@ public class PartyChatFilter implements Listener
 		boolean prefswap = m.getMessage().startsWith(getSwap());
 		String sourceparty = null;
 		ChatFilterPref sourcepref = null;
-		MemberSettings sourcesettings = getSettings(source.getUniqueId());
+		AsyncMemberSettings sourcesettings = getSettings(source.getUniqueId());
 		if(sourcesettings != null)
 		{
 			sourceparty = sourcesettings.getPartyName();
@@ -143,7 +143,7 @@ public class PartyChatFilter implements Listener
 			Player target = (Player)m.getTarget();
 			String targetparty = null;
 			ChatFilterPref targetpref = null;
-			MemberSettings targetsettings = getSettings(target.getUniqueId());
+			AsyncMemberSettings targetsettings = getSettings(target.getUniqueId());
 			if(targetsettings != null)
 			{
 				targetparty = targetsettings.getPartyName();
@@ -204,7 +204,7 @@ public class PartyChatFilter implements Listener
 		if(m != null)
 		{
 			inst.tellMessage(p, "party-member-inform", m.getParty().getName());
-			MemberSettings ms = getSettings(p.getUniqueId());
+			AsyncMemberSettings ms = getSettings(p.getUniqueId());
 			if(ms != null)
 			{
 				ms.setPref(getDefaultFilterPref("on-join-server"));

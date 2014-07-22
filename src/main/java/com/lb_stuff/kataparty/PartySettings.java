@@ -57,13 +57,13 @@ public class PartySettings implements IPartySettings
 	@Override
 	public void apply(IPartySettings s)
 	{
-		name = s.getName();
-		tp = s.canTp();
-		pvp = s.canPvp();
-		visible = s.isVisible();
-		inv = s.hasInventory();
-		invite = s.isInviteOnly();
-		sticky = s.isSticky();
+		setName(s.getName());
+		setTp(s.canTp());
+		setPvp(s.canPvp());
+		setVisible(s.isVisible());
+		setInventory(s.hasInventory());
+		setInviteOnly(s.isInviteOnly());
+		setSticky(s.isSticky());
 	}
 
 	private String name = "KataParty";

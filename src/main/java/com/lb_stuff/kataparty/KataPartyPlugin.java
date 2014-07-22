@@ -6,7 +6,7 @@ import com.lb_stuff.kataparty.command.*;
 import com.lb_stuff.kataparty.config.MainConfig;
 import com.lb_stuff.kataparty.api.Messenger;
 import com.lb_stuff.kataparty.api.KataPartyService;
-import com.lb_stuff.kataparty.api.ChatFilterService;
+import com.lb_stuff.service.ChatFilterService;
 import com.lb_stuff.kataparty.api.IParty;
 
 import net.gravitydevelopment.updater.Updater;

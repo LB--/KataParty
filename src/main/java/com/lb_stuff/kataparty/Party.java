@@ -98,7 +98,7 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public void setName(String n)
 	{
-		for(Map.Entry<UUID, PartySet.IMemberSettings> e : parties.getPartyMembers())
+		for(Map.Entry<UUID, PartySet.IAsyncMemberSettings> e : parties.getPartyMembers())
 		{
 			if(e.getValue().getPartyName().equals(getName()))
 			{
@@ -178,6 +178,7 @@ public final class Party extends PartySettings implements IParty
 	public void add(IMember m)
 	{
 		members.add(m);
+		m.setParty(this);
 		parties.addSettings(m.getUuid(), getName());
 	}
 	@Override
@@ -271,13 +272,14 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public Set<IMember> getMembersAlive()
 	{
-		Set<IMember> mems = new HashSet<>();
-		for(IMember m : this)
+		Set<IMember> mems = getMembersOnline();
+		for(Iterator<IMember> it = mems.iterator(); it.hasNext(); )
 		{
-			OfflinePlayer offp = Bukkit.getOfflinePlayer(m.getUuid());
-			if(offp.isOnline() && !offp.getPlayer().isDead())
+			IMember m = it.next();
+			Player p = Bukkit.getPlayer(m.getUuid());
+			if(p.getPlayer().isDead())
 			{
-				mems.add(m);
+				it.remove();
 			}
 		}
 		return mems;
@@ -570,16 +572,15 @@ public final class Party extends PartySettings implements IParty
 			{
 				return false;
 			}
-			if(getClass() != obj.getClass())
+			if(obj instanceof IMember)
 			{
-				return false;
+				return uuid.equals(((IMember)obj).getUuid());
 			}
-			final Member other = (Member)obj;
-			if(!Objects.equals(this.uuid, other.uuid))
+			if(obj instanceof UUID)
 			{
-				return false;
+				return uuid.equals((UUID)obj);
 			}
-			return true;
+			return false;
 		}
 
 		@Override

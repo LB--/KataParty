@@ -2,7 +2,7 @@ package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.*;
 import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
-import static com.lb_stuff.kataparty.api.IPartySet.IMemberSettings;
+import static com.lb_stuff.kataparty.api.IPartySet.IAsyncMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
@@ -118,12 +118,12 @@ public class PartySet implements IPartySet
 		return copy.iterator();
 	}
 
-	public static class MemberSettings implements IMemberSettings
+	public static class AsyncMemberSettings implements IAsyncMemberSettings
 	{
 		private String partyname;
 		private ChatFilterPref pref = PREFER_PARTY;
 		private boolean alone = true;
-		public MemberSettings(String pname)
+		public AsyncMemberSettings(String pname)
 		{
 			partyname = pname;
 		}
@@ -164,14 +164,14 @@ public class PartySet implements IPartySet
 			alone = isalone;
 		}
 	}
-	private final ConcurrentSkipListMap<UUID, MemberSettings> partiers = new ConcurrentSkipListMap<>();
+	private final ConcurrentSkipListMap<UUID, AsyncMemberSettings> partiers = new ConcurrentSkipListMap<>();
 	@Override
 	public void addSettings(UUID uuid, String pname)
 	{
-		partiers.put(uuid, new MemberSettings(pname));
+		partiers.put(uuid, new AsyncMemberSettings(pname));
 	}
 	@Override
-	public MemberSettings getSettings(UUID uuid)
+	public AsyncMemberSettings getSettings(UUID uuid)
 	{
 		return partiers.get(uuid);
 	}
@@ -186,13 +186,13 @@ public class PartySet implements IPartySet
 		return inst.getFilter().getDefaultFilterPref("on-party-join");
 	}
 
-	private class PartyMembers implements Iterable<Map.Entry<UUID, IMemberSettings>>
+	private class PartyMembers implements Iterable<Map.Entry<UUID, IAsyncMemberSettings>>
 	{
 		@Override
-		public Iterator<Map.Entry<UUID, IMemberSettings>> iterator()
+		public Iterator<Map.Entry<UUID, IAsyncMemberSettings>> iterator()
 		{
-			Map<UUID, IMemberSettings> mems = new HashMap<>();
-			for(Map.Entry<UUID, MemberSettings> m : partiers.entrySet())
+			Map<UUID, IAsyncMemberSettings> mems = new HashMap<>();
+			for(Map.Entry<UUID, AsyncMemberSettings> m : partiers.entrySet())
 			{
 				mems.put(m.getKey(), m.getValue());
 			}
@@ -201,7 +201,7 @@ public class PartySet implements IPartySet
 	}
 	private final PartyMembers pms = new PartyMembers();
 	@Override
-	public Iterable<Map.Entry<UUID, IMemberSettings>> getPartyMembers()
+	public Iterable<Map.Entry<UUID, IAsyncMemberSettings>> getPartyMembers()
 	{
 		return pms;
 	}

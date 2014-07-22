@@ -43,6 +43,7 @@
 								<includes>
 									<include>com.lb_stuff.command:PluginInfoCommand</include>
 									<include>com.lb_stuff.command:PluginReloadCommand</include>
+									<include>com.lb_stuff.service:ChatFilterService</include>
 									<include>net.gravitydevelopment.updater:updater</include>
 								</includes>
 							</artifactSet>
@@ -50,6 +51,10 @@
 								<relocation>
 									<pattern>com.lb_stuff.command</pattern>
 									<shadedPattern>com.lb_stuff.kataparty.command</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.lb_stuff.service</pattern>
+									<shadedPattern>com.lb_stuff.kataparty.api</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>net.gravitydevelopment.updater</pattern>
