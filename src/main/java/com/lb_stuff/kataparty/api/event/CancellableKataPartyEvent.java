@@ -3,7 +3,7 @@ package com.lb_stuff.kataparty.api.event;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-public class CancellableKataPartyEvent extends KataPartyEvent implements Cancellable
+public abstract class CancellableKataPartyEvent extends KataPartyEvent implements Cancellable
 {
 	/**
 	 * See {@link org.bukkit.event.Event#Event()}

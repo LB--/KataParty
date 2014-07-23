@@ -42,5 +42,14 @@ public class KataPartyService
 		return inst.getTicketManager();
 	}
 
+	/**
+	 * Returns the {@link IDebugLogger} for {@link com.lb_stuff.kataparty.api.event.KataPartyEvent}.
+	 * @return The {@link IDebugLogger} for {@link com.lb_stuff.kataparty.api.event.KataPartyEvent}.
+	 */
+	public IDebugLogger getEventDebugLogger()
+	{
+		return inst.getEventDebugLogger();
+	}
+
 	//...
 }

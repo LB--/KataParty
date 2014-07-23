@@ -204,16 +204,14 @@ public class PartyChatFilter implements Listener
 		if(m != null)
 		{
 			inst.tellMessage(p, "party-member-inform", m.getParty().getName());
-			AsyncMemberSettings ms = getSettings(p.getUniqueId());
-			if(ms != null)
+			AsyncMemberSettings ms = getSettings(m.getUuid());
+			if(ms == null)
 			{
-				ms.setPref(getDefaultFilterPref("on-join-server"));
-				tellFilterPref(p);
+				inst.getPartySet().addSettings(m.getUuid(), m.getParty().getName());
+				ms = getSettings(m.getUuid());
 			}
-			else
-			{
-				inst.getLogger().warning(p.getName()+" does not have a MemberSettings but they're in a party!");
-			}
+			ms.setPref(getDefaultFilterPref("on-join-server"));
+			tellFilterPref(p);
 			updateAlone(m.getParty());
 		}
 		else

@@ -18,12 +18,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import static org.bukkit.ChatColor.*;
 import org.bukkit.plugin.ServicePriority;
+import org.bukkit.command.CommandSender;
 
 import java.util.*;
 import java.io.*;
@@ -82,6 +82,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		getServer().getPluginManager().registerEvents(filtserv, this);
 		getServer().getPluginManager().registerEvents(filter, this);
 		getServer().getPluginManager().registerEvents(tickets, this);
+		getServer().getPluginManager().registerEvents(edl, this);
 
 		boolean firstrun = !configFile.exists();
 
@@ -272,14 +273,29 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		getLogger().warning("Missing translation string \""+name+"\"");
 		return "<Missing translation \""+name+"\">";
 	}
+	private static final String PREFIX = ""+AQUA+"[KataParty] "+RESET;
 	@Override
-	public void tell(Player p, String message)
+	public void tell(CommandSender p, String message)
 	{
-		p.sendMessage(""+AQUA+"[KataParty] "+RESET+message);
+		for(String line : message.split("\\n"))
+		{
+			p.sendMessage(PREFIX+line);
+		}
 	}
 	@Override
-	public void tellMessage(Player p, String name, Object... parameters)
+	public void tellMessage(CommandSender p, String name, Object... parameters)
 	{
 		tell(p, getMessage(name, parameters));
+	}
+	@Override
+	public void tellConsole(String message)
+	{
+		tell(getServer().getConsoleSender(), message);
+	}
+
+	private final EventDebugLogger edl = new EventDebugLogger(this);
+	public EventDebugLogger getEventDebugLogger()
+	{
+		return edl;
 	}
 }

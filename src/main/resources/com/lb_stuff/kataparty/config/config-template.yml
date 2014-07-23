@@ -173,5 +173,8 @@ messages:
   ticket-accept-inform: "[%messages.ticket-accept-inform%]"
   ticket-reject-inform-members: "[%messages.ticket-reject-inform-members%]"
 
+# If you're a developer (or just curious), then set this to true for colorful console spam.
+debug: [%debug%]
+
 # This is updated automatically. Don't change it. Java will smite you if you do.
 this-is-the-config-version-number-dont-change-it-unless-you-want-very-bad-things-to-happen: [%version%]

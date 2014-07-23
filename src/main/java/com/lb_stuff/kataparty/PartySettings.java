@@ -164,6 +164,7 @@ public class PartySettings implements IPartySettings
 		public Map<String, Object> serialize()
 		{
 			Map<String, Object> data = new HashMap<>();
+			data.put("uuid", uuid.toString());
 			data.put("tp", tp);
 			data.put("rank", ""+rank);
 			return data;

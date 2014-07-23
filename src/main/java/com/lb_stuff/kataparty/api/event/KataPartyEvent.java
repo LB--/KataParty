@@ -9,7 +9,7 @@ import org.bukkit.Bukkit;
 /**
  * An {@link org.bukkit.event.Event} called by KataParty.
  */
-public class KataPartyEvent extends Event
+public abstract class KataPartyEvent extends Event
 {
 	/**
 	 * See {@link org.bukkit.event.Event#Event()}

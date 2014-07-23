@@ -145,4 +145,6 @@ messages:
   ticket-accept-inform: "You &aaccepted&r the &binvitation ticket&r for &b%1$s&r"
   ticket-reject-inform-members: "%1$s has &crejected&r the &binvitation ticket&r for your KataParty"
 
+debug: false
+
 version: 0

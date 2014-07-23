@@ -32,7 +32,8 @@ public final class PartyMemberLeaveEvent extends CancellableKataPartyEvent
 		KICKED,
 		/**
 		 * The {@link com.lb_stuff.kataparty.api.IParty} was
-		 * {@link com.lb_stuff.kataparty.api.IParty#disband(com.lb_stuff.kataparty.api.event.PartyDisbandEvent.Reason, org.bukkit.entity.Player) disbanded}.
+		 * {@link com.lb_stuff.kataparty.api.IParty#disband(com.lb_stuff.kataparty.api.event.PartyDisbandEvent.Reason, org.bukkit.entity.Player) disbanded},
+		 * and the event cannot be cancelled.
 		 */
 		DISBAND,
 		/**
@@ -74,6 +75,23 @@ public final class PartyMemberLeaveEvent extends CancellableKataPartyEvent
 	public Reason getReason()
 	{
 		return reason;
+	}
+
+	/**
+	 * Cancels or uncancels the event, unless {@link #getReason()}
+	 * returns {@link Reason#DISBAND}, in which case the event
+	 * cannot be cancelled.
+	 * @param c Whether to cancel the event.
+	 */
+	@Override
+	public void setCancelled(boolean c)
+	{
+		if(getReason() == Reason.DISBAND)
+		{
+			super.setCancelled(false);
+			return;
+		}
+		super.setCancelled(c);
 	}
 
 	private static final HandlerList handlers = new HandlerList();
