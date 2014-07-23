@@ -6,9 +6,10 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.entity.Player;
 
 /**
- * Event called when a KataParty is created.
+ * Event called when an {@link com.lb_stuff.kataparty.api.IParty}
+ * is being created.
  */
-public class PartyCreateEvent extends CancellableKataPartyEvent
+public final class PartyCreateEvent extends CancellableKataPartyEvent
 {
 	private final Player player;
 	private final IPartySettings settings;

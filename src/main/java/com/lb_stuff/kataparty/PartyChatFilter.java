@@ -30,7 +30,7 @@ public class PartyChatFilter implements Listener
 
 	private AsyncMemberSettings getSettings(UUID uuid)
 	{
-		return inst.getParties().getSettings(uuid);
+		return inst.getPartySet().getSettings(uuid);
 	}
 
 	private String getConfig(String path)
@@ -72,7 +72,7 @@ public class PartyChatFilter implements Listener
 
 	public void tellFilterPref(Player p)
 	{
-		AsyncMemberSettings ms = inst.getParties().getSettings(p.getUniqueId());
+		AsyncMemberSettings ms = inst.getPartySet().getSettings(p.getUniqueId());
 		if(ms != null)
 		{
 			switch(ms.getPref())
@@ -200,7 +200,7 @@ public class PartyChatFilter implements Listener
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
 		Player p = e.getPlayer();
-		final IParty.IMember m = inst.getParties().findMember(p.getUniqueId());
+		final IParty.IMember m = inst.getPartySet().findMember(p.getUniqueId());
 		if(m != null)
 		{
 			inst.tellMessage(p, "party-member-inform", m.getParty().getName());
@@ -224,7 +224,7 @@ public class PartyChatFilter implements Listener
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerKick(PlayerKickEvent e)
 	{
-		final IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+		final IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
 			updateAlone(m.getParty());
@@ -233,7 +233,7 @@ public class PartyChatFilter implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent e)
 	{
-		final IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+		final IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
 			updateAlone(m.getParty());

@@ -20,8 +20,8 @@ public class PartyPvpListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onDamageBy(EntityDamageByEntityEvent e)
 	{
-		IParty.IMember a = inst.getParties().findMember(e.getDamager().getUniqueId());
-		IParty.IMember b = inst.getParties().findMember(e.getEntity().getUniqueId());
+		IParty.IMember a = inst.getPartySet().findMember(e.getDamager().getUniqueId());
+		IParty.IMember b = inst.getPartySet().findMember(e.getEntity().getUniqueId());
 		if(a != null && !a.getParty().canPvp())
 		{
 			if(b != null && a.getParty() == b.getParty())
@@ -33,7 +33,7 @@ public class PartyPvpListener implements Listener
 				AnimalTamer owner = ((Wolf)e.getEntity()).getOwner();
 				if(owner != null)
 				{
-					b = inst.getParties().findMember(owner.getUniqueId());
+					b = inst.getPartySet().findMember(owner.getUniqueId());
 					if(a != b && a.getParty() == b.getParty())
 					{
 						e.setCancelled(true); //member attacks wolf of member
@@ -47,7 +47,7 @@ public class PartyPvpListener implements Listener
 			AnimalTamer owner = w.getOwner();
 			if(owner != null)
 			{
-				a = inst.getParties().findMember(owner.getUniqueId());
+				a = inst.getPartySet().findMember(owner.getUniqueId());
 				if(a != null && a.getParty() == b.getParty())
 				{
 					e.setCancelled(true); //member's wolf attacks member
@@ -64,8 +64,8 @@ public class PartyPvpListener implements Listener
 			AnimalTamer owner = ((Wolf)e.getEntity()).getOwner();
 			if(owner != null)
 			{
-				IParty.IMember a = inst.getParties().findMember(owner.getUniqueId());
-				IParty.IMember b = inst.getParties().findMember(e.getTarget().getUniqueId());
+				IParty.IMember a = inst.getPartySet().findMember(owner.getUniqueId());
+				IParty.IMember b = inst.getPartySet().findMember(e.getTarget().getUniqueId());
 				if(a != null && b != null && a.getParty() == b.getParty() && !a.getParty().canPvp())
 				{
 					e.setCancelled(true); //member's wolf targets member

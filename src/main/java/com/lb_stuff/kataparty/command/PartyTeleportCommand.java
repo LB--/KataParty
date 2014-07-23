@@ -26,7 +26,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 		if(args.length == 1 && sender instanceof Player)
 		{
 			Player player = (Player)sender;
-			IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
+			IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 			if(m != null)
 			{
 				for(IParty.IMember o : m.getParty())
@@ -54,7 +54,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0 || args.length == 1)
 			{
-				IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
+				IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 				if(!m.getParty().canTp())
 				{
 					inst.tellMessage(player, "party-teleports-disabled");
@@ -68,7 +68,7 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 					Player tp = inst.getServer().getPlayer(args[0]);
 					if(tp != null && player.canSee(tp))
 					{
-						IParty.IMember t = inst.getParties().findMember(tp.getUniqueId());
+						IParty.IMember t = inst.getPartySet().findMember(tp.getUniqueId());
 						if(t != null && t.getParty() == m.getParty())
 						{
 							if(m.getParty().canTp() && t.canTp())

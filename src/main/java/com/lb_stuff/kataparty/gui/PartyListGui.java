@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
+import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
@@ -24,11 +25,11 @@ public final class PartyListGui extends PartyGui
 		clearButtons();
 
 		int buttons = 0;
-		for(final IParty p : inst.getParties())
+		for(final IParty p : inst.getPartySet())
 		{
 			if(p.isVisible() || player.hasPermission("KataParty.seehidden"))
 			{
-				IParty.IMember mem = inst.getParties().findMember(player.getUniqueId());
+				IParty.IMember mem = inst.getPartySet().findMember(player.getUniqueId());
 				final boolean same = (mem != null && p == mem.getParty());
 				addButton(buttons++, p.getName(), p.isVisible()? Material.NAME_TAG : Material.PAPER, new ArrayList<String>(){
 				{
@@ -78,7 +79,7 @@ public final class PartyListGui extends PartyGui
 	@Override
 	protected void onButton(int slot, ClickType click)
 	{
-		IParty p = inst.getParties().findParty(getButtonName(slot));
+		IParty p = inst.getPartySet().findParty(getButtonName(slot));
 		if(p == null)
 		{
 			return;
@@ -87,12 +88,12 @@ public final class PartyListGui extends PartyGui
 		{
 			case LEFT:
 			{
-				IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
+				IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 				if(m == null || m.getParty() != p)
 				{
 					if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
 					{
-						if(p.newMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
+						if(p.newMember(new MemberSettings(player.getUniqueId()), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
 						{
 							inst.getFilter().tellFilterPref(player);
 						}

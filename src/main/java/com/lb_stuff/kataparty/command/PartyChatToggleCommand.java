@@ -22,7 +22,7 @@ public class PartyChatToggleCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0)
 			{
-				AsyncMemberSettings ms = inst.getParties().getSettings(player.getUniqueId());
+				AsyncMemberSettings ms = inst.getPartySet().getSettings(player.getUniqueId());
 				if(ms != null)
 				{
 					ms.togglePref();

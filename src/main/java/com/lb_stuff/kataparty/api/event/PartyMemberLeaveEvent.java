@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
  * Event called when a {@link org.bukkit.entity.Player} tries to leave an
  * {@link com.lb_stuff.kataparty.api.IParty}.
  */
-public class PartyMemberLeaveEvent extends CancellableKataPartyEvent
+public final class PartyMemberLeaveEvent extends CancellableKataPartyEvent
 {
 	/**
 	 * The reason for leaving.

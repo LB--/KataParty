@@ -4,7 +4,9 @@ import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.kataparty.api.IMessenger;
 import com.lb_stuff.kataparty.api.IParty;
 import static com.lb_stuff.kataparty.api.IParty.IMember;
+import com.lb_stuff.kataparty.api.PartyRank;
 import com.lb_stuff.kataparty.api.IPartySettings;
+import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
@@ -42,7 +44,7 @@ public final class Party extends PartySettings implements IParty
 	public Party(Map<String, Object> data)
 	{
 		KataPartyPlugin plugin = (KataPartyPlugin)Bukkit.getServicesManager().getRegistration(KataPartyService.class).getPlugin();
-		parties = plugin.getParties();
+		parties = plugin.getPartySet();
 		messenger = parties.getMessenger();
 		Object inventory = data.get("inv");
 		if(!(inventory instanceof Boolean))
@@ -56,7 +58,7 @@ public final class Party extends PartySettings implements IParty
 		for(IMember m : mems)
 		{
 			m.setParty(this);
-			add(m);
+			members.add(m);
 		}
 	}
 
@@ -133,7 +135,7 @@ public final class Party extends PartySettings implements IParty
 	}
 
 	@Override
-	public Member newMember(UUID uuid, PartyMemberJoinEvent.Reason r)
+	public IMember newMember(IMemberSettings settings, PartyMemberJoinEvent.Reason r)
 	{
 		if(disbanded)
 		{
@@ -142,7 +144,7 @@ public final class Party extends PartySettings implements IParty
 
 		if(r != null)
 		{
-			PartyMemberJoinEvent pmje = new PartyMemberJoinEvent(this, uuid, r);
+			PartyMemberJoinEvent pmje = new PartyMemberJoinEvent(this, settings, r);
 			Bukkit.getServer().getPluginManager().callEvent(pmje);
 			if(pmje.isCancelled())
 			{
@@ -152,34 +154,30 @@ public final class Party extends PartySettings implements IParty
 
 		{
 			IMember m;
-			while((m = parties.findMember(uuid)) != null)
+			while((m = getPartySet().findMember(settings.getUuid())) != null)
 			{
-				m.getParty().removeMember(uuid, PartyMemberLeaveEvent.Reason.SWITCH_PARTIES);
+				m.getParty().removeMember(settings.getUuid(), PartyMemberLeaveEvent.Reason.SWITCH_PARTIES);
 			}
 		}
-		Member m = new Member(this, uuid);
-		members.add(m);
-		parties.addSettings(uuid, getName());
-		OfflinePlayer offp = Bukkit.getOfflinePlayer(uuid);
-		if(offp.isOnline())
+		IMember m = getPartySet().getMemberFactory(settings.getClass()).create(this, settings);
+		if(m != null)
 		{
-			informMembersMessage("party-join-inform", offp.getPlayer().getDisplayName());
-			m.informMessage("manage-hint");
+			members.add(m);
+			parties.addSettings(settings.getUuid(), getName());
+			OfflinePlayer offp = Bukkit.getOfflinePlayer(settings.getUuid());
+			if(offp.isOnline())
+			{
+				informMembersMessage("party-join-inform", offp.getPlayer().getDisplayName());
+				m.informMessage("manage-hint");
+			}
+			else
+			{
+				informMembersMessage("party-join-inform", offp.getName());
+			}
+			getPartySet().getSettings(settings.getUuid()).setPref(parties.getJoinFilterPref());
+			m.setTp(m.canTp()); //shows message
 		}
-		else
-		{
-			informMembersMessage("party-join-inform", offp.getName());
-		}
-		parties.getSettings(uuid).setPref(parties.getJoinFilterPref());
-		m.setTp(parties.defaultSelfTeleports());
 		return m;
-	}
-	@Override
-	public void add(IMember m)
-	{
-		members.add(m);
-		m.setParty(this);
-		parties.addSettings(m.getUuid(), getName());
 	}
 	@Override
 	public void removeMember(UUID uuid, PartyMemberLeaveEvent.Reason r)
@@ -285,7 +283,7 @@ public final class Party extends PartySettings implements IParty
 		return mems;
 	}
 	@Override
-	public Set<IMember> getMembersRanked(Rank r)
+	public Set<IMember> getMembersRanked(PartyRank r)
 	{
 		Set<IMember> mems = new HashSet<>();
 		for(IMember m : this)
@@ -486,7 +484,7 @@ public final class Party extends PartySettings implements IParty
 	}
 
 	@Override
-	public String rankName(Rank r)
+	public String rankName(PartyRank r)
 	{
 		switch(r)
 		{
@@ -496,27 +494,19 @@ public final class Party extends PartySettings implements IParty
 			default: throw new IllegalStateException();
 		}
 	}
-	public static class Member implements IMember
+	public static class Member extends MemberSettings implements IMember
 	{
 		private IParty p;
-		private final UUID uuid;
-		private Rank rank = Rank.MEMBER;
-		private boolean tp = true;
 
 		@Override
 		public Map<String, Object> serialize()
 		{
-			Map<String, Object> data = new HashMap<>();
-			data.put("uuid", uuid.toString());
-			data.put("rank", ""+rank);
-			data.put("tp", tp);
+			Map<String, Object> data = super.serialize();
 			return data;
 		}
 		public Member(Map<String, Object> data)
 		{
-			uuid = UUID.fromString((String)data.get("uuid"));
-			rank = Rank.valueOf((String)data.get("rank"));
-			tp = (Boolean)data.get("tp");
+			super(MemberSettings.deserialize(data));
 		}
 		@Override @Deprecated
 		public void setParty(IParty party)
@@ -524,16 +514,16 @@ public final class Party extends PartySettings implements IParty
 			p = party;
 		}
 
-		private Member(Party party, UUID id)
+		public Member(IParty party, IMemberSettings settings)
 		{
+			super(settings);
 			p = party;
-			uuid = id;
 		}
 
 		@Override @Deprecated
 		public void inform(String message)
 		{
-			OfflinePlayer offp = Bukkit.getOfflinePlayer(uuid);
+			OfflinePlayer offp = Bukkit.getOfflinePlayer(getUuid());
 			if(offp.isOnline())
 			{
 				offp.getPlayer().sendMessage("[KataParty] "+message);
@@ -542,7 +532,7 @@ public final class Party extends PartySettings implements IParty
 		@Override
 		public void informMessage(String name, Object... parameters)
 		{
-			OfflinePlayer offp = Bukkit.getOfflinePlayer(uuid);
+			OfflinePlayer offp = Bukkit.getOfflinePlayer(getUuid());
 			if(offp.isOnline())
 			{
 				p.getPartySet().getMessenger().tellMessage(offp.getPlayer(), name, parameters);
@@ -556,59 +546,20 @@ public final class Party extends PartySettings implements IParty
 		}
 
 		@Override
-		public UUID getUuid()
-		{
-			return uuid;
-		}
-		@Override
-		public int hashCode()
-		{
-			return uuid.hashCode();
-		}
-		@Override
-		public boolean equals(Object obj)
-		{
-			if(obj == null)
-			{
-				return false;
-			}
-			if(obj instanceof IMember)
-			{
-				return uuid.equals(((IMember)obj).getUuid());
-			}
-			if(obj instanceof UUID)
-			{
-				return uuid.equals((UUID)obj);
-			}
-			return false;
-		}
-
-		@Override
-		public Rank getRank()
-		{
-			return rank;
-		}
-		@Override
 		public String getRankName()
 		{
 			return p.rankName(getRank());
 		}
 		@Override
-		public void setRank(Rank r)
+		public void setRank(PartyRank r)
 		{
-			rank = r;
+			super.setRank(r);
 			informMessage("party-rank-inform", p.rankName(r));
 		}
 
 		@Override
-		public boolean canTp()
-		{
-			return tp;
-		}
-		@Override
 		public void setTp(boolean v)
 		{
-			tp = v;
 			if(v)
 			{
 				informMessage("party-self-teleports-enable-inform");
@@ -617,6 +568,7 @@ public final class Party extends PartySettings implements IParty
 			{
 				informMessage("party-self-teleports-disable-inform");
 			}
+			super.setTp(v);
 		}
 	}
 }

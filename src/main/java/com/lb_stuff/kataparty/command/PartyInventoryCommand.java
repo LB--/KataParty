@@ -23,7 +23,7 @@ public class PartyInventoryCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0)
 			{
-				IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
+				IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 				if(m != null)
 				{
 					Inventory i = m.getParty().getInventory();

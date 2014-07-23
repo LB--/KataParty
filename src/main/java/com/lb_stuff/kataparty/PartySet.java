@@ -1,6 +1,9 @@
 package com.lb_stuff.kataparty;
 
+import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.*;
+import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
+import static com.lb_stuff.kataparty.api.IPartyFactory.IMemberFactory;
 import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 import static com.lb_stuff.kataparty.api.IPartySet.IAsyncMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
@@ -29,7 +32,7 @@ public class PartySet implements IPartySet
 	public static PartySet deserialize(Map<String, Object> data)
 	{
 		KataPartyPlugin plugin = (KataPartyPlugin)Bukkit.getServicesManager().getRegistration(KataPartyService.class).getPlugin();
-		PartySet ps = plugin.getParties();
+		PartySet ps = plugin.getPartySet();
 		List<IParty> plist = (List<IParty>)data.get("parties");
 		ps.parties.addAll(plist);
 
@@ -52,6 +55,51 @@ public class PartySet implements IPartySet
 		return inst;
 	}
 
+	private Map<Class<? extends IPartySettings>, IPartyFactory> pfacts = new HashMap<>();
+	@Override
+	public IPartyFactory registerPartyFactory(Class<? extends IPartySettings> clazz, IPartyFactory factory)
+	{
+		if((clazz == null && factory != null) || (clazz != null && factory == null))
+		{
+			throw new IllegalArgumentException("Both arguments must be null or not null");
+		}
+		IPartyFactory old = pfacts.get(clazz);
+		pfacts.put(clazz, factory);
+		return old;
+	}
+	@Override
+	public IPartyFactory getPartyFactory(Class<? extends IPartySettings> clazz)
+	{
+		IPartyFactory fact = pfacts.get(clazz);
+		if(fact == null)
+		{
+			throw new IllegalArgumentException("No IPartyFactory for "+clazz);
+		}
+		return fact;
+	}
+	private Map<Class<? extends IMemberSettings>, IMemberFactory> mfacts = new HashMap<>();
+	@Override
+	public IMemberFactory registerMemberFactory(Class<? extends IMemberSettings> clazz, IMemberFactory factory)
+	{
+		if((clazz == null && factory != null) || (clazz != null && factory == null))
+		{
+			throw new IllegalArgumentException("Both arguments must be null or not null");
+		}
+		IMemberFactory old = mfacts.get(clazz);
+		mfacts.put(clazz, factory);
+		return old;
+	}
+	@Override
+	public IMemberFactory getMemberFactory(Class<? extends IMemberSettings> clazz)
+	{
+		IMemberFactory fact = mfacts.get(clazz);
+		if(fact == null)
+		{
+			throw new IllegalArgumentException("No IMemberFactory for "+clazz);
+		}
+		return fact;
+	}
+
 	@Override
 	public IParty newParty(Player creator, IPartySettings settings)
 	{
@@ -61,22 +109,24 @@ public class PartySet implements IPartySet
 			inst.getServer().getPluginManager().callEvent(pce);
 			if(!pce.isCancelled())
 			{
-				Party p = new Party(this, settings);
-				parties.add(p);
-				if(creator != null)
+				IParty p = getPartyFactory(settings.getClass()).create(this, settings);
+				if(p != null)
 				{
-					p.newMember(creator.getUniqueId(), PartyMemberJoinEvent.Reason.CREATOR).setRank(Party.Rank.ADMIN);
-					getSettings(creator.getUniqueId()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
+					parties.add(p);
+					if(creator != null)
+					{
+						MemberSettings ms = new MemberSettings(creator.getUniqueId());
+						ms.setRank(PartyRank.ADMIN);
+						if(p.newMember(ms, PartyMemberJoinEvent.Reason.CREATOR) != null)
+						{
+							getSettings(ms.getUuid()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
+						}
+					}
 				}
 				return p;
 			}
 		}
 		return null;
-	}
-	@Override
-	public boolean add(IParty p)
-	{
-		return parties.add(p);
 	}
 	@Override
 	public void remove(IParty p, PartyDisbandEvent.Reason r, Player player)

@@ -1,5 +1,7 @@
 package com.lb_stuff.kataparty.api;
 
+import static com.lb_stuff.kataparty.api.IPartyFactory.IMemberFactory;
+import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -20,6 +22,30 @@ public interface IPartySet extends Iterable<IParty>, ConfigurationSerializable
 	 */
 	IMessenger getMessenger();
 	/**
+	 * Register an {@link IPartyFactory} for the given type of
+	 * {@link IPartySettings} implementor. Both parameters may
+	 * be <code>null</code> as long as both are.
+	 * @param clazz The type of {@link IPartySettings} implementor
+	 * for which to register the {@link IPartyFactory}.
+	 * @param factory The {@link IPartyFactory} to be registered.
+	 * @return The old {@link IPartyFactory} instance, or
+	 * <code>null</code>.
+	 */
+	IPartyFactory registerPartyFactory(Class<? extends IPartySettings> clazz, IPartyFactory factory);
+	IPartyFactory getPartyFactory(Class<? extends IPartySettings> clazz);
+	/**
+	 * Register an {@link IMemberFactory} for the given type of
+	 * {@link IMemberSettings} implementor. Both parameters may
+	 * be <code>null</code> as long as both are.
+	 * @param clazz The type of {@link ImemberSettings} implementor
+	 * for which to register the {@link IMemberFactory}.
+	 * @param factory The {@link IMemberFactory} to be registered.
+	 * @return The old {@link IMemberFactory} instance, or
+	 * <code>null</code>.
+	 */
+	IMemberFactory registerMemberFactory(Class<? extends IMemberSettings> clazz, IMemberFactory factory);
+	IMemberFactory getMemberFactory(Class<? extends IMemberSettings> clazz);
+	/**
 	 * Creates and adds a new {@link IParty} if the
 	 * {@link com.lb_stuff.kataparty.api.event.PartyCreateEvent} is not
 	 * cancelled.
@@ -31,12 +57,6 @@ public interface IPartySet extends Iterable<IParty>, ConfigurationSerializable
 	 * cancelled.
 	 */
 	IParty newParty(Player creator, IPartySettings settings);
-	/**
-	 * Adds an {@link IParty} implemented by another plugin.
-	 * @param p The {@link IParty}.
-	 * @return <code>true</code> if the {@link IParty} was actually added.
-	 */
-	boolean add(IParty p);
 	/**
 	 * Disbands an {@link IParty} via
 	 * {@link IParty#disband(com.lb_stuff.kataparty.api.event.PartyDisbandEvent.Reason, org.bukkit.entity.Player)}.

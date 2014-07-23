@@ -10,7 +10,7 @@ import org.bukkit.event.inventory.InventoryAction;
  * {@link com.lb_stuff.kataparty.api.IPartyTicketManager invitation ticket}. This
  * event generally comes already cancelled.
  */
-public class TicketInventoryEvent extends CancellableKataPartyEvent
+public final class TicketInventoryEvent extends CancellableKataPartyEvent
 {
 	private final Inventory inv;
 	private final ItemStack ticket;

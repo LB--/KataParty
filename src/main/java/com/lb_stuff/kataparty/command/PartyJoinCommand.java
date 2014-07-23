@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
+import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
@@ -22,7 +23,7 @@ public class PartyJoinCommand extends TabbablePartyCommand
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		List<String> ret = new ArrayList<>();
-		for(IParty p : inst.getParties())
+		for(IParty p : inst.getPartySet())
 		{
 			if(p.isVisible() && p.getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 			{
@@ -40,19 +41,19 @@ public class PartyJoinCommand extends TabbablePartyCommand
 			Player player = (Player)sender;
 			if(args.length == 1)
 			{
-				IParty p = inst.getParties().findParty(args[0]);
+				IParty p = inst.getPartySet().findParty(args[0]);
 				if(p == null)
 				{
 					inst.tellMessage(player, "party-does-not-exist", args[0]);
 				}
 				else
 				{
-					IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
+					IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 					if(m == null || m.getParty() != p)
 					{
 						if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
 						{
-							if(p.newMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
+							if(p.newMember(new MemberSettings(player.getUniqueId()), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
 							{
 								inst.getFilter().tellFilterPref(player);
 							}

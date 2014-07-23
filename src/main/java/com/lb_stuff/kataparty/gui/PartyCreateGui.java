@@ -85,7 +85,7 @@ public final class PartyCreateGui extends PartyGui
 			}
 		}});
 		setButton(INVITES, (getDefault("invite-only")? 2 : 1));
-		if(!inst.getParties().keepEmptyParties() && player.hasPermission("KataParty.stick"))
+		if(!inst.getPartySet().keepEmptyParties() && player.hasPermission("KataParty.stick"))
 		{
 			addButton(STICKY, inst.getMessage("manage-sticky-disabled"), Material.STICK, new ArrayList<String>(){
 			{
@@ -98,7 +98,7 @@ public final class PartyCreateGui extends PartyGui
 	protected void update()
 	{
 		String pname = getButtonName(TICKET);
-		if(pname != null && inst.getParties().findParty(pname) != null)
+		if(pname != null && inst.getPartySet().findParty(pname) != null)
 		{
 			clearButtons();
 			rename(inst.getMessage("create-name-taken", pname));
@@ -126,7 +126,7 @@ public final class PartyCreateGui extends PartyGui
 				ps.setVisible(getButton(VISIBLE) != 1);
 				ps.setInviteOnly(getButton(INVITES) != 1);
 				ps.setSticky(getButton(STICKY) != 1);
-				inst.getParties().newParty(player, ps);
+				inst.getPartySet().newParty(player, ps);
 				inst.getFilter().tellFilterPref(player);
 				hide();
 			} break;
@@ -209,7 +209,7 @@ public final class PartyCreateGui extends PartyGui
 			} break;
 			case STICKY:
 			{
-				if(!inst.getParties().keepEmptyParties() && player.hasPermission("KataParty.stick"))
+				if(!inst.getPartySet().keepEmptyParties() && player.hasPermission("KataParty.stick"))
 				{
 					if(getButton(STICKY) != 1)
 					{
@@ -233,7 +233,7 @@ public final class PartyCreateGui extends PartyGui
 		String pname = getButtonName(TICKET);
 		if(pname != null)
 		{
-			IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
+			IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 			if(m == null || !m.getParty().getName().equals(pname))
 			{
 				inst.tellMessage(player, "create-cancelled");

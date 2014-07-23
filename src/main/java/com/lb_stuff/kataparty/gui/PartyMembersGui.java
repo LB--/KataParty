@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.PartyRank;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
 import org.bukkit.Material;
@@ -27,13 +28,13 @@ public final class PartyMembersGui extends PartyGui
 	{
 		clearButtons();
 
-		if(!inst.getParties().contains(party))
+		if(!inst.getPartySet().contains(party))
 		{
 			hide();
 			return;
 		}
 
-		final IParty.IMember mt = inst.getParties().findMember(player.getUniqueId());
+		final IParty.IMember mt = inst.getPartySet().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -41,8 +42,8 @@ public final class PartyMembersGui extends PartyGui
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.getRank() == IParty.Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == IParty.Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == PartyRank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == PartyRank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -63,7 +64,7 @@ public final class PartyMembersGui extends PartyGui
 		{
 			final OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
 			final Player onp = offp.getPlayer();
-			addButton(++buttons, new ItemStack(Material.SKULL_ITEM, (m.getRank().equals(IParty.Rank.MODERATOR)? 2 : (m.getRank().equals(IParty.Rank.ADMIN)? 3 : 1)), (short)3));
+			addButton(++buttons, new ItemStack(Material.SKULL_ITEM, (m.getRank().equals(PartyRank.MODERATOR)? 2 : (m.getRank().equals(PartyRank.ADMIN)? 3 : 1)), (short)3));
 			setButton(buttons, (offp.getName() != null ? offp.getName() : m.getUuid().toString()), new ArrayList<String>(){
 			{
 				if(offp.getName() == null)
@@ -135,7 +136,7 @@ public final class PartyMembersGui extends PartyGui
 			return;
 		}
 
-		final IParty.IMember mt = inst.getParties().findMember(player.getUniqueId());
+		final IParty.IMember mt = inst.getPartySet().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -143,8 +144,8 @@ public final class PartyMembersGui extends PartyGui
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.getRank() == IParty.Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == IParty.Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == PartyRank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == PartyRank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -165,14 +166,14 @@ public final class PartyMembersGui extends PartyGui
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							target.setRank(IParty.Rank.MODERATOR);
+							target.setRank(PartyRank.MODERATOR);
 						}
 					} break;
 					case MODERATOR:
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							target.setRank(IParty.Rank.ADMIN);
+							target.setRank(PartyRank.ADMIN);
 						}
 					} break;
 					default: break;
@@ -193,14 +194,14 @@ public final class PartyMembersGui extends PartyGui
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							target.setRank(IParty.Rank.MEMBER);
+							target.setRank(PartyRank.MEMBER);
 						}
 					} break;
 					case ADMIN:
 					{
 						if(isAdmin || (isMember && isPartyAdmin))
 						{
-							target.setRank(IParty.Rank.MODERATOR);
+							target.setRank(PartyRank.MODERATOR);
 						}
 					} break;
 					default: break;

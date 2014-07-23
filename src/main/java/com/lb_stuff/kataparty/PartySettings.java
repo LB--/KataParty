@@ -1,11 +1,14 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IPartySettings;
+import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
+import com.lb_stuff.kataparty.api.PartyRank;
 
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class PartySettings implements IPartySettings
 {
@@ -148,5 +151,101 @@ public class PartySettings implements IPartySettings
 	public void setSticky(boolean enabled)
 	{
 		sticky = enabled;
+	}
+
+	public static class MemberSettings implements IMemberSettings
+	{
+		static
+		{
+			ConfigurationSerialization.registerClass(MemberSettings.class);
+		}
+
+		@Override
+		public Map<String, Object> serialize()
+		{
+			Map<String, Object> data = new HashMap<>();
+			data.put("tp", tp);
+			data.put("rank", ""+rank);
+			return data;
+		}
+		public static MemberSettings deserialize(Map<String, Object> data)
+		{
+			MemberSettings s = new MemberSettings(UUID.fromString((String)data.get("uuid")));
+			s.tp = (Boolean)data.get("tp");
+			s.rank = PartyRank.valueOf((String)data.get("rank"));
+			return s;
+		}
+
+		public MemberSettings(UUID id)
+		{
+			uuid = id;
+		}
+		public MemberSettings(IMemberSettings other)
+		{
+			uuid = other.getUuid();
+			tp = other.canTp();
+			rank = other.getRank();
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return uuid.hashCode();
+		}
+		@Override
+		public boolean equals(Object obj)
+		{
+			if(obj == null)
+			{
+				return false;
+			}
+			if(obj instanceof IMemberSettings)
+			{
+				return uuid.equals(((IMemberSettings)obj).getUuid());
+			}
+			if(obj instanceof UUID)
+			{
+				return uuid.equals((UUID)obj);
+			}
+			return false;
+		}
+
+		@Override
+		public void apply(IMemberSettings s)
+		{
+			tp = s.canTp();
+			rank = s.getRank();
+		}
+
+		private final UUID uuid;
+		@Override
+		public UUID getUuid()
+		{
+			return uuid;
+		}
+
+		private PartyRank rank = PartyRank.MEMBER;
+		@Override
+		public PartyRank getRank()
+		{
+			return rank;
+		}
+		@Override
+		public void setRank(PartyRank r)
+		{
+			rank = r;
+		}
+
+		private boolean tp = KataPartyPlugin.getInst().getPartySet().defaultSelfTeleports();
+		@Override
+		public boolean canTp()
+		{
+			return tp;
+		}
+		@Override
+		public void setTp(boolean enabled)
+		{
+			tp = enabled;
+		}
 	}
 }

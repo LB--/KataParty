@@ -1,10 +1,10 @@
 package com.lb_stuff.kataparty.api;
 
+import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.Location;
@@ -56,21 +56,16 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	/**
 	 * Fires {@link com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent}
 	 * and adds a new {@link IMember} to this party.
-	 * @param uuid The {@link java.util.UUID} of the {@link org.bukkit.OfflinePlayer}.
+	 * @param settings The {@link IPartySettings.IMemberSettings}.
 	 * @param r The {@link com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent.Reason}.
 	 * @return The {@link IMember}, or <code>null</code> if the
 	 * {@link com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent} was cancelled.
 	 */
-	IMember newMember(UUID uuid, PartyMemberJoinEvent.Reason r);
-	/**
-	 * Adds an {@link IMember} from another plugin and calls {@link IMember#setParty(com.lb_stuff.kataparty.api.IParty)}.
-	 * @param m The {@link IMember}.
-	 */
-	void add(IMember m);
+	IMember newMember(IMemberSettings settings, PartyMemberJoinEvent.Reason r);
 	/**
 	 * Removes an {@link IMember} based on {@link java.util.UUID}. If
 	 * {@link IPartySet#keepEmptyParties()} is <code>false</code> and
-	 * {@link #isSticky()} is also <code>false<code>, then this will call
+	 * {@link #isSticky()} is also <code>false</code>, then this will call
 	 * {@link #disband(com.lb_stuff.kataparty.api.event.PartyDisbandEvent.Reason, org.bukkit.entity.Player)}
 	 * when the last {@link IMember} is removed.
 	 * @param uuid The {@link java.util.UUID} of the {@link org.bukkit.OfflinePlayer}.
@@ -113,7 +108,7 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	 * @param r The rank criteria.
 	 * @return A {@link java.util.Set} of {@link IMember}s with rank <code>r</code>.
 	 */
-	Set<IMember> getMembersRanked(Rank r);
+	Set<IMember> getMembersRanked(PartyRank r);
 	/**
 	 * Permanently disbands this party.
 	 * @param r The {@link com.lb_stuff.kataparty.api.event.PartyDisbandEvent.Reason}.
@@ -153,41 +148,23 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	void setInventory(boolean enabled);
 
 	/**
-	 * The in-party rank of an {@link IMember}.
-	 */
-	public static enum Rank
-	{
-		/**
-		 * The {@link IMember} has full control over the party.
-		 */
-		ADMIN,
-		/**
-		 * The {@link IMember} has limited control over the party.
-		 */
-		MODERATOR,
-		/**
-		 * The {@link IMember} can only change their personal settings.
-		 */
-		MEMBER;
-	}
-	/**
-	 * Retrieves the user-defined name of the given {@link Rank} from the config file via
+	 * Retrieves the user-defined name of the given {@link PartyRank} from the config file via
 	 * {@link Messenger#getMessage(java.lang.String, java.lang.Object...)}.
-	 * @param r The {@link Rank} to retrieve the user-defined name of.
+	 * @param r The {@link PartyRank} to retrieve the user-defined name of.
 	 * @return
 	 */
-	String rankName(Rank r);
+	String rankName(PartyRank r);
 
 	/**
 	 * A member of an {@link IParty}.
 	 * This interface may be implemented by plugins other than KataParty.
 	 */
-	public interface IMember extends ConfigurationSerializable
+	public interface IMember extends IMemberSettings
 	{
 		/**
-		 * Used during deserialization and by {@link IParty#add(com.lb_stuff.kataparty.api.IParty.IMember)}.
+		 * Only to be used during deserialization.
 		 * @param p The {@link IParty}.
-		 * @deprecated Should not be used in normal circumstances.
+		 * @deprecated Only to be used during deserialization.
 		 */
 		@Deprecated
 		void setParty(IParty p);
@@ -206,52 +183,14 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 		 */
 		void informMessage(String name, Object... parameters);
 		/**
-		 * Returns {@link java.util.UUID#hashCode()}.
-		 * @return {@link java.util.UUID#hashCode()}.
-		 */
-		@Override
-		int hashCode();
-		/**
-		 * Calls {@link java.util.UUID#equals(java.lang.Object)}.
-		 * @param obj The {@link IMember} or {@link java.util.UUID}.
-		 * @return {@link java.util.UUID#equals(java.lang.Object)}.
-		 */
-		@Override
-		boolean equals(Object obj);
-		/**
 		 * Returns the {@link IParty} this is a member of.
 		 * @return The {@link IParty} this is a member of.
 		 */
 		IParty getParty();
 		/**
-		 * Returns this member's {@link java.util.UUID}.
-		 * @return This member's {@link java.util.UUID}.
-		 */
-		UUID getUuid();
-		/**
-		 * Returns this member's {@link Rank}.
-		 * @return This member's {@link Rank}.
-		 */
-		Rank getRank();
-		/**
 		 * Calls {@link IParty#rankName(com.lb_stuff.kataparty.api.IParty.Rank)}.
 		 * @return {@link IParty#rankName(com.lb_stuff.kataparty.api.IParty.Rank)}.
 		 */
 		String getRankName();
-		/**
-		 * Sets this member's {@link Rank}.
-		 * @param r The new {@link Rank} this member should have.
-		 */
-		void setRank(Rank r);
-		/**
-		 * Returns this member's personal teleportation setting.
-		 * @return This member's personal teleportation setting.
-		 */
-		boolean canTp();
-		/**
-		 * Sets this member's personal teleportation setting.
-		 * @param tp The new value for this member's personal teleportation setting.
-		 */
-		void setTp(boolean tp);
 	}
 }

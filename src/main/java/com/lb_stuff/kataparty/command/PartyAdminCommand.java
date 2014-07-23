@@ -22,7 +22,7 @@ public class PartyAdminCommand extends TabbablePartyCommand
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		List<String> ret = new ArrayList<>();
-		for(IParty p : inst.getParties())
+		for(IParty p : inst.getPartySet())
 		{
 			if(p.getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
 			{
@@ -39,7 +39,7 @@ public class PartyAdminCommand extends TabbablePartyCommand
 			Player player = (Player)sender;
 			if(args.length == 1)
 			{
-				IParty p = inst.getParties().findParty(args[0]);
+				IParty p = inst.getPartySet().findParty(args[0]);
 				if(p == null)
 				{
 					inst.tellMessage(player, "party-does-not-exist", args[0]);

@@ -26,7 +26,7 @@ public final class PartyTeleportGui extends PartyGui
 	{
 		clearButtons();
 
-		if(!inst.getParties().contains(party))
+		if(!inst.getPartySet().contains(party))
 		{
 			hide();
 			return;
@@ -69,7 +69,7 @@ public final class PartyTeleportGui extends PartyGui
 		{
 			return;
 		}
-		if(inst.getParties().findParty(party.getName()) == null)
+		if(inst.getPartySet().findParty(party.getName()) == null)
 		{
 			hide();
 			return;

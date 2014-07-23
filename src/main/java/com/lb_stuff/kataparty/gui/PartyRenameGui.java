@@ -25,7 +25,7 @@ public final class PartyRenameGui extends PartyGui
 	{
 		clearButtons();
 
-		if(!inst.getParties().contains(party))
+		if(!inst.getPartySet().contains(party))
 		{
 			hide();
 			return;

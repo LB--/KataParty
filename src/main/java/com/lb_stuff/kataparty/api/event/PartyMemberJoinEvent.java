@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty.api.event;
 
 import com.lb_stuff.kataparty.api.IParty;
+import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 
 import org.bukkit.event.HandlerList;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
  * Event called when a {@link org.bukkit.entity.Player} tries to join an
  * {@link com.lb_stuff.kataparty.api.IParty}.
  */
-public class PartyMemberJoinEvent extends CancellableKataPartyEvent
+public final class PartyMemberJoinEvent extends CancellableKataPartyEvent
 {
 	/**
 	 * The reason for joining.
@@ -18,19 +19,16 @@ public class PartyMemberJoinEvent extends CancellableKataPartyEvent
 	public enum Reason
 	{
 		/**
-		 * The {@link PartyMemberJoinEvent#getApplicantUuid() applicant}
-		 * is the {@link org.bukkit.entity.Player} who created the
-		 * {@link com.lb_stuff.kataparty.api.IParty}.
+		 * The applicant is the {@link org.bukkit.entity.Player} who created
+		 * the {@link com.lb_stuff.kataparty.api.IParty}.
 		 */
 		CREATOR,
 		/**
-		 * The {@link PartyMemberJoinEvent#getApplicantUuid() applicant}
-		 * is joining voluntarily.
+		 * The applicant is joining voluntarily.
 		 */
 		VOLUNTARY,
 		/**
-		 * The {@link PartyMemberJoinEvent#getApplicantUuid() applicant}
-		 * was invited and used their
+		 * The was invited and used their
 		 * {@link com.lb_stuff.kataparty.api.IPartyTicketManager invitation ticket}
 		 * to join.
 		 */
@@ -40,14 +38,14 @@ public class PartyMemberJoinEvent extends CancellableKataPartyEvent
 		OTHER
 	}
 	private final IParty party;
-	private final UUID player;
+	private final IMemberSettings settings;
 	private final Reason reason;
 	/**
 	 * @param p The {@link com.lb_stuff.kataparty.api.IParty} being joined.
-	 * @param applicant The {@link PartyMemberJoinEvent#getApplicantUuid() applicant}.
+	 * @param applicant The {@link com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings}.
 	 * @param r The {@link Reason} for application.
 	 */
-	public PartyMemberJoinEvent(IParty p, UUID applicant, Reason r)
+	public PartyMemberJoinEvent(IParty p, IMemberSettings applicant, Reason r)
 	{
 		if(p == null)
 		{
@@ -57,12 +55,16 @@ public class PartyMemberJoinEvent extends CancellableKataPartyEvent
 		{
 			throw new IllegalArgumentException("Applicant cannot be null");
 		}
+		else if(p.getPartySet().findMember(applicant.getUuid()) != null)
+		{
+			throw new IllegalArgumentException("Applicant cannot be in a party");
+		}
 		if(r == null)
 		{
 			throw new IllegalArgumentException("Reason cannot be null");
 		}
 		party = p;
-		player = applicant;
+		settings = applicant;
 		reason = r;
 	}
 
@@ -75,12 +77,12 @@ public class PartyMemberJoinEvent extends CancellableKataPartyEvent
 		return party;
 	}
 	/**
-	 * Returns the applicant's {@link org.bukkit.entity.Player#getUniqueId() UUID}.
-	 * @return The applicant's {@link org.bukkit.entity.Player#getUniqueId() UUID}.
+	 * Returns the applicant's {@link com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings}.
+	 * @return The applicant's {@link com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings}.
 	 */
-	public UUID getApplicantUuid()
+	public IMemberSettings getApplicant()
 	{
-		return player;
+		return settings;
 	}
 	/**
 	 * Returns the {@link Reason}.

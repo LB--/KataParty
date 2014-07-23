@@ -4,10 +4,13 @@ import com.lb_stuff.command.PluginInfoCommand;
 import com.lb_stuff.command.PluginReloadCommand;
 import com.lb_stuff.kataparty.command.*;
 import com.lb_stuff.kataparty.config.MainConfig;
+import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
+import com.lb_stuff.kataparty.PartyFactory.MemberFactory;
 import com.lb_stuff.kataparty.api.IMessenger;
 import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.service.ChatFilterService;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.PartyRank;
 
 import net.gravitydevelopment.updater.Updater;
 
@@ -42,10 +45,12 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 
 	private final File configFile = new File(getDataFolder(), "config.yml");
 	private final File partiesFile = new File(getDataFolder(), "parties.yml");
-	private MainConfig config;
+	private final PartyFactory pfact = new PartyFactory();
+	private final PartyFactory.MemberFactory mfact = pfact.new MemberFactory();
 	private final PartyPvpListener pvp = new PartyPvpListener(this);
 	private final PartyPotionListener potions = new PartyPotionListener(this);
 	private final PartyHealthXpListener shxp = new PartyHealthXpListener(this);
+	private MainConfig config;
 	private Updater updater = null;
 	@Override
 	public void onEnable()
@@ -56,6 +61,9 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		ConfigurationSerialization.registerClass(Party.class);
 		ConfigurationSerialization.registerClass(Party.Member.class);
 		ConfigurationSerialization.registerClass(PartySet.class);
+
+		getPartySet().registerPartyFactory(PartySettings.class, pfact);
+		getPartySet().registerMemberFactory(MemberSettings.class, mfact);
 
 		implementCommand("kataparty", new PluginInfoCommand(this));
 		implementCommand("kpreload", new PluginReloadCommand(this));
@@ -143,7 +151,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 					{
 						p.setSticky(false);
 					}
-					IParty party = getParties().newParty(null, p);
+					IParty party = getPartySet().newParty(null, p);
 					if(!ps.isBoolean("inventory"))
 					{
 						List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
@@ -156,8 +164,8 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 					for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
 					{
 						ConfigurationSection ms = (ConfigurationSection)me.getValue();
-						IParty.IMember m = party.newMember(UUID.fromString(me.getKey()), null);
-						m.setRank(Party.Rank.valueOf(ms.getString("rank")));
+						IParty.IMember m = party.newMember(new MemberSettings(UUID.fromString(me.getKey())), null);
+						m.setRank(PartyRank.valueOf(ms.getString("rank")));
 						m.setTp(ms.getBoolean("tp"));
 					}
 				}
@@ -203,8 +211,13 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		reloadConfig();
 	}
 
+	public static KataPartyPlugin getInst()
+	{
+		return (KataPartyPlugin)Bukkit.getServicesManager().getRegistration(KataPartyService.class).getPlugin();
+	}
+
 	private final PartySet parties = new PartySet(this);
-	public PartySet getParties()
+	public PartySet getPartySet()
 	{
 		return parties;
 	}

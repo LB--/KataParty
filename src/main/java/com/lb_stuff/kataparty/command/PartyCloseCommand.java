@@ -23,14 +23,14 @@ public class PartyCloseCommand extends PartyAdminCommand
 			Player player = (Player)sender;
 			if(args.length == 1)
 			{
-				IParty p = inst.getParties().findParty(args[0]);
+				IParty p = inst.getPartySet().findParty(args[0]);
 				if(p == null)
 				{
 					inst.tellMessage(player, "party-does-not-exist", args[0]);
 				}
 				else
 				{
-					inst.getParties().remove(p, PartyDisbandEvent.Reason.SERVER_ADMIN_CLOSE, player);
+					inst.getPartySet().remove(p, PartyDisbandEvent.Reason.SERVER_ADMIN_CLOSE, player);
 				}
 				return true;
 			}

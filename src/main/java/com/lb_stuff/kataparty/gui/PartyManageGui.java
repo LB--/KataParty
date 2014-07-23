@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.PartyRank;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
@@ -43,13 +44,13 @@ public final class PartyManageGui extends PartyGui
 	{
 		clearButtons();
 
-		if(!inst.getParties().contains(party))
+		if(!inst.getPartySet().contains(party))
 		{
 			hide();
 			return;
 		}
 
-		final IParty.IMember mt = inst.getParties().findMember(player.getUniqueId());
+		final IParty.IMember mt = inst.getPartySet().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -57,8 +58,8 @@ public final class PartyManageGui extends PartyGui
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.getRank() == IParty.Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == IParty.Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == PartyRank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == PartyRank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -93,12 +94,12 @@ public final class PartyManageGui extends PartyGui
 		setButton(MEMBERS, inst.getMessage("manage-members"), new ArrayList<String>(){
 		{
 			add(inst.getMessage("manage-members-online", party.getMembersOnline().size(), party.numMembers()));
-			Set<IParty.IMember> mods = party.getMembersRanked(IParty.Rank.MODERATOR);
+			Set<IParty.IMember> mods = party.getMembersRanked(PartyRank.MODERATOR);
 			Set<IParty.IMember> onmods = new HashSet<>();
 			onmods.addAll(mods);
 			onmods.retainAll(party.getMembersOnline());
 			add(inst.getMessage("manage-mods-online", onmods.size(), mods.size()));
-			Set<IParty.IMember> admins = party.getMembersRanked(IParty.Rank.ADMIN);
+			Set<IParty.IMember> admins = party.getMembersRanked(PartyRank.ADMIN);
 			Set<IParty.IMember> onadmins = new HashSet<>();
 			onadmins.addAll(admins);
 			onadmins.retainAll(party.getMembersOnline());
@@ -178,7 +179,7 @@ public final class PartyManageGui extends PartyGui
 				}
 			}});
 		}
-		if(!inst.getParties().keepEmptyParties() && player.hasPermission("KataParty.stick"))
+		if(!inst.getPartySet().keepEmptyParties() && player.hasPermission("KataParty.stick"))
 		{
 			addButton(STICKY, inst.getMessage(party.isSticky()? "manage-sticky-enabled" : "manage-sticky-disabled"), Material.STICK, new ArrayList<String>(){
 			{
@@ -234,7 +235,7 @@ public final class PartyManageGui extends PartyGui
 			return;
 		}
 
-		final IParty.IMember mt = inst.getParties().findMember(player.getUniqueId());
+		final IParty.IMember mt = inst.getPartySet().findMember(player.getUniqueId());
 		boolean is_member = false;
 		boolean is_admin = false;
 		boolean is_partyAdmin = false;
@@ -242,8 +243,8 @@ public final class PartyManageGui extends PartyGui
 		if(mt != null && mt.getParty() == party)
 		{
 			is_member = true;
-			is_partyAdmin = (mt.getRank() == IParty.Rank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == IParty.Rank.MODERATOR);
+			is_partyAdmin = (mt.getRank() == PartyRank.ADMIN);
+			is_partyMod = (is_partyAdmin || mt.getRank() == PartyRank.MODERATOR);
 		}
 		if(player.hasPermission("KataParty.admin"))
 		{
@@ -343,7 +344,7 @@ public final class PartyManageGui extends PartyGui
 			} break;
 			case STICKY:
 			{
-				if(!inst.getParties().keepEmptyParties() && player.hasPermission("KataParty.stick"))
+				if(!inst.getPartySet().keepEmptyParties() && player.hasPermission("KataParty.stick"))
 				{
 					party.setSticky(!party.isSticky());
 				}
@@ -352,7 +353,7 @@ public final class PartyManageGui extends PartyGui
 			{
 				if(isAdmin || (player.hasPermission("KataParty.disband") && isPartyAdmin))
 				{
-					inst.getParties().remove(party, PartyDisbandEvent.Reason.PARTY_ADMIN_DISBAND, player);
+					inst.getPartySet().remove(party, PartyDisbandEvent.Reason.PARTY_ADMIN_DISBAND, player);
 					hide();
 				}
 			} break;

@@ -1,5 +1,6 @@
 package com.lb_stuff.kataparty;
 
+import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IPartyTicketManager;
 import com.lb_stuff.kataparty.api.event.TicketInventoryEvent;
 import com.lb_stuff.kataparty.api.IParty;
@@ -76,7 +77,7 @@ public class PartyTicketManager implements IPartyTicketManager, Listener
 		if(isTicket(is))
 		{
 			String pname = stripColor(is.getItemMeta().getLore().get(0).substring(PREFIX.length()));
-			return inst.getParties().findParty(pname);
+			return inst.getPartySet().findParty(pname);
 		}
 		return null;
 	}
@@ -170,10 +171,10 @@ public class PartyTicketManager implements IPartyTicketManager, Listener
 				final IParty p = getTicketParty(is);
 				if(p != null && wasTicketGiven(is))
 				{
-					IParty.IMember m = inst.getParties().findMember(player.getUniqueId());
+					IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 					if(m == null || m.getParty() != p)
 					{
-						if(p.newMember(player.getUniqueId(), PartyMemberJoinEvent.Reason.INVITATION) != null)
+						if(p.newMember(new MemberSettings(player.getUniqueId()), PartyMemberJoinEvent.Reason.INVITATION) != null)
 						{
 							inst.tellMessage(player, "ticket-accept-inform", p.getName());
 							inst.getFilter().tellFilterPref(player);
@@ -198,7 +199,7 @@ public class PartyTicketManager implements IPartyTicketManager, Listener
 			{
 				e.getItemDrop().remove();
 				IParty p = getTicketParty(is);
-				IParty.IMember m = inst.getParties().findMember(e.getPlayer().getUniqueId());
+				IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
 				if(p != null && (m == null || m.getParty() != p))
 				{
 					inst.tellMessage(e.getPlayer(), "ticket-reject-inform", p.getName());

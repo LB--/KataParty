@@ -2,6 +2,8 @@ package com.lb_stuff.kataparty.api;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
+import java.util.UUID;
+
 /**
  * Holds settings for an {@link IParty}.
  * This interface may be implemented by plugins other than KataParty.
@@ -83,4 +85,56 @@ public interface IPartySettings extends ConfigurationSerializable
 	 * @param sticky Whether the party should be exempt from automatic closure.
 	 */
 	void setSticky(boolean sticky);
+
+	public interface IMemberSettings extends ConfigurationSerializable
+	{
+		/**
+		 * Apply the settings from another {@link IMemberSettings}.
+		 * {@link #getUuid()} should be excluded.
+		 * @param settings The {@link IMemberSettings} to copy the settings from.
+		 */
+		void apply(IMemberSettings settings);
+
+		/**
+		 * Returns {@link java.util.UUID#hashCode()}.
+		 * @return {@link java.util.UUID#hashCode()}.
+		 */
+		@Override
+		int hashCode();
+		/**
+		 * Calls {@link java.util.UUID#equals(java.lang.Object)}.
+		 * @param obj The {@link IMemberSettings} or {@link java.util.UUID}.
+		 * @return {@link java.util.UUID#equals(java.lang.Object)}.
+		 */
+		@Override
+		boolean equals(Object obj);
+
+		/**
+		 * Returns the {@link java.util.UUID}.
+		 * @return The {@link java.util.UUID}.
+		 */
+		UUID getUuid();
+
+		/**
+		 * Returns the {@link PartyRank}.
+		 * @return The {@link PartyRank}.
+		 */
+		PartyRank getRank();
+		/**
+		 * Sets the {@link PartyRank}.
+		 * @param r The new {@link PartyRank}.
+		 */
+		void setRank(PartyRank r);
+
+		/**
+		 * Get the personal teleportation setting.
+		 * @return The teleportation setting for the individual.
+		 */
+		boolean canTp();
+		/**
+		 * Set the personal teleportation setting.
+		 * @param tp The new teleportation setting for the individual.
+		 */
+		void setTp(boolean tp);
+	}
 }

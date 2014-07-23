@@ -31,7 +31,7 @@ public class KataPartyService
 	 */
 	public IPartySet getPartySet()
 	{
-		return inst.getParties();
+		return inst.getPartySet();
 	}
 	/**
 	 * Get the manager for invitation tickets.

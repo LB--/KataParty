@@ -23,7 +23,7 @@ public class PartyPotionListener implements Listener
 		ProjectileSource ps = e.getPotion().getShooter();
 		if(ps instanceof Player)
 		{
-			IParty.IMember thrower = inst.getParties().findMember(((Player)ps).getUniqueId());
+			IParty.IMember thrower = inst.getPartySet().findMember(((Player)ps).getUniqueId());
 //			if(thrower != null && thrower.getParty().arePotionsSmart())
 			{
 				//

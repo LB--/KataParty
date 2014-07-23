@@ -6,9 +6,10 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.entity.Player;
 
 /**
- * Called when a KataParty is disbanded.
+ * Event called when an {@link com.lb_stuff.kataparty.api.IParty}
+ * is being {@link com.lb_stuff.kataparty.api.IParty#disband(com.lb_stuff.kataparty.api.event.PartyDisbandEvent.Reason, org.bukkit.entity.Player) disbanded}.
  */
-public class PartyDisbandEvent extends CancellableKataPartyEvent
+public final class PartyDisbandEvent extends CancellableKataPartyEvent
 {
 	/**
 	 * The reason for which a party is being disbanded.
