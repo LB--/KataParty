@@ -6,44 +6,105 @@ import org.bukkit.event.HandlerList;
 
 import java.util.UUID;
 
+/**
+ * Event called when a {@link org.bukkit.entity.Player} tries to join an
+ * {@link com.lb_stuff.kataparty.api.IParty}.
+ */
 public class PartyMemberJoinEvent extends CancellableKataPartyEvent
 {
+	/**
+	 * The reason for joining.
+	 */
 	public enum Reason
 	{
+		/**
+		 * The {@link PartyMemberJoinEvent#getApplicantUuid() applicant}
+		 * is the {@link org.bukkit.entity.Player} who created the
+		 * {@link com.lb_stuff.kataparty.api.IParty}.
+		 */
 		CREATOR,
+		/**
+		 * The {@link PartyMemberJoinEvent#getApplicantUuid() applicant}
+		 * is joining voluntarily.
+		 */
 		VOLUNTARY,
+		/**
+		 * The {@link PartyMemberJoinEvent#getApplicantUuid() applicant}
+		 * was invited and used their
+		 * {@link com.lb_stuff.kataparty.api.IPartyTicketManager invitation ticket}
+		 * to join.
+		 */
 		INVITATION,
+		/**
+		 */
 		OTHER
 	}
 	private final IParty party;
 	private final UUID player;
 	private final Reason reason;
+	/**
+	 * @param p The {@link com.lb_stuff.kataparty.api.IParty} being joined.
+	 * @param applicant The {@link PartyMemberJoinEvent#getApplicantUuid() applicant}.
+	 * @param r The {@link Reason} for application.
+	 */
 	public PartyMemberJoinEvent(IParty p, UUID applicant, Reason r)
 	{
+		if(p == null)
+		{
+			throw new IllegalArgumentException("Party cannot be null");
+		}
+		if(applicant == null)
+		{
+			throw new IllegalArgumentException("Applicant cannot be null");
+		}
+		if(r == null)
+		{
+			throw new IllegalArgumentException("Reason cannot be null");
+		}
 		party = p;
 		player = applicant;
 		reason = r;
 	}
 
+	/**
+	 * Returns the {@link com.lb_stuff.kataparty.api.IParty} being joined.
+	 * @return The {@link com.lb_stuff.kataparty.api.IParty} being joined.
+	 */
 	public IParty getParty()
 	{
 		return party;
 	}
-	public UUID getPlayerUuid()
+	/**
+	 * Returns the applicant's {@link org.bukkit.entity.Player#getUniqueId() UUID}.
+	 * @return The applicant's {@link org.bukkit.entity.Player#getUniqueId() UUID}.
+	 */
+	public UUID getApplicantUuid()
 	{
 		return player;
 	}
+	/**
+	 * Returns the {@link Reason}.
+	 * @return The {@link Reason}.
+	 */
 	public Reason getReason()
 	{
 		return reason;
 	}
 
 	private static final HandlerList handlers = new HandlerList();
+	/**
+	 * See {@link org.bukkit.event.Event#getHandlers()}.
+	 * @return The {@link org.bukkit.event.HandlerList}.
+	 */
 	@Override
 	public HandlerList getHandlers()
 	{
 		return handlers;
 	}
+	/**
+	 * See {@link org.bukkit.event.Event#getHandlers()}.
+	 * @return The {@link org.bukkit.event.HandlerList}.
+	 */
 	public static HandlerList getHandlerList()
 	{
 		return handlers;

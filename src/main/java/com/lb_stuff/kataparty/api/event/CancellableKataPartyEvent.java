@@ -38,11 +38,19 @@ public class CancellableKataPartyEvent extends KataPartyEvent implements Cancell
 	}
 
 	private static final HandlerList handlers = new HandlerList();
+	/**
+	 * See {@link org.bukkit.event.Event#getHandlers()}.
+	 * @return The {@link org.bukkit.event.HandlerList}.
+	 */
 	@Override
 	public HandlerList getHandlers()
 	{
 		return handlers;
 	}
+	/**
+	 * See {@link org.bukkit.event.Event#getHandlers()}.
+	 * @return The {@link org.bukkit.event.HandlerList}.
+	 */
 	public static HandlerList getHandlerList()
 	{
 		return handlers;

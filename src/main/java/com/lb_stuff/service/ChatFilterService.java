@@ -105,6 +105,10 @@ public final class ChatFilterService implements Listener
 		 */
 		public void setFormat(String fmt)
 		{
+			if(fmt == null)
+			{
+				throw new IllegalArgumentException("Format cannot be null");
+			}
 			format = fmt;
 		}
 
@@ -122,6 +126,10 @@ public final class ChatFilterService implements Listener
 		 */
 		public void setSourceDisplayName(String dispname)
 		{
+			if(dispname == null)
+			{
+				throw new IllegalArgumentException("Display name cannot be null");
+			}
 			srcdisp = dispname;
 		}
 
@@ -134,11 +142,17 @@ public final class ChatFilterService implements Listener
 			return message;
 		}
 		/**
-		 * Replaces the message.
+		 * Replaces the message. If <code>msg</code> is null, cancels the event without
+		 * changing the return value of {@link #getMessage()}.
 		 * @param msg The new message.
 		 */
 		public void setMessage(String msg)
 		{
+			if(msg == null)
+			{
+				setCancelled(true);
+				return;
+			}
 			message = msg;
 		}
 
@@ -189,11 +203,19 @@ public final class ChatFilterService implements Listener
 		}
 
 		private static final HandlerList handlers = new HandlerList();
+		/**
+		 * See {@link org.bukkit.event.Event#getHandlers()}.
+		 * @return The {@link org.bukkit.event.HandlerList}.
+		 */
 		@Override
 		public HandlerList getHandlers()
 		{
 			return handlers;
 		}
+		/**
+		 * See {@link org.bukkit.event.Event#getHandlers()}.
+		 * @return The {@link org.bukkit.event.HandlerList}.
+		 */
 		public static HandlerList getHandlerList()
 		{
 			return handlers;

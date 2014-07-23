@@ -9,11 +9,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -126,7 +127,7 @@ public class PartyTicketManager implements IPartyTicketManager, Listener
 			TicketInventoryEvent tie = null;
 			if(isTicket(e.getCursor()))
 			{
-				tie = new TicketInventoryEvent(top, e.getCursor());
+				tie = new TicketInventoryEvent(top, e.getCursor(), e.getAction());
 				if(e.getRawSlot() < top.getSize())
 				{
 					e.setCancelled(true);
@@ -134,8 +135,8 @@ public class PartyTicketManager implements IPartyTicketManager, Listener
 			}
 			if(isTicket(e.getCurrentItem()))
 			{
-				tie = new TicketInventoryEvent(top, e.getCurrentItem());
-				if(e.getAction().equals(e.getAction().MOVE_TO_OTHER_INVENTORY))
+				tie = new TicketInventoryEvent(top, e.getCurrentItem(), e.getAction());
+				if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY)
 				{
 					e.setCancelled(true);
 				}
