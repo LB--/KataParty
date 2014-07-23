@@ -6,11 +6,8 @@ import com.lb_stuff.kataparty.command.*;
 import com.lb_stuff.kataparty.config.MainConfig;
 import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.PartyFactory.MemberFactory;
-import com.lb_stuff.kataparty.api.IMessenger;
-import com.lb_stuff.kataparty.api.KataPartyService;
+import com.lb_stuff.kataparty.api.*;
 import com.lb_stuff.service.ChatFilterService;
-import com.lb_stuff.kataparty.api.IParty;
-import com.lb_stuff.kataparty.api.PartyRank;
 
 import net.gravitydevelopment.updater.Updater;
 
@@ -231,6 +228,11 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	public PartyChatFilter getFilter()
 	{
 		return filter;
+	}
+
+	public ChatFilterPref getJoinFilterPref()
+	{
+		return getFilter().getDefaultFilterPref("on-party-join");
 	}
 
 	private final PartyTicketManager tickets = new PartyTicketManager(this);

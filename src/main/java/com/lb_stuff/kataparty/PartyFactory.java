@@ -15,7 +15,7 @@ public class PartyFactory implements IPartyFactory
 	{
 		if(from instanceof PartySettings)
 		{
-			return new Party((PartySet)parent, from); //TODO: abstract away the cast
+			return new Party(parent, from);
 		}
 		return null;
 	}

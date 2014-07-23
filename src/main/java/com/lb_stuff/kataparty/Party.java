@@ -1,5 +1,6 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.IPartySet;
 import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.kataparty.api.IMessenger;
 import com.lb_stuff.kataparty.api.IParty;
@@ -23,7 +24,7 @@ import java.util.*;
 
 public final class Party extends PartySettings implements IParty
 {
-	private final PartySet parties;
+	private final IPartySet parties;
 	private final IMessenger messenger;
 	private final Set<IMember> members = new HashSet<>();
 	private Inventory inv = null;
@@ -62,7 +63,7 @@ public final class Party extends PartySettings implements IParty
 		}
 	}
 
-	public Party(PartySet ps, IPartySettings settings)
+	public Party(IPartySet ps, IPartySettings settings)
 	{
 		super(settings);
 		parties = ps;
@@ -92,7 +93,7 @@ public final class Party extends PartySettings implements IParty
 	}
 
 	@Override
-	public PartySet getPartySet()
+	public IPartySet getPartySet()
 	{
 		return parties;
 	}
@@ -174,7 +175,7 @@ public final class Party extends PartySettings implements IParty
 			{
 				informMembersMessage("party-join-inform", offp.getName());
 			}
-			getPartySet().getSettings(settings.getUuid()).setPref(parties.getJoinFilterPref());
+			getPartySet().getSettings(settings.getUuid()).setPref(KataPartyPlugin.getInst().getJoinFilterPref());
 			m.setTp(m.canTp()); //shows message
 		}
 		return m;

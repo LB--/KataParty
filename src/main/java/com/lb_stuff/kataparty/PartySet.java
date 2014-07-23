@@ -231,11 +231,6 @@ public class PartySet implements IPartySet
 		partiers.remove(uuid);
 	}
 
-	public ChatFilterPref getJoinFilterPref()
-	{
-		return inst.getFilter().getDefaultFilterPref("on-party-join");
-	}
-
 	private class PartyMembers implements Iterable<Map.Entry<UUID, IAsyncMemberSettings>>
 	{
 		@Override
