@@ -32,6 +32,13 @@ public interface IPartySet extends Iterable<IParty>, ConfigurationSerializable
 	 * <code>null</code>.
 	 */
 	IPartyFactory registerPartyFactory(Class<? extends IPartySettings> clazz, IPartyFactory factory);
+	/**
+	 * Returns the {@link IPartyFactory} for the given type of
+	 * {@link IPartySettings} implementor.
+	 * @param clazz The type of {@link IPartySettings} implementor
+	 * @return The {@link IPartyFactory} instance, or
+	 * <code>null</code>.
+	 */
 	IPartyFactory getPartyFactory(Class<? extends IPartySettings> clazz);
 	/**
 	 * Register an {@link IMemberFactory} for the given type of
@@ -44,6 +51,13 @@ public interface IPartySet extends Iterable<IParty>, ConfigurationSerializable
 	 * <code>null</code>.
 	 */
 	IMemberFactory registerMemberFactory(Class<? extends IMemberSettings> clazz, IMemberFactory factory);
+	/**
+	 * Returns the {@link IMemberFactory} for the given type of
+	 * {@link IMemberSettings} implementor.
+	 * @param clazz The type of {@link IMemberSettings} implementor
+	 * @return The {@link IMemberFactory} instance, or
+	 * <code>null</code>.
+	 */
 	IMemberFactory getMemberFactory(Class<? extends IMemberSettings> clazz);
 	/**
 	 * Creates and adds a new {@link IParty} if the
