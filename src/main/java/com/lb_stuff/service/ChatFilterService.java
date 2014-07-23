@@ -1,5 +1,8 @@
 package com.lb_stuff.service;
 
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.event.Listener;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -11,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -18,14 +22,63 @@ import java.util.HashSet;
  * This service listens to {@link org.bukkit.event.player.AsyncPlayerChatEvent}
  * and cancels the event after other plugins have processed it, instead splitting
  * it into multiple events ({@link ChatFilterService.AsyncMessage}) where each
- * event is from the source to one of the targets. One of the targets is always
- * the console. This allows each target to see a different message (or no message
- * at all) based on their preferences. This class listens to its own events
- * that have not been cancelled with {@link org.bukkit.event.EventPriority#MONITOR}
+ * event is from the source to one of the targets. Two of the targets are always
+ * the console and the source. This allows each target to see a different message
+ * (or no message at all) based on their preferences. This class listens to its own
+ * events that have not been cancelled with {@link org.bukkit.event.EventPriority#MONITOR}
  * priority and manually sends the message to each target based on the event.
  */
 public final class ChatFilterService implements Listener
 {
+	/**
+	 * Doesn't do anything - allows you to register the service as you wish.
+	 */
+	public ChatFilterService()
+	{
+	}
+	/**
+	 * Registers the service with the given {@link ServicePriority}, but does not start it.
+	 * @param priority The desired {@link ServicePriority}.
+	 */
+	public ChatFilterService(ServicePriority priority)
+	{
+		JavaPlugin plugin = JavaPlugin.getProvidingPlugin(ChatFilterService.class);
+		Bukkit.getServicesManager().register(ChatFilterService.class, this, plugin, priority);
+	}
+
+	/**
+	 * Start intercepting {@link org.bukkit.event.player.AsyncPlayerChatEvent}.
+	 */
+	public void start()
+	{
+		JavaPlugin plugin = JavaPlugin.getProvidingPlugin(ChatFilterService.class);
+		Bukkit.getPluginManager().registerEvents(this, plugin);
+	}
+	/**
+	 * Stop intercepting {@link org.bukkit.event.player.AsyncPlayerChatEvent}.
+	 */
+	public void stop()
+	{
+		HandlerList.unregisterAll(this);
+	}
+
+	/**
+	 * Convenience method for {@link org.bukkit.plugin.ServicesManager#getRegistration(java.lang.Class)}.
+	 * @return The {@link RegisteredServiceProvider} for this class.
+	 */
+	public static RegisteredServiceProvider<ChatFilterService> getService()
+	{
+		return Bukkit.getServicesManager().getRegistration(ChatFilterService.class);
+	}
+	/**
+	 * Convenience method for {@link org.bukkit.plugin.ServicesManager#getRegistrations(java.lang.Class)}.
+	 * @return The {@link RegisteredServiceProvider} for this class.
+	 */
+	public static Collection<RegisteredServiceProvider<ChatFilterService>> getServices()
+	{
+		return Bukkit.getServicesManager().getRegistrations(ChatFilterService.class);
+	}
+
 	/**
 	 * See class description for more information.
 	 * @param e The {@link org.bukkit.event.player.AsyncPlayerChatEvent}.
@@ -50,7 +103,7 @@ public final class ChatFilterService implements Listener
 		e.setCancelled(true);
 	}
 	/**
-	 * Sett class description for more information.
+	 * See class description for more information.
 	 * @param m The {@link AsyncMesage}.
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -52,7 +52,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	@Override
 	public void onEnable()
 	{
-		getServer().getServicesManager().register(ChatFilterService.class, filtserv, this, ServicePriority.Normal);
+		new ChatFilterService(ServicePriority.Normal).start();
 		getServer().getServicesManager().register(KataPartyService.class, service, this, ServicePriority.Highest);
 
 		ConfigurationSerialization.registerClass(Party.class);
@@ -79,7 +79,6 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		getServer().getPluginManager().registerEvents(pvp, this);
 		getServer().getPluginManager().registerEvents(potions, this);
 		getServer().getPluginManager().registerEvents(shxp, this);
-		getServer().getPluginManager().registerEvents(filtserv, this);
 		getServer().getPluginManager().registerEvents(filter, this);
 		getServer().getPluginManager().registerEvents(tickets, this);
 		getServer().getPluginManager().registerEvents(edl, this);
@@ -220,12 +219,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		return parties;
 	}
 
-	private final ChatFilterService filtserv = new ChatFilterService();
 	private final PartyChatFilter filter = new PartyChatFilter(this);
-	public ChatFilterService getFilterService()
-	{
-		return filtserv;
-	}
 	public PartyChatFilter getFilter()
 	{
 		return filter;
