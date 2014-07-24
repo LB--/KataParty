@@ -30,7 +30,17 @@ public class KataPartyUpdater extends Updater
 		}
 		for(int i = 0; i < c.length; ++i)
 		{
-			if(Integer.parseInt(c[i]) < Integer.parseInt(p[i]))
+			final int a = Integer.parseInt(c[i]);
+			final int b = Integer.parseInt(p[i]);
+			if(a == b)
+			{
+				continue;
+			}
+			else if(a > b)
+			{
+				break;
+			}
+			else //if(a < b)
 			{
 				inst.getLogger().warning("Out of date version (new version is v"+potential+")");
 				inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()

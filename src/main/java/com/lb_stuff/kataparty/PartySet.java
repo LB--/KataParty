@@ -44,11 +44,6 @@ public class PartySet implements IPartySet
 		inst = plugin;
 	}
 
-	public boolean defaultSelfTeleports()
-	{
-		return inst.getConfig().getBoolean("party-defaults.self-teleports");
-	}
-
 	@Override
 	public IMessenger getMessenger()
 	{

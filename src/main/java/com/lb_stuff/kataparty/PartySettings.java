@@ -47,6 +47,10 @@ public class PartySettings extends Metadatable implements IPartySettings
 	public PartySettings()
 	{
 	}
+	public PartySettings(String pname)
+	{
+		setName(pname);
+	}
 	public PartySettings(IPartySettings other)
 	{
 		name = other.getName();
@@ -70,6 +74,11 @@ public class PartySettings extends Metadatable implements IPartySettings
 		setSticky(s.isSticky());
 	}
 
+	private static boolean getDefault(String path)
+	{
+		return KataPartyPlugin.getInst().getConfig().getBoolean("party-defaults."+path);
+	}
+
 	private String name = "KataParty";
 	@Override
 	public String getName()
@@ -82,7 +91,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		name = n;
 	}
 
-	private boolean tp = true;
+	private boolean tp = getDefault("teleports");
 	@Override
 	public boolean canTp()
 	{
@@ -94,7 +103,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		tp = enabled;
 	}
 
-	private boolean pvp = false;
+	private boolean pvp = getDefault("pvp");
 	@Override
 	public boolean canPvp()
 	{
@@ -106,7 +115,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		pvp = enabled;
 	}
 
-	private boolean visible = true;
+	private boolean visible = getDefault("visible");
 	@Override
 	public boolean isVisible()
 	{
@@ -118,7 +127,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		visible = enabled;
 	}
 
-	private boolean inv = false;
+	private boolean inv = getDefault("inventory");
 	@Override
 	public boolean hasInventory()
 	{
@@ -130,7 +139,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		inv = enabled;
 	}
 
-	private boolean invite = false;
+	private boolean invite = getDefault("invite-only");
 	@Override
 	public boolean isInviteOnly()
 	{
@@ -239,7 +248,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 			rank = r;
 		}
 
-		private boolean tp = KataPartyPlugin.getInst().getPartySet().defaultSelfTeleports();
+		private boolean tp = getDefault("self-teleports");
 		@Override
 		public boolean canTp()
 		{

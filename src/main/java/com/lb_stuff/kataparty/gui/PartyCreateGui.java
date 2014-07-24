@@ -1,240 +1,255 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.PartySettings;
+import com.lb_stuff.kataparty.api.IGuiButton;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.IPartySettings;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.inventory.ClickType;
 
-import java.util.ArrayList;
-
-public final class PartyCreateGui extends PartyGui
+public class PartyCreateGui extends PartyGui
 {
-	private boolean getDefault(String path)
+	protected static final int TICKET = 0;
+	protected class TicketButton extends GenericGuiButton
 	{
-		return inst.getConfig().getBoolean("party-defaults."+path);
-	}
-
-	private static final int TICKET = 0;
-	private static final int TELEPORTS = 2;
-	private static final int PVP = 3;
-	private static final int INVENTORY = 4;
-	private static final int VISIBLE = 5;
-	private static final int INVITES = 6;
-	private static final int STICKY = 8;
-	public PartyCreateGui(KataPartyPlugin plugin, Player p, String pname)
-	{
-		super(plugin, p, 1, plugin.getMessage("create-gui-title", pname));
-
-		addButton(TICKET, pname, Material.NAME_TAG, new ArrayList<String>(){
+		public TicketButton()
 		{
-			add(inst.getMessage("create-create"));
-			add(inst.getMessage("create-cancel"));
-		}});
-		addButton(TELEPORTS, inst.getMessage(getDefault("teleports")? "manage-teleports-enabled" : "manage-teleports-disabled"), Material.ENDER_PEARL, new ArrayList<String>(){
+			super(s.getName(), Material.NAME_TAG, inst.getMessage("create-create"), inst.getMessage("create-cancel"));
+		}
+		@Override
+		public boolean onClick(ClickType click)
 		{
-			if(player.hasPermission("KataParty.teleport.disable"))
-			{
-				add(inst.getMessage("manage-click-to-change"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-change"));
-			}
-		}});
-		setButton(TELEPORTS, (getDefault("teleports")? 2 : 1));
-		addButton(PVP, inst.getMessage(getDefault("pvp")? "manage-pvp-enabled" : "manage-pvp-disabled"), (getDefault("pvp")? Material.GOLD_SWORD : Material.STONE_SWORD), new ArrayList<String>(){
-		{
-			add(inst.getMessage("manage-click-to-change"));
-		}});
-		setButton(PVP, (getDefault("pvp")? 2 : 1));
-		addButton(INVENTORY, inst.getMessage(getDefault("inventory")? "manage-inventory-enabled" : "manage-inventory-disabled"), (getDefault("inventory")? Material.ENDER_CHEST : Material.CHEST), new ArrayList<String>(){
-		{
-			if(player.hasPermission("KataParty.inventory.enable"))
-			{
-				add(inst.getMessage("manage-click-to-change"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-change"));
-			}
-		}});
-		setButton(INVENTORY, (getDefault("inventory")? 2 : 1));
-		addButton(VISIBLE, inst.getMessage(getDefault("visible")? "manage-visibility-enabled" : "manage-visibility-disabled"), (getDefault("visible")? Material.JACK_O_LANTERN : Material.PUMPKIN), new ArrayList<String>(){
-		{
-			if(player.hasPermission("KataParty.hide"))
-			{
-				add(inst.getMessage("manage-click-to-change"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-change"));
-			}
-		}});
-		setButton(VISIBLE, (getDefault("visible")? 2 : 1));
-		addButton(INVITES, inst.getMessage(getDefault("invite-only")? "manage-invites-enabled" : "manage-invites-disabled"), (getDefault("invite-only")? Material.IRON_DOOR : Material.WOOD_DOOR), new ArrayList<String>(){
-		{
-			if(player.hasPermission("KataParty.invite.enforce"))
-			{
-				add(inst.getMessage("manage-click-to-change"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-change"));
-			}
-		}});
-		setButton(INVITES, (getDefault("invite-only")? 2 : 1));
-		if(!inst.getPartySet().keepEmptyParties() && player.hasPermission("KataParty.stick"))
-		{
-			addButton(STICKY, inst.getMessage("manage-sticky-disabled"), Material.STICK, new ArrayList<String>(){
-			{
-				add(inst.getMessage("manage-click-to-change"));
-			}});
+			inst.getPartySet().newParty(player, s);
+			inst.getFilter().tellFilterPref(player);
+			hide();
+			return true;
 		}
 	}
 
-	@Override
-	protected void update()
+	protected abstract class PermissionToggleButton implements IGuiButton
 	{
-		String pname = getButtonName(TICKET);
-		if(pname != null && inst.getPartySet().findParty(pname) != null)
+		protected boolean hasExtraRequirements()
+		{
+			return true;
+		}
+
+		protected final GenericGuiButton on;
+		protected final GenericGuiButton off;
+		protected final String perm;
+		public PermissionToggleButton(String permission, Material onmat, Material offmat, String msgname)
+		{
+			on = new GenericGuiButton(onmat);
+			off = new GenericGuiButton(offmat);
+			perm = "KataParty."+permission;
+			on.setName(inst.getMessage("manage-"+msgname+"-enabled"));
+			off.setName(inst.getMessage("manage-"+msgname+"-disabled"));
+			on.setValue(2);
+		}
+		@Override
+		public ItemStack display()
+		{
+			if(hasExtraRequirements() && (perm == null || player.hasPermission(perm)))
+			{
+				on.setLore(inst.getMessage("manage-click-to-change"));
+				off.setLore(inst.getMessage("manage-click-to-change"));
+			}
+			else
+			{
+				on.setLore(inst.getMessage("manage-cannot-change"));
+				off.setLore(inst.getMessage("manage-cannot-change"));
+			}
+			return null;
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			return hasExtraRequirements() && (perm == null || player.hasPermission(perm));
+		}
+	}
+	protected static final int TELEPORTS = 2;
+	protected class TeleportsButton extends PermissionToggleButton
+	{
+		public TeleportsButton()
+		{
+			super("teleport.disable",  Material.ENDER_PEARL, Material.ENDER_PEARL, "teleports");
+		}
+		@Override
+		public ItemStack display()
+		{
+			super.display();
+			return (s.canTp()? on : off).display();
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(super.onClick(click))
+			{
+				s.setTp(!s.canTp());
+				return true;
+			}
+			return false;
+		}
+	}
+	protected static final int PVP = 3;
+	protected class PvpButton extends PermissionToggleButton
+	{
+		public PvpButton()
+		{
+			super(null, Material.GOLD_SWORD, Material.STONE_SWORD, "pvp");
+		}
+		@Override
+		public ItemStack display()
+		{
+			super.display();
+			return (s.canPvp()? on : off).display();
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(super.onClick(click))
+			{
+				s.setPvp(!s.canPvp());
+				return true;
+			}
+			return false;
+		}
+	}
+	protected static final int INVENTORY = 4;
+	protected class InventoryButton extends PermissionToggleButton
+	{
+		public InventoryButton()
+		{
+			super("inventory.enable", Material.ENDER_CHEST, Material.CHEST, "inventory");
+		}
+		@Override
+		public ItemStack display()
+		{
+			super.display();
+			return (s.hasInventory()? on : off).display();
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(super.onClick(click))
+			{
+				s.setInventory(!s.hasInventory());
+				return true;
+			}
+			return false;
+		}
+	}
+	protected static final int VISIBLE = 5;
+	protected class VisibilityButton extends PermissionToggleButton
+	{
+		public VisibilityButton()
+		{
+			super("hide", Material.JACK_O_LANTERN, Material.PUMPKIN, "visibility");
+		}
+		@Override
+		public ItemStack display()
+		{
+			super.display();
+			return (s.isVisible()? on : off).display();
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(super.onClick(click))
+			{
+				s.setVisible(!s.isVisible());
+				return true;
+			}
+			return false;
+		}
+	}
+	protected static final int INVITES = 6;
+	protected class InvitesButton extends PermissionToggleButton
+	{
+		public InvitesButton()
+		{
+			super("invite.enforce", Material.IRON_DOOR, Material.WOOD_DOOR, "invites");
+		}
+		@Override
+		public ItemStack display()
+		{
+			super.display();
+			return (s.isInviteOnly()? on : off).display();
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(super.onClick(click))
+			{
+				s.setInviteOnly(!s.isInviteOnly());
+				return true;
+			}
+			return false;
+		}
+	}
+	protected static final int STICKY = 8;
+	protected class StickyButton extends PermissionToggleButton
+	{
+		public StickyButton()
+		{
+			super("stick", Material.STICK, Material.STICK, "sticky");
+		}
+		@Override
+		public ItemStack display()
+		{
+			super.display();
+			return (s.isSticky()? on : off).display();
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(super.onClick(click))
+			{
+				s.setSticky(!s.isSticky());
+				return true;
+			}
+			return false;
+		}
+	}
+
+	private final IPartySettings s;
+	public PartyCreateGui(KataPartyPlugin plugin, Player p, IPartySettings settings)
+	{
+		this(plugin, p, settings, 1);
+	}
+	public PartyCreateGui(KataPartyPlugin plugin, Player p, IPartySettings settings, int guirows)
+	{
+		super(plugin, p, guirows, plugin.getMessage("create-gui-title", settings.getName()));
+		s = settings;
+
+		addButton(TICKET, new TicketButton());
+		addButton(TELEPORTS, new TeleportsButton());
+		addButton(PVP, new PvpButton());
+		addButton(INVENTORY, new InventoryButton());
+		addButton(VISIBLE, new VisibilityButton());
+		addButton(INVITES, new InvitesButton());
+		addButton(STICKY, new StickyButton());
+	}
+
+	@Override
+	protected void onUpdate()
+	{
+		if(!getButtons().isEmpty() && inst.getPartySet().findParty(s.getName()) != null)
 		{
 			clearButtons();
-			rename(inst.getMessage("create-name-taken", pname));
-		}
-	}
-
-	@Override
-	protected void onButton(int slot, ClickType click)
-	{
-		switch(slot)
-		{
-			case TICKET:
-			{
-				update();
-				String pname = getButtonName(TICKET);
-				if(pname == null)
-				{
-					return;
-				}
-				PartySettings ps = new PartySettings();
-				ps.setName(pname);
-				ps.setTp(getButton(TELEPORTS) != 1);
-				ps.setPvp(getButton(PVP) != 1);
-				ps.setInventory(getButton(INVENTORY) != 1);
-				ps.setVisible(getButton(VISIBLE) != 1);
-				ps.setInviteOnly(getButton(INVITES) != 1);
-				ps.setSticky(getButton(STICKY) != 1);
-				inst.getPartySet().newParty(player, ps);
-				inst.getFilter().tellFilterPref(player);
-				hide();
-			} break;
-			case TELEPORTS:
-			{
-				if(player.hasPermission("KataParty.teleport.disable"))
-				{
-					if(getButton(TELEPORTS) != 1)
-					{
-						setButton(TELEPORTS, 1);
-						setButton(TELEPORTS, inst.getMessage("manage-teleports-disabled"));
-					}
-					else
-					{
-						setButton(TELEPORTS, 2);
-						setButton(TELEPORTS, inst.getMessage("manage-teleports-enabled"));
-					}
-				}
-			} break;
-			case PVP:
-			{
-				if(getButton(PVP) != 1)
-				{
-					setButton(PVP, 1, Material.STONE_SWORD);
-					setButton(PVP, inst.getMessage("manage-pvp-disabled"));
-				}
-				else
-				{
-					setButton(PVP, 2, Material.GOLD_SWORD);
-					setButton(PVP, inst.getMessage("manage-pvp-enabled"));
-				}
-			} break;
-			case INVENTORY:
-			{
-				if(player.hasPermission("KataParty.inventory.enable"))
-				{
-					if(getButton(INVENTORY) != 1)
-					{
-						setButton(INVENTORY, 1, Material.CHEST);
-						setButton(INVENTORY, inst.getMessage("manage-inventory-disabled"));
-					}
-					else
-					{
-						setButton(INVENTORY, 2, Material.ENDER_CHEST);
-						setButton(INVENTORY, inst.getMessage("manage-inventory-enabled"));
-					}
-				}
-			} break;
-			case VISIBLE:
-			{
-				if(player.hasPermission("KataParty.hide"))
-				{
-					if(getButton(VISIBLE) != 1)
-					{
-						setButton(VISIBLE, 1, Material.PUMPKIN);
-						setButton(VISIBLE, inst.getMessage("manage-visibility-disabled"));
-					}
-					else
-					{
-						setButton(VISIBLE, 2, Material.JACK_O_LANTERN);
-						setButton(VISIBLE, inst.getMessage("manage-visibility-enabled"));
-					}
-				}
-			} break;
-			case INVITES:
-			{
-				if(player.hasPermission("KataParty.invite.enforce"))
-				{
-					if(getButton(INVITES) != 1)
-					{
-						setButton(INVITES, 1, Material.WOOD_DOOR);
-						setButton(INVITES, inst.getMessage("manage-invites-disabled"));
-					}
-					else
-					{
-						setButton(INVITES, 2, Material.IRON_DOOR);
-						setButton(INVITES, inst.getMessage("manage-invites-enabled"));
-					}
-				}
-			} break;
-			case STICKY:
-			{
-				if(!inst.getPartySet().keepEmptyParties() && player.hasPermission("KataParty.stick"))
-				{
-					if(getButton(STICKY) != 1)
-					{
-						setButton(STICKY, 1);
-						setButton(STICKY, inst.getMessage("manage-sticky-disabled"));
-					}
-					else
-					{
-						setButton(STICKY, 2);
-						setButton(STICKY, inst.getMessage("manage-sticky-enabled"));
-					}
-				}
-			} break;
-			default: break;
+			rename(inst.getMessage("create-name-taken", s.getName()));
 		}
 	}
 
 	@Override
 	protected void onClose()
 	{
-		String pname = getButtonName(TICKET);
-		if(pname != null)
+		if(!getButtons().isEmpty())
 		{
 			IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
-			if(m == null || !m.getParty().getName().equals(pname))
+			if(m == null || !m.getParty().getName().equals(s.getName()))
 			{
 				inst.tellMessage(player, "create-cancelled");
 			}

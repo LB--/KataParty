@@ -204,6 +204,7 @@ public final class Party extends PartySettings implements IParty
 				parties.removeSettings(uuid);
 				break;
 			}
+			m = null;
 		}
 		if(!disbanded)
 		{
@@ -211,11 +212,15 @@ public final class Party extends PartySettings implements IParty
 			if(hadmembers && numMembers() == 0 && !parties.keepEmptyParties() && !isSticky())
 			{
 				parties.remove(this, PartyDisbandEvent.Reason.AUTOMATIC_CLOSE, Bukkit.getPlayer(uuid));
-				if(m  != null)
+				if(m != null)
 				{
 					m.informMessage("party-closed-on-leave-inform", getName());
 				}
 			}
+		}
+		if(m != null)
+		{
+			m.setParty(null);
 		}
 	}
 	@Override

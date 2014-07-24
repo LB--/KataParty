@@ -4,13 +4,11 @@ import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IGuiButton;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -19,10 +17,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -57,83 +52,40 @@ public abstract class PartyGui implements InventoryHolder, Listener
 		return inv;
 	}
 
-	protected abstract void update();
-
 	private final Map<Integer, IGuiButton> buttons = new HashMap<>();
-	protected final void addButton(int slot, String name, Material icon, List<String> info)
+	protected final void addButton(int slot, IGuiButton button)
 	{
-		ItemStack i = new ItemStack(icon);
-		ItemMeta m = i.getItemMeta();
-		m.setDisplayName(name);
-		m.setLore(info);
-		i.setItemMeta(m);
-		inv.setItem(slot, i);
+		buttons.put(slot, button);
 	}
-	protected final void addButton(int slot, ItemStack button)
+	protected final IGuiButton getButton(int slot)
 	{
-		inv.setItem(slot, button);
+		return buttons.get(slot);
 	}
-	protected final int getButton(int slot)
+	protected final Map<Integer, IGuiButton> getButtons()
 	{
-		return inv.getItem(slot).getAmount();
-	}
-	protected final String getButtonName(int slot)
-	{
-		return inv.getItem(slot ) != null? inv.getItem(slot).getItemMeta().getDisplayName() : null;
-	}
-	protected final void setButton(int slot, int value)
-	{
-		ItemStack i = inv.getItem(slot);
-		i.setAmount(value);
-		inv.setItem(slot, i);
-	}
-	protected final void setButton(int slot, Material icon)
-	{
-		ItemStack i = inv.getItem(slot);
-		i.setType(icon);
-		inv.setItem(slot, i);
-	}
-	protected final void setButton(int slot, int value, Material icon)
-	{
-		ItemStack i = inv.getItem(slot);
-		i.setType(icon);
-		i.setAmount(value);
-		inv.setItem(slot, i);
-	}
-	protected final void setButton(int slot, String name)
-	{
-		ItemStack i = inv.getItem(slot);
-		ItemMeta m = i.getItemMeta();
-		m.setDisplayName(name);
-		i.setItemMeta(m);
-		inv.setItem(slot, i);
-	}
-	protected final void setButton(int slot, List<String> info)
-	{
-		ItemStack i = inv.getItem(slot);
-		ItemMeta m = i.getItemMeta();
-		m.setLore(info);
-		i.setItemMeta(m);
-		inv.setItem(slot, i);
-	}
-	protected final void setButton(int slot, String name, List<String> info)
-	{
-		ItemStack i = inv.getItem(slot);
-		ItemMeta m = i.getItemMeta();
-		m.setDisplayName(name);
-		m.setLore(info);
-		i.setItemMeta(m);
-		inv.setItem(slot, i);
+		Map<Integer, IGuiButton> clone = new HashMap<>();
+		clone.putAll(buttons);
+		return clone;
 	}
 	protected final void removeButton(int slot)
 	{
-		inv.clear(slot);
+		buttons.remove(slot);
 	}
 	protected final void clearButtons()
 	{
-		inv.clear();
+		buttons.clear();
 	}
-	protected abstract void onButton(int slot, ClickType click);
+
+	protected abstract void onUpdate();
+	protected final void update()
+	{
+		onUpdate();
+		inv.clear();
+		for(Map.Entry<Integer, IGuiButton> e : buttons.entrySet())
+		{
+			inv.setItem(e.getKey(), e.getValue().display());
+		}
+	}
 
 	public final void show()
 	{
@@ -168,7 +120,11 @@ public abstract class PartyGui implements InventoryHolder, Listener
 				e.setCancelled(true);
 				if(!e.getSlotType().equals(SlotType.OUTSIDE) && inv.getItem(e.getSlot()) != null)
 				{
-					onButton(e.getSlot(), e.getClick());
+					IGuiButton b = getButton(e.getSlot());
+					if(b != null)
+					{
+						b.onClick(e.getClick());
+					}
 				}
 			}
 			update();

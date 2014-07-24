@@ -21,7 +21,7 @@ public final class PartyRenameGui extends PartyGui
 	}
 
 	@Override
-	protected void update()
+	protected void onUpdate()
 	{
 		clearButtons();
 
@@ -31,22 +31,24 @@ public final class PartyRenameGui extends PartyGui
 			return;
 		}
 
-		addButton(0, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
+		addButton(0, new GenericGuiButton(party.getName(), Material.NAME_TAG, new ArrayList<String>(){
 		{
 			add(inst.getMessage("rename-name-requirements"));
-		}});
-	}
-
-	@Override
-	protected void onButton(int slot, ClickType click)
-	{
-		update();
-		if(getButtonName(0) == null)
+		}})
 		{
-			return;
-		}
+			@Override
+			public boolean onClick(ClickType click)
+			{
+				update();
+				if(getInventory().getItem(0) == null || getInventory().getItem(0).getItemMeta().getDisplayName() == null)
+				{
+					return false;
+				}
 
-		party.setName(getButtonName(2));
-		hide();
+				party.setName(getInventory().getItem(2).getItemMeta().getDisplayName());
+				hide();
+				return true;
+			}
+		});
 	}
 }

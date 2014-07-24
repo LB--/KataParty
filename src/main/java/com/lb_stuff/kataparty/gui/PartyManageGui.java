@@ -18,158 +18,154 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 
-public final class PartyManageGui extends PartyGui
+public class PartyManageGui extends PartyCreateGui
 {
-	private static final int TICKET = 0;
-	private static final int MEMBERS = 1;
-	private static final int TELEPORTS = 2;
-	private static final int PVP = 3;
-	private static final int INVENTORY = 4;
-	private static final int VISIBLE = 5;
-	private static final int INVITES = 6;
-	private static final int TICKETS = 7;
-	private static final int STICKY = 8;
-	private static final int DISBAND = 9;
-	private static final int TPALL = 10;
-	private static final int SELFTP = 11;
-	private final IParty party;
-	public PartyManageGui(KataPartyPlugin plugin, Player plr, IParty p)
+	protected class ManageTicketButton extends TicketButton
 	{
-		super(plugin, plr, 2, plugin.getMessage("manage-gui-title", p.getName()));
-		party = p;
+		public ManageTicketButton()
+		{
+			setLore(new ArrayList<String>(){
+			{
+				if(isMember())
+				{
+					add(inst.getMessage("manage-your-rank", getMember().getRankName()));
+					add(inst.getMessage("manage-leave"));
+				}
+				else
+				{
+					add(inst.getMessage("manage-not-member"));
+				}
+				if(isAdmin() || isPartyAdmin())
+				{
+					add(inst.getMessage("manage-rename"));
+				}
+				if(isAdmin())
+				{
+					add(inst.getMessage("manage-admin"));
+				}
+			}});
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			switch(click)
+			{
+				case LEFT:
+				{
+					if(isMember())
+					{
+						party.removeMember(player.getUniqueId(), PartyMemberLeaveEvent.Reason.VOLUNTARY);
+						hide();
+					}
+				} break;
+				case RIGHT:
+				{
+					if(isAdmin() || isPartyAdmin())
+					{
+						//Bukkit didn't support opening anvil inventories when ths code was written
+						PartyGui pg = new PartyRenameGui(inst, player, party);
+						pg.show();
+						if(player.getOpenInventory() == null || player.getOpenInventory().getTopInventory() == null
+						|| player.getOpenInventory().getTopInventory().getType() != InventoryType.ANVIL)
+						{
+							pg.onInvClose(new InventoryCloseEvent(player.getOpenInventory()));
+							inst.getLogger().warning("Your CB version doesn't support opening anvil inventories");
+							inst.tell(player, "That feature is currently unavailable");
+						}
+					}
+				} break;
+				default: break;
+			}
+			return true;
+		}
 	}
-
-	@Override
-	protected void update()
+	protected static final int MEMBERS = 1;
+	protected class ManageMembersButton extends GenericGuiButton
 	{
-		clearButtons();
-
-		if(!inst.getPartySet().contains(party))
+		public ManageMembersButton()
 		{
-			hide();
-			return;
+			super(new ItemStack(Material.SKULL_ITEM, party.numMembers(), (short)3));
+			setName(inst.getMessage("manage-members"));
+			setLore(new ArrayList<String>(){
+			{
+				add(inst.getMessage("manage-members-online", party.getMembersOnline().size(), party.numMembers()));
+				Set<IParty.IMember> mods = party.getMembersRanked(PartyRank.MODERATOR);
+				Set<IParty.IMember> onmods = new HashSet<>();
+				onmods.addAll(mods);
+				onmods.retainAll(party.getMembersOnline());
+				add(inst.getMessage("manage-mods-online", onmods.size(), mods.size()));
+				Set<IParty.IMember> admins = party.getMembersRanked(PartyRank.ADMIN);
+				Set<IParty.IMember> onadmins = new HashSet<>();
+				onadmins.addAll(admins);
+				onadmins.retainAll(party.getMembersOnline());
+				add(inst.getMessage("manage-admins-online", onadmins.size(), admins.size()));
+			}});
 		}
-
-		final IParty.IMember mt = inst.getPartySet().findMember(player.getUniqueId());
-		boolean is_member = false;
-		boolean is_admin = false;
-		boolean is_partyAdmin = false;
-		boolean is_partyMod = false;
-		if(mt != null && mt.getParty() == party)
+		@Override
+		public boolean onClick(ClickType click)
 		{
-			is_member = true;
-			is_partyAdmin = (mt.getRank() == PartyRank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == PartyRank.MODERATOR);
+			new PartyMembersGui(inst, player, party).show();
+			return true;
 		}
-		if(player.hasPermission("KataParty.admin"))
+	}
+	protected class ManageTeleportsButton extends TeleportsButton
+	{
+		@Override
+		protected boolean hasExtraRequirements()
 		{
-			is_admin = true;
+			return isAdmin() || isPartyMod();
 		}
-		final boolean isMember = is_member;
-		final boolean isAdmin = is_admin;
-		final boolean isPartyAdmin = is_partyAdmin;
-		final boolean isPartyMod = is_partyMod;
-
-		addButton(TICKET, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
+	}
+	protected class ManagePvpButton extends PvpButton
+	{
+		@Override
+		protected boolean hasExtraRequirements()
 		{
-			if(isMember)
-			{
-				add(inst.getMessage("manage-your-rank", mt.getRankName()));
-				add(inst.getMessage("manage-leave"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-not-member"));
-			}
-			if(isAdmin || isPartyAdmin)
-			{
-				add(inst.getMessage("manage-rename"));
-			}
-			if(isAdmin)
-			{
-				add(inst.getMessage("manage-admin"));
-			}
-		}});
-		addButton(MEMBERS, new ItemStack(Material.SKULL_ITEM, party.numMembers(), (short)3));
-		setButton(MEMBERS, inst.getMessage("manage-members"), new ArrayList<String>(){
+			return isAdmin() || isPartyMod();
+		}
+	}
+	protected class ManageInventoryButton extends InventoryButton
+	{
+		@Override
+		public boolean onClick(ClickType click)
 		{
-			add(inst.getMessage("manage-members-online", party.getMembersOnline().size(), party.numMembers()));
-			Set<IParty.IMember> mods = party.getMembersRanked(PartyRank.MODERATOR);
-			Set<IParty.IMember> onmods = new HashSet<>();
-			onmods.addAll(mods);
-			onmods.retainAll(party.getMembersOnline());
-			add(inst.getMessage("manage-mods-online", onmods.size(), mods.size()));
-			Set<IParty.IMember> admins = party.getMembersRanked(PartyRank.ADMIN);
-			Set<IParty.IMember> onadmins = new HashSet<>();
-			onadmins.addAll(admins);
-			onadmins.retainAll(party.getMembersOnline());
-			add(inst.getMessage("manage-admins-online", onadmins.size(), admins.size()));
-		}});
-		addButton(TELEPORTS, inst.getMessage(party.canTp()? "manage-teleports-enabled" : "manage-teleports-disabled"), Material.ENDER_PEARL, new ArrayList<String>(){
+			if((perm == null || player.hasPermission(perm)) && (isAdmin() || isPartyMod()))
+			{
+				if(party.hasInventory())
+				{
+					party.disableInventory(player.getLocation());
+				}
+				else
+				{
+					party.enableInventory();
+				}
+				return true;
+			}
+			return false;
+		}
+	}
+	protected class ManageVisibilityButton extends VisibilityButton
+	{
+		@Override
+		protected boolean hasExtraRequirements()
 		{
-			if(isAdmin || (player.hasPermission("KataParty.teleport.disable") && isPartyMod))
-			{
-				add(inst.getMessage("manage-click-to-change"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-change"));
-			}
-		}});
-		setButton(TELEPORTS, (party.canTp()? 2 : 1));
-		addButton(PVP, inst.getMessage(party.canPvp()? "manage-pvp-enabled" : "manage-pvp-disabled"), (party.canPvp()? Material.GOLD_SWORD : Material.STONE_SWORD), new ArrayList<String>(){
+			return isAdmin() || isPartyAdmin();
+		}
+	}
+	protected static final int TICKETS = 7;
+	protected class ManageTicketsButton extends GenericGuiButton
+	{
+		public ManageTicketsButton()
 		{
-			if(isAdmin || isPartyMod)
-			{
-				add(inst.getMessage("manage-click-to-change"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-change"));
-			}
-		}});
-		setButton(PVP, (party.canPvp()? 2 : 1));
-		addButton(INVENTORY, inst.getMessage(party.getInventory() != null? "manage-inventory-enabled" : "manage-inventory-disabled"), (party.getInventory() != null? Material.ENDER_CHEST : Material.CHEST), new ArrayList<String>(){
+			super(Material.ANVIL);
+			setName(inst.getMessage("manage-generate-ticket"));
+		}
+		@Override
+		public ItemStack display()
 		{
-			if(isAdmin || (player.hasPermission("KataParty.inventory.enable") && isPartyMod))
+			setLore(new ArrayList<String>(){
 			{
-				add(inst.getMessage("manage-click-to-change"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-change"));
-			}
-		}});
-		setButton(INVENTORY, (party.getInventory() != null? 2 : 1));
-		addButton(VISIBLE, inst.getMessage(party.isVisible()? "manage-visibility-enabled" : "manage-visibility-disabled"), (party.isVisible()? Material.JACK_O_LANTERN : Material.PUMPKIN), new ArrayList<String>(){
-		{
-			if(isAdmin || (player.hasPermission("KataParty.hide") && isPartyAdmin))
-			{
-				add(inst.getMessage("manage-click-to-change"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-change"));
-			}
-		}});
-		setButton(VISIBLE, (party.isVisible()? 2 : 1));
-		addButton(INVITES, inst.getMessage(party.isInviteOnly()? "manage-invites-enabled" : "manage-invites-disabled"), (party.isInviteOnly()? Material.IRON_DOOR : Material.WOOD_DOOR), new ArrayList<String>(){
-		{
-			if(isAdmin || (player.hasPermission("KataParty.invite.enforce") && isPartyAdmin))
-			{
-				add(inst.getMessage("manage-click-to-change"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-change"));
-			}
-		}});
-		setButton(INVITES, (party.isInviteOnly()? 2 : 1));
-		if(party.isInviteOnly())
-		{
-			addButton(TICKETS, inst.getMessage("manage-generate-ticket"), Material.ANVIL, new ArrayList<String>(){
-			{
-				if(isAdmin || (player.hasPermission("KataParty.invite.create") && isPartyAdmin))
+				if(isAdmin() || (player.hasPermission("KataParty.invite.create") && isPartyAdmin()))
 				{
 					add(inst.getMessage("manage-click-to-use"));
 				}
@@ -178,214 +174,221 @@ public final class PartyManageGui extends PartyGui
 					add(inst.getMessage("manage-cannot-use"));
 				}
 			}});
+			return super.display();
 		}
-		if(!inst.getPartySet().keepEmptyParties() && player.hasPermission("KataParty.stick"))
+		@Override
+		public boolean onClick(ClickType click)
 		{
-			addButton(STICKY, inst.getMessage(party.isSticky()? "manage-sticky-enabled" : "manage-sticky-disabled"), Material.STICK, new ArrayList<String>(){
+			if(isAdmin() || (player.hasPermission("KataParty.invite.create") && isPartyAdmin()))
 			{
-				add(inst.getMessage("manage-click-to-change"));
-			}});
-			setButton(STICKY, (party.isSticky()? 2 : 1));
+				inst.getTicketManager().removeTickets(player.getInventory());
+				player.getWorld().dropItem(player.getLocation(), inst.getTicketManager().generateTicket(party)).setPickupDelay(0);
+				return true;
+			}
+			return false;
 		}
-		addButton(DISBAND, inst.getMessage(isMember? "manage-disband" : "manage-close"), Material.TNT, new ArrayList<String>(){
+	}
+	protected class ManageStickyButton extends StickyButton
+	{
+		@Override
+		protected boolean hasExtraRequirements()
 		{
-			if(isAdmin || (player.hasPermission("KataParty.disband") && isPartyAdmin))
-			{
-				add(inst.getMessage("manage-click-to-use"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-use"));
-			}
-		}});
-		addButton(TPALL, inst.getMessage("manage-summon"), Material.ENDER_PORTAL_FRAME, new ArrayList<String>(){
+			return isAdmin() || isPartyAdmin();
+		}
+	}
+	protected static final int DISBAND = 9;
+	protected class ManageDisbandButton extends GenericGuiButton
+	{
+		public ManageDisbandButton()
 		{
-			if(isAdmin || (player.hasPermission("KataParty.teleport.do") && isPartyAdmin))
-			{
-				add(inst.getMessage("manage-click-to-use"));
-			}
-			else
-			{
-				add(inst.getMessage("manage-cannot-use"));
-			}
-		}});
-		if(isMember)
+			super(Material.TNT);
+			setName(inst.getMessage(isMember()? "manage-disband" : "manage-close"));
+		}
+		@Override
+		public ItemStack display()
 		{
-			addButton(SELFTP, inst.getMessage(mt.canTp()? "manage-self-teleports-enabled" : "manage-self-teleports-disabled"), Material.EYE_OF_ENDER, new ArrayList<String>(){
+			setLore(new ArrayList<String>(){
 			{
-				if(player.hasPermission("KataParty.teleport.disallow"))
+				if(isAdmin() || (player.hasPermission("KataParty.disband") && isPartyAdmin()))
 				{
-					add(inst.getMessage("manage-click-to-change"));
+					add(inst.getMessage("manage-click-to-use"));
 				}
 				else
 				{
-					add(inst.getMessage("manage-cannot-change"));
+					add(inst.getMessage("manage-cannot-use"));
 				}
 			}});
-			setButton(SELFTP, (mt.canTp()? 2 : 1));
+			return super.display();
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(isAdmin() || (player.hasPermission("KataParty.disband") && isPartyAdmin()))
+			{
+				inst.getPartySet().remove(party, PartyDisbandEvent.Reason.PARTY_ADMIN_DISBAND, player);
+				hide();
+				return true;
+			}
+			return false;
+		}
+	}
+	protected static final int TPALL = 10;
+	protected class ManageTpAllButton extends GenericGuiButton
+	{
+		public ManageTpAllButton()
+		{
+			super(Material.ENDER_PORTAL_FRAME);
+			setName(inst.getMessage("manage-summon"));
+		}
+		@Override
+		public ItemStack display()
+		{
+			setLore(new ArrayList<String>(){
+			{
+				if(isAdmin() || (player.hasPermission("KataParty.teleport.do") && isPartyAdmin()))
+				{
+					add(inst.getMessage("manage-click-to-use"));
+				}
+				else
+				{
+					add(inst.getMessage("manage-cannot-use"));
+				}
+			}});
+			return super.display();
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(isAdmin() || (player.hasPermission("KataParty.teleport.do") && isPartyAdmin()))
+			{
+				for(IParty.IMember mem : party)
+				{
+					if(!mem.getUuid().equals(player.getUniqueId()) && mem.canTp())
+					{
+						OfflinePlayer offp = inst.getServer().getOfflinePlayer(mem.getUuid());
+						if(offp.isOnline())
+						{
+							Player onp = offp.getPlayer();
+							onp.setNoDamageTicks(20*5); //inulnerable for 5 seconds
+							onp.teleport(player);
+							inst.tellMessage(onp, "member-teleported-to", player.getDisplayName());
+						}
+					}
+				}
+				hide();
+				return true;
+			}
+			return false;
+		}
+	}
+	protected static final int SELFTP = 11;
+	protected class ManageSelfTpButton extends PermissionToggleButton
+	{
+		public ManageSelfTpButton()
+		{
+			super("teleport.disallow", Material.EYE_OF_ENDER, Material.EYE_OF_ENDER, "self-teleports");
+		}
+		@Override
+		public ItemStack display()
+		{
+			super.display();
+			return (getMember().canTp()? on : off).display();
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(super.onClick(click))
+			{
+				getMember().setTp(!getMember().canTp());
+				return true;
+			}
+			return false;
+		}
+	}
+
+	protected final IParty party;
+	public PartyManageGui(KataPartyPlugin plugin, Player plr, IParty p)
+	{
+		super(plugin, plr, p, 2);
+		party = p;
+
+		rename(inst.getMessage("manage-gui-title", party.getName()));
+		addButton(TICKET, new ManageTicketButton());
+		addButton(MEMBERS, new ManageMembersButton());
+		addButton(TELEPORTS, new ManageTeleportsButton());
+		addButton(PVP, new ManagePvpButton());
+		addButton(INVENTORY, new ManageInventoryButton());
+		addButton(VISIBLE, new ManageVisibilityButton());
+		addButton(STICKY, new ManageStickyButton());
+	}
+
+	protected IParty.IMember getMember()
+	{
+		return inst.getPartySet().findMember(player.getUniqueId());
+	}
+	protected boolean isMember()
+	{
+		return getMember() != null;
+	}
+	protected boolean isAdmin()
+	{
+		return player.hasPermission("KataParty.admin");
+	}
+	protected boolean isPartyAdmin()
+	{
+		IParty.IMember m = getMember();
+		return m != null && m.getRank() == PartyRank.ADMIN;
+	}
+	protected boolean isPartyMod()
+	{
+		IParty.IMember m = getMember();
+		return m != null && (m.getRank() == PartyRank.ADMIN || m.getRank() == PartyRank.MODERATOR);
+	}
+
+	private final ManageTicketsButton tickets = new ManageTicketsButton();
+	private final ManageDisbandButton disband = new ManageDisbandButton();
+	private final ManageTpAllButton tpall = new ManageTpAllButton();
+	private final ManageSelfTpButton selftp = new ManageSelfTpButton();
+	@Override
+	protected void onUpdate()
+	{
+		if(!inst.getPartySet().contains(party))
+		{
+			hide();
+			return;
+		}
+
+		if(party.isInviteOnly())
+		{
+			addButton(TICKETS, tickets);
+		}
+		else
+		{
+			removeButton(TICKETS);
+		}
+
+		if(isAdmin() || isPartyAdmin())
+		{
+			addButton(DISBAND, disband);
+			addButton(TPALL, tpall);
+		}
+		else
+		{
+			removeButton(DISBAND);
+		}
+
+		if(isMember())
+		{
+			addButton(SELFTP, selftp);
+		}
+		else
+		{
+			removeButton(SELFTP);
 		}
 	}
 
 	@Override
-	protected void onButton(int slot, ClickType click)
+	protected void onClose()
 	{
-		update();
-		if(getButtonName(TICKET) == null)
-		{
-			return;
-		}
-
-		final IParty.IMember mt = inst.getPartySet().findMember(player.getUniqueId());
-		boolean is_member = false;
-		boolean is_admin = false;
-		boolean is_partyAdmin = false;
-		boolean is_partyMod = false;
-		if(mt != null && mt.getParty() == party)
-		{
-			is_member = true;
-			is_partyAdmin = (mt.getRank() == PartyRank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == PartyRank.MODERATOR);
-		}
-		if(player.hasPermission("KataParty.admin"))
-		{
-			is_admin = true;
-		}
-		final boolean isMember = is_member;
-		final boolean isAdmin = is_admin;
-		final boolean isPartyAdmin = is_partyAdmin;
-		final boolean isPartyMod = is_partyMod;
-
-		switch(slot)
-		{
-			case TICKET:
-			{
-				switch(click)
-				{
-					case LEFT:
-					{
-						if(isMember)
-						{
-							party.removeMember(player.getUniqueId(), PartyMemberLeaveEvent.Reason.VOLUNTARY);
-							hide();
-						}
-					} break;
-					case RIGHT:
-					{
-						if(isAdmin || isPartyAdmin)
-						{
-							//Bukkit didn't support opening anvil inventories when ths code was written
-							PartyGui pg = new PartyRenameGui(inst, player, party);
-							pg.show();
-							if(player.getOpenInventory() == null || player.getOpenInventory().getTopInventory() == null
-							|| player.getOpenInventory().getTopInventory().getType() != InventoryType.ANVIL)
-							{
-								pg.onInvClose(new InventoryCloseEvent(player.getOpenInventory()));
-								inst.getLogger().warning("Your CB version doesn't support opening anvil inventories");
-								inst.tell(player, "That feature is currently disabled");
-							}
-						}
-					} break;
-					default: break;
-				}
-			} break;
-			case MEMBERS:
-			{
-				new PartyMembersGui(inst, player, party).show();
-			} break;
-			case TELEPORTS:
-			{
-				if(isAdmin || (player.hasPermission("KataParty.teleport.disable") && isPartyMod))
-				{
-					party.setTp(!party.canTp());
-				}
-			} break;
-			case PVP:
-			{
-				if(isAdmin || isPartyMod)
-				{
-					party.setPvp(!party.canPvp());
-				}
-			} break;
-			case INVENTORY:
-			{
-				if(isAdmin || (player.hasPermission("KataParty.inventory.enable") && isPartyMod))
-				{
-					if(party.getInventory() == null)
-					{
-						party.enableInventory();
-					}
-					else
-					{
-						party.disableInventory(player.getEyeLocation());
-					}
-				}
-			} break;
-			case VISIBLE:
-			{
-				if(isAdmin || (player.hasPermission("KataParty.hide") && isPartyAdmin))
-				{
-					party.setVisible(!party.isVisible());
-				}
-			} break;
-			case INVITES:
-			{
-				if(isAdmin || (player.hasPermission("KataParty.invite.enforce") && isPartyAdmin))
-				{
-					party.setInviteOnly(!party.isInviteOnly());
-				}
-			} break;
-			case TICKETS:
-			{
-				if(isAdmin || (player.hasPermission("KataParty.invite.create") && isPartyAdmin))
-				{
-					inst.getTicketManager().removeTickets(player.getInventory());
-					player.getWorld().dropItem(player.getLocation(), inst.getTicketManager().generateTicket(party)).setPickupDelay(0);
-				}
-			} break;
-			case STICKY:
-			{
-				if(!inst.getPartySet().keepEmptyParties() && player.hasPermission("KataParty.stick"))
-				{
-					party.setSticky(!party.isSticky());
-				}
-			} break;
-			case DISBAND:
-			{
-				if(isAdmin || (player.hasPermission("KataParty.disband") && isPartyAdmin))
-				{
-					inst.getPartySet().remove(party, PartyDisbandEvent.Reason.PARTY_ADMIN_DISBAND, player);
-					hide();
-				}
-			} break;
-			case TPALL:
-			{
-				if(isAdmin || (player.hasPermission("KataParty.teleport.do") && isPartyAdmin))
-				{
-					for(IParty.IMember mem : party)
-					{
-						if(!mem.getUuid().equals(player.getUniqueId()) && mem.canTp())
-						{
-							OfflinePlayer offp = inst.getServer().getOfflinePlayer(mem.getUuid());
-							if(offp.isOnline())
-							{
-								Player onp = offp.getPlayer();
-								onp.setNoDamageTicks(20*5); //inulnerable for 5 seconds
-								onp.teleport(player);
-								inst.tellMessage(onp, "member-teleported-to", player.getDisplayName());
-							}
-						}
-					}
-					hide();
-				}
-			} break;
-			case SELFTP:
-			{
-				if(isMember && player.hasPermission("KataParty.teleport.disallow"))
-				{
-					mt.setTp(!mt.canTp());
-				}
-			} break;
-			default: break;
-		}
 	}
 }

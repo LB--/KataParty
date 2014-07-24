@@ -6,7 +6,11 @@ import com.lb_stuff.kataparty.command.*;
 import com.lb_stuff.kataparty.config.MainConfig;
 import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.PartyFactory.MemberFactory;
-import com.lb_stuff.kataparty.api.*;
+import com.lb_stuff.kataparty.api.IMessenger;
+import com.lb_stuff.kataparty.api.KataPartyService;
+import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.PartyRank;
+import com.lb_stuff.kataparty.api.ChatFilterPref;
 import com.lb_stuff.service.ChatFilterService;
 
 import net.gravitydevelopment.updater.Updater;
@@ -123,6 +127,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 			}
 			else //compatibiity with pre-v1.2.3
 			{
+				getLogger().info("Loading & upgrading parties...");
 				ConfigurationSection cs = conf.getConfigurationSection("parties");
 				for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 				{
@@ -166,6 +171,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 						m.setTp(ms.getBoolean("tp"));
 					}
 				}
+				getLogger().info("Done loading & upgrading parties.");
 			}
 		}
 

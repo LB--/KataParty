@@ -5,19 +5,29 @@ import com.lb_stuff.kataparty.api.IGuiButton;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
 
 import java.util.List;
+import java.util.Arrays;
 
-public abstract class GenericGuiButton implements IGuiButton
+public class GenericGuiButton implements IGuiButton
 {
 	private final ItemStack button;
-	public GenericGuiButton(String name, Material icon, List<String> info)
+	public GenericGuiButton(Material icon)
+	{
+		button = new ItemStack(icon);
+	}
+	public GenericGuiButton(String name, Material icon, List<String> lore)
 	{
 		button = new ItemStack(icon);
 		ItemMeta m = button.getItemMeta();
 		m.setDisplayName(name);
-		m.setLore(info);
+		m.setLore(lore);
 		button.setItemMeta(m);
+	}
+	public GenericGuiButton(String name, Material icon, String... lore)
+	{
+		this(name, icon, Arrays.asList(lore));
 	}
 	public GenericGuiButton(ItemStack is)
 	{
@@ -52,10 +62,24 @@ public abstract class GenericGuiButton implements IGuiButton
 		m.setLore(lore);
 		button.setItemMeta(m);
 	}
+	protected final void setLore(String... lore)
+	{
+		setLore(Arrays.asList(lore));
+	}
+
+	protected ItemStack getItem()
+	{
+		return button;
+	}
 
 	@Override
 	public ItemStack display()
 	{
 		return new ItemStack(button);
+	}
+	@Override
+	public boolean onClick(ClickType click)
+	{
+		return true;
 	}
 }

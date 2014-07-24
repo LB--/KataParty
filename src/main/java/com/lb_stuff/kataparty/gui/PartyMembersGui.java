@@ -16,6 +16,38 @@ import java.util.ArrayList;
 public final class PartyMembersGui extends PartyGui
 {
 	private static final int TICKET = 0;
+	private class TicketButton extends GenericGuiButton
+	{
+		public TicketButton()
+		{
+			super(Material.NAME_TAG);
+		}
+		@Override
+		public ItemStack display()
+		{
+			if(inst.getPartySet().contains(party))
+			{
+				setName(party.getName());
+				setLore(new ArrayList<String>(){
+				{
+					add(inst.getMessage("members-return"));
+				}});
+				return super.display();
+			}
+			hide();
+			return null;
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(inst.getPartySet().contains(party))
+			{
+				new PartyManageGui(inst, player, party).show();
+				return true;
+			}
+			return false;
+		}
+	}
 	private final IParty party;
 	public PartyMembersGui(KataPartyPlugin plugin, Player plr, IParty p)
 	{
@@ -23,8 +55,180 @@ public final class PartyMembersGui extends PartyGui
 		party = p;
 	}
 
+	private class ListedMemberButton extends GenericGuiButton
+	{
+		private final IParty.IMember m;
+		public ListedMemberButton(IParty.IMember m)
+		{
+			super(SkullGenerator.getPlayerSkull(m.getUuid()));
+			this.m = m;
+		}
+		@Override
+		public ItemStack display()
+		{
+			if(m.getParty() == party)
+			{
+				switch(m.getRank())
+				{
+					case ADMIN:
+					{
+						setValue(3);
+					} break;
+					case MODERATOR:
+					{
+						setValue(2);
+					} break;
+					case MEMBER:
+					{
+						setValue(1);
+					} break;
+					default: break;
+				}
+				final OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
+				setName(offp.getName());
+				final Player onp = offp.getPlayer();
+				setLore(new ArrayList<String>(){
+				{
+					if(offp.getName() == null)
+					{
+						add(inst.getMessage("members-missing-player-file"));
+					}
+					if(m.getUuid().equals(player.getUniqueId()))
+					{
+						add(inst.getMessage("members-yourself"));
+					}
+					add(inst.getMessage("members-rank", m.getRankName()));
+					switch(m.getRank())
+					{
+						case MEMBER:
+						{
+							if(isAdmin() || (isMember() && isPartyAdmin()))
+							{
+								add(inst.getMessage("members-promote-moderator"));
+							}
+							if(isAdmin() || (isMember() && isPartyMod()))
+							{
+								add(inst.getMessage("members-demote-kick"));
+							}
+						} break;
+						case MODERATOR:
+						{
+							if(isAdmin() || (isMember() && isPartyAdmin()))
+							{
+								add(inst.getMessage("members-promote-admin"));
+								add(inst.getMessage("members-demote-member"));
+							}
+						} break;
+						case ADMIN:
+						{
+							if(isAdmin() || (isMember() && isPartyAdmin()))
+							{
+								add(inst.getMessage("members-demote-moderator"));
+							}
+						} break;
+						default: break;
+					}
+					add(inst.getMessage("members-online", (offp.isOnline() && player.canSee(onp))));
+					add(inst.getMessage("members-teleports", m.canTp()));
+					if(offp.isOnline() && player.canSee(onp))
+					{
+						setName(onp.getDisplayName());
+						add(inst.getMessage("members-alive", !onp.isDead()));
+					}
+				}});
+				return super.display();
+			}
+			return null;
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			if(m.getParty() == party)
+			{
+				switch(click)
+				{
+					case LEFT:
+					{
+						switch(m.getRank())
+						{
+							case MEMBER:
+							{
+								if(isAdmin() || (isMember() && isPartyAdmin()))
+								{
+									m.setRank(PartyRank.MODERATOR);
+								}
+							} break;
+							case MODERATOR:
+							{
+								if(isAdmin() || (isMember() && isPartyAdmin()))
+								{
+									m.setRank(PartyRank.ADMIN);
+								}
+							} break;
+							default: break;
+						}
+					} break;
+					case RIGHT:
+					{
+						switch(m.getRank())
+						{
+							case MEMBER:
+							{
+								if(isAdmin() || (isMember() && isPartyMod()))
+								{
+									party.removeMember(m.getUuid(), PartyMemberLeaveEvent.Reason.KICKED);
+								}
+							} break;
+							case MODERATOR:
+							{
+								if(isAdmin() || (isMember() && isPartyAdmin()))
+								{
+									m.setRank(PartyRank.MEMBER);
+								}
+							} break;
+							case ADMIN:
+							{
+								if(isAdmin() || (isMember() && isPartyAdmin()))
+								{
+									m.setRank(PartyRank.MODERATOR);
+								}
+							} break;
+							default: break;
+						}
+					} break;
+					default: break;
+				}
+			}
+			return false;
+		}
+	}
+
+	private IParty.IMember getMember()
+	{
+		return inst.getPartySet().findMember(player.getUniqueId());
+	}
+	private boolean isMember()
+	{
+		return getMember() != null;
+	}
+	private boolean isAdmin()
+	{
+		return player.hasPermission("KataParty.admin");
+	}
+	private boolean isPartyAdmin()
+	{
+		IParty.IMember m = getMember();
+		return m != null && m.getRank() == PartyRank.ADMIN;
+	}
+	private boolean isPartyMod()
+	{
+		IParty.IMember m = getMember();
+		return m != null && (m.getRank() == PartyRank.ADMIN || m.getRank() == PartyRank.MODERATOR);
+	}
+
+	private final TicketButton ticket = new TicketButton();
 	@Override
-	protected void update()
+	protected void onUpdate()
 	{
 		clearButtons();
 
@@ -34,180 +238,12 @@ public final class PartyMembersGui extends PartyGui
 			return;
 		}
 
-		final IParty.IMember mt = inst.getPartySet().findMember(player.getUniqueId());
-		boolean is_member = false;
-		boolean is_admin = false;
-		boolean is_partyAdmin = false;
-		boolean is_partyMod = false;
-		if(mt != null && mt.getParty() == party)
-		{
-			is_member = true;
-			is_partyAdmin = (mt.getRank() == PartyRank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == PartyRank.MODERATOR);
-		}
-		if(player.hasPermission("KataParty.admin"))
-		{
-			is_admin = true;
-		}
-		final boolean isMember = is_member;
-		final boolean isAdmin = is_admin;
-		final boolean isPartyAdmin = is_partyAdmin;
-		final boolean isPartyMod = is_partyMod;
-
-		addButton(TICKET, party.getName(), Material.NAME_TAG, new ArrayList<String>(){
-		{
-			add(inst.getMessage("members-return"));
-		}});
+		addButton(TICKET, ticket);
 
 		int buttons = 0;
 		for(final IParty.IMember m : party)
 		{
-			final OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
-			final Player onp = offp.getPlayer();
-			addButton(++buttons, new ItemStack(Material.SKULL_ITEM, (m.getRank().equals(PartyRank.MODERATOR)? 2 : (m.getRank().equals(PartyRank.ADMIN)? 3 : 1)), (short)3));
-			setButton(buttons, (offp.getName() != null ? offp.getName() : m.getUuid().toString()), new ArrayList<String>(){
-			{
-				if(offp.getName() == null)
-				{
-					add(inst.getMessage("members-missing-player-file"));
-				}
-				if(m.getUuid().equals(player.getUniqueId()))
-				{
-					add(inst.getMessage("members-yourself"));
-				}
-				add(inst.getMessage("members-rank", m.getRankName()));
-				switch(m.getRank())
-				{
-					case MEMBER:
-					{
-						if(isAdmin || (isMember && isPartyAdmin))
-						{
-							add(inst.getMessage("members-promote-moderator"));
-						}
-						if(isAdmin || (isMember && isPartyMod))
-						{
-							add(inst.getMessage("members-demote-kick"));
-						}
-					} break;
-					case MODERATOR:
-					{
-						if(isAdmin || (isMember && isPartyAdmin))
-						{
-							add(inst.getMessage("members-promote-admin"));
-							add(inst.getMessage("members-demote-member"));
-						}
-					} break;
-					case ADMIN:
-					{
-						if(isAdmin || (isMember && isPartyAdmin))
-						{
-							add(inst.getMessage("members-demote-moderator"));
-						}
-					} break;
-					default: break;
-				}
-				add(inst.getMessage("members-online", (offp.isOnline() && player.canSee(onp))));
-				add(inst.getMessage("members-teleports", m.canTp()));
-				if(offp.isOnline() && player.canSee(onp))
-				{
-					add(inst.getMessage("members-alive", !onp.isDead()));
-				}
-			}});
-		}
-	}
-
-	@Override
-	protected void onButton(int slot, ClickType click)
-	{
-		update();
-		if(getButtonName(TICKET) == null)
-		{
-			return;
-		}
-
-		if(slot == TICKET)
-		{
-			new PartyManageGui(inst, player, party).show();
-			return;
-		}
-		IParty.IMember target = party.findMember(getButtonName(slot));
-		if(target == null || target.getParty() != party)
-		{
-			return;
-		}
-
-		final IParty.IMember mt = inst.getPartySet().findMember(player.getUniqueId());
-		boolean is_member = false;
-		boolean is_admin = false;
-		boolean is_partyAdmin = false;
-		boolean is_partyMod = false;
-		if(mt != null && mt.getParty() == party)
-		{
-			is_member = true;
-			is_partyAdmin = (mt.getRank() == PartyRank.ADMIN);
-			is_partyMod = (is_partyAdmin || mt.getRank() == PartyRank.MODERATOR);
-		}
-		if(player.hasPermission("KataParty.admin"))
-		{
-			is_admin = true;
-		}
-		final boolean isMember = is_member;
-		final boolean isAdmin = is_admin;
-		final boolean isPartyAdmin = is_partyAdmin;
-		final boolean isPartyMod = is_partyMod;
-
-		switch(click)
-		{
-			case LEFT:
-			{
-				switch(target.getRank())
-				{
-					case MEMBER:
-					{
-						if(isAdmin || (isMember && isPartyAdmin))
-						{
-							target.setRank(PartyRank.MODERATOR);
-						}
-					} break;
-					case MODERATOR:
-					{
-						if(isAdmin || (isMember && isPartyAdmin))
-						{
-							target.setRank(PartyRank.ADMIN);
-						}
-					} break;
-					default: break;
-				}
-			} break;
-			case RIGHT:
-			{
-				switch(target.getRank())
-				{
-					case MEMBER:
-					{
-						if(isAdmin || (isMember && isPartyMod))
-						{
-							party.removeMember(target.getUuid(), PartyMemberLeaveEvent.Reason.KICKED);
-						}
-					} break;
-					case MODERATOR:
-					{
-						if(isAdmin || (isMember && isPartyAdmin))
-						{
-							target.setRank(PartyRank.MEMBER);
-						}
-					} break;
-					case ADMIN:
-					{
-						if(isAdmin || (isMember && isPartyAdmin))
-						{
-							target.setRank(PartyRank.MODERATOR);
-						}
-					} break;
-					default: break;
-				}
-			} break;
-			default: break;
+			addButton(++buttons, new ListedMemberButton(m));
 		}
 	}
 }

@@ -54,7 +54,7 @@
 								</relocation>
 								<relocation>
 									<pattern>com.lb_stuff.service</pattern>
-									<shadedPattern>com.lb_stuff.kataparty.api</shadedPattern>
+									<shadedPattern>com.lb_stuff.kataparty.service</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>net.gravitydevelopment.updater</pattern>
@@ -116,9 +116,9 @@
 			<version>2.2</version>
 		</dependency>
 		<dependency>
-			<groupId>com.lb_stuff</groupId>
+			<groupId>com.lb_stuff.service</groupId>
 			<artifactId>ChatFilterService</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -8,6 +8,7 @@ import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.inventory.ClickType;
 
 import java.util.ArrayList;
@@ -19,19 +20,21 @@ public final class PartyListGui extends PartyGui
 		super(plugin, plr, 6, plugin.getMessage("list-gui-title"));
 	}
 
-	@Override
-	protected void update()
+	private class ListedPartyButton extends GenericGuiButton
 	{
-		clearButtons();
-
-		int buttons = 0;
-		for(final IParty p : inst.getPartySet())
+		private final IParty p;
+		public ListedPartyButton(IParty party)
 		{
-			if(p.isVisible() || player.hasPermission("KataParty.seehidden"))
+			super(party.isVisible()? Material.NAME_TAG : Material.PAPER);
+			p = party;
+		}
+		@Override
+		public ItemStack display()
+		{
+			if(inst.getPartySet().contains(p))
 			{
-				IParty.IMember mem = inst.getPartySet().findMember(player.getUniqueId());
-				final boolean same = (mem != null && p == mem.getParty());
-				addButton(buttons++, p.getName(), p.isVisible()? Material.NAME_TAG : Material.PAPER, new ArrayList<String>(){
+				setName(p.getName());
+				setLore(new ArrayList<String>(){
 				{
 					if(!p.isVisible())
 					{
@@ -42,7 +45,7 @@ public final class PartyListGui extends PartyGui
 					add(inst.getMessage("list-teleports", p.canTp()));
 					add(inst.getMessage("list-inventory", (p.getInventory() != null)));
 					add(inst.getMessage("list-invite-only", p.isInviteOnly()));
-					if(same)
+					if(inst.getPartySet().findMember(player.getUniqueId()) == p)
 					{
 						add(inst.getMessage("list-member"));
 					}
@@ -72,40 +75,57 @@ public final class PartyListGui extends PartyGui
 						}
 					}
 				}});
+				return super.display();
 			}
+			return null;
+		}
+		@Override
+		public boolean onClick(ClickType click)
+		{
+			switch(click)
+			{
+				case LEFT:
+				{
+					IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
+					if(m == null || m.getParty() != p)
+					{
+						if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
+						{
+							if(p.newMember(new MemberSettings(player.getUniqueId()), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
+							{
+								inst.getFilter().tellFilterPref(player);
+							}
+							hide();
+							return true;
+						}
+					}
+				} break;
+				case RIGHT:
+				{
+					new PartyManageGui(inst, player, p).show();
+					return true;
+				} //break;
+				default: break;
+			}
+			return false;
 		}
 	}
 
 	@Override
-	protected void onButton(int slot, ClickType click)
+	protected void onUpdate()
 	{
-		IParty p = inst.getPartySet().findParty(getButtonName(slot));
-		if(p == null)
+		clearButtons();
+
+		int buttons = 0;
+		for(final IParty p : inst.getPartySet())
 		{
-			return;
-		}
-		switch(click)
-		{
-			case LEFT:
+			if(p.isVisible() || player.hasPermission("KataParty.seehidden"))
 			{
-				IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
-				if(m == null || m.getParty() != p)
-				{
-					if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
-					{
-						if(p.newMember(new MemberSettings(player.getUniqueId()), PartyMemberJoinEvent.Reason.VOLUNTARY) != null)
-						{
-							inst.getFilter().tellFilterPref(player);
-						}
-						hide();
-					}
-				}
-			} break;
-			case RIGHT:
-			{
-				new PartyManageGui(inst, player, p).show();
-			} break;
-			default: break;
+				IParty.IMember mem = inst.getPartySet().findMember(player.getUniqueId());
+				final boolean same = (mem != null && p == mem.getParty());
+				int slotn = buttons++;
+				addButton(slotn, new ListedPartyButton(p));
+			}
 		}
 	}
 }
