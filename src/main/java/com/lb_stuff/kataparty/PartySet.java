@@ -55,17 +55,19 @@ public class PartySet implements IPartySet
 		return inst;
 	}
 
-	private Map<Class<? extends IPartySettings>, IPartyFactory> pfacts = new HashMap<>();
+	private final Map<Class<? extends IPartySettings>, IPartyFactory> pfacts = new HashMap<>();
 	@Override
 	public IPartyFactory registerPartyFactory(Class<? extends IPartySettings> clazz, IPartyFactory factory)
 	{
-		if((clazz == null && factory != null) || (clazz != null && factory == null))
+		if(clazz == null)
 		{
-			throw new IllegalArgumentException("Both arguments must be null or not null");
+			throw new IllegalArgumentException("Class cannot be null");
 		}
-		IPartyFactory old = pfacts.get(clazz);
-		pfacts.put(clazz, factory);
-		return old;
+		if(factory == null)
+		{
+			return pfacts.remove(clazz);
+		}
+		return pfacts.put(clazz, factory);
 	}
 	@Override
 	public IPartyFactory getPartyFactory(Class<? extends IPartySettings> clazz)
@@ -77,17 +79,19 @@ public class PartySet implements IPartySet
 		}
 		return fact;
 	}
-	private Map<Class<? extends IMemberSettings>, IMemberFactory> mfacts = new HashMap<>();
+	private final Map<Class<? extends IMemberSettings>, IMemberFactory> mfacts = new HashMap<>();
 	@Override
 	public IMemberFactory registerMemberFactory(Class<? extends IMemberSettings> clazz, IMemberFactory factory)
 	{
-		if((clazz == null && factory != null) || (clazz != null && factory == null))
+		if(clazz == null)
 		{
-			throw new IllegalArgumentException("Both arguments must be null or not null");
+			throw new IllegalArgumentException("Class cannot be null");
 		}
-		IMemberFactory old = mfacts.get(clazz);
-		mfacts.put(clazz, factory);
-		return old;
+		if(factory == null)
+		{
+			return mfacts.remove(clazz);
+		}
+		return mfacts.put(clazz, factory);
 	}
 	@Override
 	public IMemberFactory getMemberFactory(Class<? extends IMemberSettings> clazz)

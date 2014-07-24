@@ -46,7 +46,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	private final PartyFactory.MemberFactory mfact = pfact.new MemberFactory();
 	private final PartyPvpListener pvp = new PartyPvpListener(this);
 	private final PartyPotionListener potions = new PartyPotionListener(this);
-	private final PartyHealthXpListener shxp = new PartyHealthXpListener(this);
+	private final PartyHealthListener shxp = new PartyHealthListener(this);
 	private MainConfig config;
 	private Updater updater = null;
 	@Override

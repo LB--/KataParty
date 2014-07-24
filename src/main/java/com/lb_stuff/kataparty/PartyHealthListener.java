@@ -12,12 +12,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerExpChangeEvent;
 
-public class PartyHealthXpListener implements Listener
+public class PartyHealthListener implements Listener
 {
 	private final KataPartyPlugin inst;
-	public PartyHealthXpListener(KataPartyPlugin plugin)
+	public PartyHealthListener(KataPartyPlugin plugin)
 	{
 		inst = plugin;
 	}
@@ -79,15 +78,6 @@ public class PartyHealthXpListener implements Listener
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onRespawn(PlayerRespawnEvent e)
-	{
-		IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
-//		if(m != null && m.getParty().getHealth() != null)
-		{
-			//TODO: shared health stuff
-		}
-	}
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onXp(PlayerExpChangeEvent e)
 	{
 		IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
 //		if(m != null && m.getParty().getHealth() != null)

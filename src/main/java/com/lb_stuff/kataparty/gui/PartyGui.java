@@ -1,6 +1,7 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
+import com.lb_stuff.kataparty.api.IGuiButton;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,13 +17,16 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
-public abstract class PartyGui implements Listener
+public abstract class PartyGui implements InventoryHolder, Listener
 {
 	protected final KataPartyPlugin inst;
 	protected final Player player;
@@ -31,23 +35,31 @@ public abstract class PartyGui implements Listener
 	{
 		inst = plugin;
 		player = p;
-		inv = Bukkit.createInventory(null, 9*guirows, guiname);
+		inv = Bukkit.createInventory(this, 9*guirows, guiname);
 	}
 	public PartyGui(KataPartyPlugin plugin, Player p, Inventory inventory)
 	{
 		inst = plugin;
 		player = p;
 		inv = inventory;
+		rename(inv.getTitle());
 	}
 	protected final void rename(String guiname)
 	{
-		Inventory newinv = Bukkit.createInventory(null, inv.getSize(), guiname);
+		Inventory newinv = Bukkit.createInventory(this, inv.getSize(), guiname);
 		newinv.setContents(inv.getContents());
 		inv = newinv;
 	}
 
+	@Override
+	public Inventory getInventory()
+	{
+		return inv;
+	}
+
 	protected abstract void update();
 
+	private final Map<Integer, IGuiButton> buttons = new HashMap<>();
 	protected final void addButton(int slot, String name, Material icon, List<String> info)
 	{
 		ItemStack i = new ItemStack(icon);
@@ -149,7 +161,7 @@ public abstract class PartyGui implements Listener
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void onInvClick(InventoryClickEvent e)
 	{
-		if(e.getWhoClicked() == player)
+		if(e.getWhoClicked().getUniqueId().equals(player.getUniqueId()))
 		{
 			if(e.getRawSlot() < e.getView().getTopInventory().getSize())
 			{
@@ -166,7 +178,7 @@ public abstract class PartyGui implements Listener
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public final void OnInvDrag(InventoryDragEvent e)
 	{
-		if(e.getWhoClicked() == player)
+		if(e.getWhoClicked().getUniqueId().equals(player.getUniqueId()))
 		{
 			for(Integer rawslot : e.getRawSlots())
 			{
@@ -183,7 +195,7 @@ public abstract class PartyGui implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public final void onInvClose(InventoryCloseEvent e)
 	{
-		if(e.getPlayer() == player)
+		if(e.getPlayer().getUniqueId().equals(player.getUniqueId()))
 		{
 			HandlerList.unregisterAll(this);
 			onClose();

@@ -26,6 +26,6 @@ public enum ChatFilterPref
 			case PREFER_PARTY: return PREFER_GLOBAL;
 			case PREFER_GLOBAL: return PREFER_PARTY;
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalStateException();
 	}
 }

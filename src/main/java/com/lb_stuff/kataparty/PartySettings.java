@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class PartySettings implements IPartySettings
+public class PartySettings extends Metadatable implements IPartySettings
 {
 	static
 	{
@@ -20,7 +20,7 @@ public class PartySettings implements IPartySettings
 	@Override
 	public Map<String, Object> serialize()
 	{
-		Map<String, Object> data = new HashMap<>();
+		Map<String, Object> data = super.serialize();
 		data.put("name", getName());
 		data.put("tp", canTp());
 		data.put("pvp", canPvp());
@@ -33,6 +33,7 @@ public class PartySettings implements IPartySettings
 	public static PartySettings deserialize(Map<String, Object> data)
 	{
 		PartySettings s = new PartySettings();
+		s.setAll(Metadatable.deserialize(data));
 		s.name = (String)data.get("name");
 		s.tp = (Boolean)data.get("tp");
 		s.pvp = (Boolean)data.get("pvp");
@@ -153,7 +154,7 @@ public class PartySettings implements IPartySettings
 		sticky = enabled;
 	}
 
-	public static class MemberSettings implements IMemberSettings
+	public static class MemberSettings extends Metadatable implements IMemberSettings
 	{
 		static
 		{
@@ -163,7 +164,7 @@ public class PartySettings implements IPartySettings
 		@Override
 		public Map<String, Object> serialize()
 		{
-			Map<String, Object> data = new HashMap<>();
+			Map<String, Object> data = super.serialize();
 			data.put("uuid", uuid.toString());
 			data.put("tp", tp);
 			data.put("rank", ""+rank);
@@ -172,6 +173,7 @@ public class PartySettings implements IPartySettings
 		public static MemberSettings deserialize(Map<String, Object> data)
 		{
 			MemberSettings s = new MemberSettings(UUID.fromString((String)data.get("uuid")));
+			s.setAll(Metadatable.deserialize(data));
 			s.tp = (Boolean)data.get("tp");
 			s.rank = PartyRank.valueOf((String)data.get("rank"));
 			return s;

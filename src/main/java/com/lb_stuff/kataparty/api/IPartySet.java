@@ -23,8 +23,7 @@ public interface IPartySet extends Iterable<IParty>, ConfigurationSerializable
 	IMessenger getMessenger();
 	/**
 	 * Register an {@link IPartyFactory} for the given type of
-	 * {@link IPartySettings} implementor. Both parameters may
-	 * be <code>null</code> as long as both are.
+	 * {@link IPartySettings} implementor.
 	 * @param clazz The type of {@link IPartySettings} implementor
 	 * for which to register the {@link IPartyFactory}.
 	 * @param factory The {@link IPartyFactory} to be registered.
@@ -42,8 +41,7 @@ public interface IPartySet extends Iterable<IParty>, ConfigurationSerializable
 	IPartyFactory getPartyFactory(Class<? extends IPartySettings> clazz);
 	/**
 	 * Register an {@link IMemberFactory} for the given type of
-	 * {@link IMemberSettings} implementor. Both parameters may
-	 * be <code>null</code> as long as both are.
+	 * {@link IMemberSettings} implementor.
 	 * @param clazz The type of {@link ImemberSettings} implementor
 	 * for which to register the {@link IMemberFactory}.
 	 * @param factory The {@link IMemberFactory} to be registered.

@@ -1,14 +1,12 @@
 package com.lb_stuff.kataparty.api;
 
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-
 import java.util.UUID;
 
 /**
  * Holds settings for an {@link IParty}.
  * This interface may be implemented by plugins other than KataParty.
  */
-public interface IPartySettings extends ConfigurationSerializable
+public interface IPartySettings extends IMetadatable
 {
 	/**
 	 * Apply the settings from another {@link IPartySettings}.
@@ -86,7 +84,11 @@ public interface IPartySettings extends ConfigurationSerializable
 	 */
 	void setSticky(boolean sticky);
 
-	public interface IMemberSettings extends ConfigurationSerializable
+	/**
+	 * Holds settings for an {@link IParty.IMember}.
+	 * This interface may be implemented by plugins other than KataParty.
+	 */
+	public interface IMemberSettings extends IMetadatable
 	{
 		/**
 		 * Apply the settings from another {@link IMemberSettings}.
