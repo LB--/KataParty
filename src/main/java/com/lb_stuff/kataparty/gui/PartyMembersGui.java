@@ -28,10 +28,7 @@ public final class PartyMembersGui extends PartyGui
 			if(inst.getPartySet().contains(party))
 			{
 				setName(party.getName());
-				setLore(new ArrayList<String>(){
-				{
-					add(inst.getMessage("members-return"));
-				}});
+				setLore(inst.getMessage("members-return"));
 				return super.display();
 			}
 			hide();

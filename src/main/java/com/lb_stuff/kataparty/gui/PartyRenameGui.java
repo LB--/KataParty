@@ -9,8 +9,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
 
-import java.util.ArrayList;
-
 public final class PartyRenameGui extends PartyGui
 {
 	private final IParty party;
@@ -31,10 +29,7 @@ public final class PartyRenameGui extends PartyGui
 			return;
 		}
 
-		addButton(0, new GenericGuiButton(party.getName(), Material.NAME_TAG, new ArrayList<String>(){
-		{
-			add(inst.getMessage("rename-name-requirements"));
-		}})
+		addButton(0, new GenericGuiButton(party.getName(), Material.NAME_TAG, inst.getMessage("rename-name-requirements"))
 		{
 			@Override
 			public boolean onClick(ClickType click)
