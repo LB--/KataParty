@@ -60,6 +60,7 @@ public final class Party extends PartySettings implements IParty
 			m.setParty(this);
 			members.add(m);
 		}
+		setAll(Metadatable.deserialize(data));
 	}
 
 	public Party(IPartySet ps, IPartySettings settings)
@@ -535,6 +536,7 @@ public final class Party extends PartySettings implements IParty
 		public Member(Map<String, Object> data)
 		{
 			super(MemberSettings.deserialize(data));
+			setAll(Metadatable.deserialize(data));
 		}
 		@Override @Deprecated
 		public void setParty(IParty party)
@@ -546,6 +548,7 @@ public final class Party extends PartySettings implements IParty
 		{
 			super(settings);
 			p = party;
+			cloneAll(settings);
 		}
 
 		@Override @Deprecated

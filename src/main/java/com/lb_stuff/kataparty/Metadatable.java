@@ -8,19 +8,46 @@ import org.bukkit.configuration.MemoryConfiguration;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Metadatable implements IMetadatable
 {
-	static
+	public static class EntrySerializer implements ConfigurationSerializable
 	{
-		ConfigurationSerialization.registerClass(Metadatable.class);
+		@Override
+		public Map<String, Object> serialize()
+		{
+			Map<String, Object> data = new HashMap<>();
+			data.put("c", c.getName());
+			data.put("m", m);
+			return data;
+		}
+		public EntrySerializer(Map<String, Object> data) throws ClassNotFoundException
+		{
+			c = (Class<? extends ConfigurationSerializable>)Class.forName((String)data.get("c"));
+			m = (ConfigurationSerializable)data.get("m");
+		}
+
+		public final Class<? extends ConfigurationSerializable> c;
+		public final ConfigurationSerializable m;
+		public EntrySerializer(Class<? extends ConfigurationSerializable> clazz, ConfigurationSerializable meta)
+		{
+			c = clazz;
+			m = meta;
+		}
 	}
 
 	@Override
 	public Map<String, Object> serialize()
 	{
 		Map<String, Object> data = new HashMap<>();
-		data.put("meta", meta);
+		List<EntrySerializer> entries = new ArrayList<>();
+		data.put("meta", entries);
+		for(Map.Entry<Class<? extends ConfigurationSerializable>, ConfigurationSerializable> e : meta.entrySet())
+		{
+			entries.add(new EntrySerializer(e.getKey(), e.getValue()));
+		}
 		return data;
 	}
 	public static Metadatable deserialize(Map<String, Object> data)
@@ -29,7 +56,10 @@ public class Metadatable implements IMetadatable
 		Object o = data.get("meta");
 		if(o != null)
 		{
-			m.meta.putAll((Map<Class<? extends ConfigurationSerializable>, ConfigurationSerializable>)o);
+			for(EntrySerializer e : (List<EntrySerializer>)o)
+			{
+				m.meta.put((Class<? extends ConfigurationSerializable>)e.c, e.m);
+			}
 		}
 		return m;
 	}

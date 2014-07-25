@@ -12,11 +12,6 @@ import java.util.UUID;
 
 public class PartySettings extends Metadatable implements IPartySettings
 {
-	static
-	{
-		ConfigurationSerialization.registerClass(PartySettings.class);
-	}
-
 	@Override
 	public Map<String, Object> serialize()
 	{
@@ -180,11 +175,6 @@ public class PartySettings extends Metadatable implements IPartySettings
 
 	public static class MemberSettings extends Metadatable implements IMemberSettings
 	{
-		static
-		{
-			ConfigurationSerialization.registerClass(MemberSettings.class);
-		}
-
 		@Override
 		public Map<String, Object> serialize()
 		{

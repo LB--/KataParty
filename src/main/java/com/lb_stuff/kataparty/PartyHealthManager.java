@@ -117,11 +117,6 @@ public class PartyHealthManager implements Listener
 
 	public static class HealthMeta implements ConfigurationSerializable
 	{
-		static
-		{
-			ConfigurationSerialization.registerClass(HealthMeta.class);
-		}
-
 		@Override
 		public Map<String, Object> serialize()
 		{

@@ -59,9 +59,14 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		new ChatFilterService(ServicePriority.Normal).start();
 		getServer().getServicesManager().register(KataPartyService.class, service, this, ServicePriority.Highest);
 
+		ConfigurationSerialization.registerClass(Metadatable.class);
+		ConfigurationSerialization.registerClass(Metadatable.EntrySerializer.class);
+		ConfigurationSerialization.registerClass(PartySettings.class);
+		ConfigurationSerialization.registerClass(MemberSettings.class);
 		ConfigurationSerialization.registerClass(Party.class);
 		ConfigurationSerialization.registerClass(Party.Member.class);
 		ConfigurationSerialization.registerClass(PartySet.class);
+		ConfigurationSerialization.registerClass(PartyHealthManager.HealthMeta.class);
 
 		getPartySet().registerPartyFactory(PartySettings.class, pfact);
 		getPartySet().registerMemberFactory(MemberSettings.class, mfact);
@@ -115,64 +120,60 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 
 		if(partiesFile.exists())
 		{
-			final YamlConfiguration conf = YamlConfiguration.loadConfiguration(partiesFile);
-			if(conf.contains("party-set"))
+			Bukkit.getScheduler().runTask(this, new Runnable(){@Override public void run()
 			{
-				Bukkit.getScheduler().runTask(this, new Runnable(){@Override public void run()
+				getLogger().info("Loading parties...");
+				final YamlConfiguration conf = YamlConfiguration.loadConfiguration(partiesFile);
+				if(!conf.contains("party-set")) //compatibiity with pre-v1.2.3
 				{
-					getLogger().info("Loading parties...");
-					conf.get("party-set");
-					getLogger().info("Done loading parties.");
-				}});
-			}
-			else //compatibiity with pre-v1.2.3
-			{
-				getLogger().info("Loading & upgrading parties...");
-				ConfigurationSection cs = conf.getConfigurationSection("parties");
-				for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
-				{
-					ConfigurationSection ps = (ConfigurationSection)e.getValue();
-					PartySettings p = new PartySettings();
-					p.setName(e.getKey());
-					p.setTp(ps.getBoolean("tp"));
-					p.setPvp(ps.getBoolean("pvp"));
-					p.setVisible(ps.getBoolean("visible"));
-					if(ps.contains("invite-only"))
+					getLogger().info("Upgrading parties...");
+					ConfigurationSection cs = conf.getConfigurationSection("parties");
+					for(Map.Entry<String, Object> e : cs.getValues(false).entrySet())
 					{
-						p.setInviteOnly(ps.getBoolean("invite-only"));
-					}
-					else
-					{
-						p.setInviteOnly(false);
-					}
-					if(ps.contains("stickied"))
-					{
-						p.setSticky(ps.getBoolean("stickied"));
-					}
-					else
-					{
-						p.setSticky(false);
-					}
-					IParty party = getPartySet().newParty(null, p);
-					if(!ps.isBoolean("inventory"))
-					{
-						List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
-						party.enableInventory();
-						for(int i = 0; i < items.size() && i < party.getInventory().getSize(); ++i)
+						ConfigurationSection ps = (ConfigurationSection)e.getValue();
+						PartySettings p = new PartySettings();
+						p.setName(e.getKey());
+						p.setTp(ps.getBoolean("tp"));
+						p.setPvp(ps.getBoolean("pvp"));
+						p.setVisible(ps.getBoolean("visible"));
+						if(ps.contains("invite-only"))
 						{
-							party.getInventory().setItem(i, items.get(i));
+							p.setInviteOnly(ps.getBoolean("invite-only"));
+						}
+						else
+						{
+							p.setInviteOnly(false);
+						}
+						if(ps.contains("stickied"))
+						{
+							p.setSticky(ps.getBoolean("stickied"));
+						}
+						else
+						{
+							p.setSticky(false);
+						}
+						IParty party = getPartySet().newParty(null, p);
+						if(!ps.isBoolean("inventory"))
+						{
+							List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
+							party.enableInventory();
+							for(int i = 0; i < items.size() && i < party.getInventory().getSize(); ++i)
+							{
+								party.getInventory().setItem(i, items.get(i));
+							}
+						}
+						for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
+						{
+							ConfigurationSection ms = (ConfigurationSection)me.getValue();
+							IParty.IMember m = party.newMember(new MemberSettings(UUID.fromString(me.getKey())), null);
+							m.setRank(PartyRank.valueOf(ms.getString("rank")));
+							m.setTp(ms.getBoolean("tp"));
 						}
 					}
-					for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
-					{
-						ConfigurationSection ms = (ConfigurationSection)me.getValue();
-						IParty.IMember m = party.newMember(new MemberSettings(UUID.fromString(me.getKey())), null);
-						m.setRank(PartyRank.valueOf(ms.getString("rank")));
-						m.setTp(ms.getBoolean("tp"));
-					}
+					getLogger().info("Done upgrading parties.");
 				}
-				getLogger().info("Done loading & upgrading parties.");
-			}
+				getLogger().info("Done loading parties.");
+			}});
 		}
 
 		parties.keepEmptyParties(!config.getBoolean("remove-empty-parties"));
