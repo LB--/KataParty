@@ -56,13 +56,38 @@ public class PartyHealthManager implements Listener
 			if(hm != null && contribs.contains(m))
 			{
 				p.setMaxHealth(20.0*contribs.size());
-				p.setHealth(p.getMaxHealth()*hm.percent);
+				p.setHealth(p.getMaxHealth()*hm.getPercent());
 			}
 			else
 			{
 				p.resetMaxHealth();
 			}
 		}
+	}
+	private void scheduleUpdate(final IParty p)
+	{
+		Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
+		{
+			update(p);
+		}});
+	}
+	private void scheduleUpdate(final IParty.IMember m, final double oldhealth)
+	{
+		if(!contributors(m.getParty()).contains(m))
+		{
+			return;
+		}
+		Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
+		{
+			Player p = Bukkit.getPlayer(m.getUuid());
+			double change = p.getHealth() - oldhealth;
+			HealthMeta hm = HealthMeta.getFrom(m.getParty());
+			if(hm != null)
+			{
+				hm.setPercent(hm.getPercent() + change/p.getMaxHealth());
+				update(m.getParty());
+			}
+		}});
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -72,7 +97,7 @@ public class PartyHealthManager implements Listener
 		IParty.IMember m = inst.getPartySet().findMember(p.getUniqueId());
 		if(m != null)
 		{
-			update(m.getParty());
+			scheduleUpdate(m.getParty());
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -81,7 +106,7 @@ public class PartyHealthManager implements Listener
 		IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
-			update(m.getParty());
+			scheduleUpdate(m.getParty());
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -92,25 +117,20 @@ public class PartyHealthManager implements Listener
 			IParty.IMember m = inst.getPartySet().findMember(e.getEntity().getUniqueId());
 			if(m != null)
 			{
-				HealthMeta hm = HealthMeta.getFrom(m.getParty());
-				if(hm != null)
-				{
-					Player p = (Player)e.getEntity();
-					hm.percent -= e.getDamage()/p.getMaxHealth();
-				}
-				update(m.getParty());
+				Player p = (Player)e.getEntity();
+				scheduleUpdate(m, p.getHealth());
 			}
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onDamageByEntity(EntityDamageByEntityEvent e)
 	{
-		onDamage(e);
+//		onDamage(e);
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onDamageByBlock(EntityDamageByBlockEvent e)
 	{
-		onDamage(e);
+//		onDamage(e);
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onHeal(EntityRegainHealthEvent e)
@@ -120,13 +140,8 @@ public class PartyHealthManager implements Listener
 			IParty.IMember m = inst.getPartySet().findMember(e.getEntity().getUniqueId());
 			if(m != null)
 			{
-				HealthMeta hm = HealthMeta.getFrom(m.getParty());
-				if(hm != null)
-				{
-					Player p = (Player)e.getEntity();
-					hm.percent += e.getAmount()/p.getMaxHealth();
-				}
-				update(m.getParty());
+				Player p = (Player)e.getEntity();
+				scheduleUpdate(m, p.getHealth());
 			}
 		}
 	}
@@ -148,7 +163,7 @@ public class PartyHealthManager implements Listener
 		IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
-			update(m.getParty());
+			scheduleUpdate(m.getParty());
 		}
 	}
 
@@ -179,7 +194,7 @@ public class PartyHealthManager implements Listener
 		public Map<String, Object> serialize()
 		{
 			Map<String, Object> data = new HashMap<>();
-			data.put("percent", percent);
+			data.put("percent", getPercent());
 			return data;
 		}
 		public HealthMeta(Map<String, Object> data)
@@ -187,7 +202,7 @@ public class PartyHealthManager implements Listener
 			percent = (Double)data.get("percent");
 		}
 
-		public double percent = 1.0;
+		private double percent = 1.0;
 		public HealthMeta()
 		{
 		}
@@ -203,6 +218,24 @@ public class PartyHealthManager implements Listener
 		public static void removeFrom(IMetadatable m)
 		{
 			m.set(HealthMeta.class, null);
+		}
+
+		public double getPercent()
+		{
+			return percent;
+		}
+		public void setPercent(double v)
+		{
+			KataPartyPlugin.getInst().getLogger().info("######## from "+percent+" to "+v);
+			percent = v;
+			if(percent <= 0.0)
+			{
+				percent = 0.0;
+			}
+			else if(percent >= 1.0)
+			{
+				percent = 1.0;
+			}
 		}
 	}
 }
