@@ -103,7 +103,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		PartySettingsChangeEvent psce = new PartySettingsChangeEvent(this, s);
 		Bukkit.getPluginManager().callEvent(psce);
-		return psce.isCancelled();
+		return !psce.isCancelled();
 	}
 
 	@Override

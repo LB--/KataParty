@@ -150,20 +150,32 @@ public class PartyHealthManager implements Listener
 	{
 		if(e.getEntity() instanceof Player)
 		{
-			IParty.IMember m = inst.getPartySet().findMember(e.getEntity().getUniqueId());
+			final IParty.IMember m = inst.getPartySet().findMember(e.getEntity().getUniqueId());
 			if(m != null)
 			{
-				//...
+				final Player p = (Player)e.getEntity();
+				Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
+				{
+					p.resetMaxHealth();
+					for(IParty.IMember mem : contributors(m.getParty()))
+					{
+						HealthMeta.getFrom(m.getParty()).setPercent(1.0);
+					}
+				}});
+				scheduleUpdate(m.getParty());
 			}
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onRespawn(PlayerRespawnEvent e)
 	{
-		IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
+		final IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
-			scheduleUpdate(m.getParty());
+			Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
+			{
+				scheduleUpdate(m, 0.0);
+			}});
 		}
 	}
 
@@ -181,6 +193,7 @@ public class PartyHealthManager implements Listener
 		if(!e.getParty().isHealthShared() && e.getChanges().isHealthShared())
 		{
 			HealthMeta.addTo(e.getParty());
+			scheduleUpdate(e.getParty());
 		}
 		if(e.getParty().isHealthShared() && !e.getChanges().isHealthShared())
 		{
@@ -226,7 +239,6 @@ public class PartyHealthManager implements Listener
 		}
 		public void setPercent(double v)
 		{
-			KataPartyPlugin.getInst().getLogger().info("######## from "+percent+" to "+v);
 			percent = v;
 			if(percent <= 0.0)
 			{
