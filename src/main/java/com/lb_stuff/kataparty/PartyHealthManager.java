@@ -89,6 +89,18 @@ public class PartyHealthManager implements Listener
 			}
 		}});
 	}
+	private void scheduleUpdate(final IParty p, final double change)
+	{
+		Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
+		{
+			HealthMeta hm = HealthMeta.getFrom(p);
+			if(hm != null)
+			{
+				hm.setPercent(hm.getPercent() + change);
+				update(p);
+			}
+		}});
+	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(PlayerJoinEvent e)
@@ -97,7 +109,7 @@ public class PartyHealthManager implements Listener
 		IParty.IMember m = inst.getPartySet().findMember(p.getUniqueId());
 		if(m != null)
 		{
-			scheduleUpdate(m.getParty());
+			scheduleUpdate(m, 0.0);
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -106,7 +118,10 @@ public class PartyHealthManager implements Listener
 		IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
 		if(m != null)
 		{
-			scheduleUpdate(m.getParty());
+			Player p = e.getPlayer();
+			p.resetMaxHealth();
+			p.setHealth(p.getMaxHealth()*HealthMeta.getFrom(m.getParty()).getPercent());
+			scheduleUpdate(m.getParty(), -1.0/contributors(m.getParty()).size());
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
