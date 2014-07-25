@@ -2,7 +2,6 @@ package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IMetadatable;
 
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.MemoryConfiguration;
 
