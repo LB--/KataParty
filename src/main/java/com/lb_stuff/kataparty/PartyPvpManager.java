@@ -8,14 +8,15 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Wolf;
 
-public class PartyPvpListener implements Listener
+public class PartyPvpManager implements Listener
 {
 	private final KataPartyPlugin inst;
-	public PartyPvpListener(KataPartyPlugin plugin)
+	public PartyPvpManager(KataPartyPlugin plugin)
 	{
 		inst = plugin;
 	}
@@ -24,7 +25,7 @@ public class PartyPvpListener implements Listener
 	public void onDamageBy(EntityDamageByEntityEvent e)
 	{
 		Entity damager = e.getDamager();
-		if(damager instanceof Projectile)
+		if(damager instanceof Projectile && !(damager instanceof ThrownPotion))
 		{
 			Projectile proj = (Projectile)damager;
 			ProjectileSource source = proj.getShooter();

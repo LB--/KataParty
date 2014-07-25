@@ -29,7 +29,6 @@ public final class Party extends PartySettings implements IParty
 	private final Set<IMember> members = new HashSet<>();
 	private Inventory inv = null;
 	private Double health = null;
-	private boolean potions = false;
 
 	@Override
 	public Map<String, Object> serialize()
@@ -440,53 +439,31 @@ public final class Party extends PartySettings implements IParty
 		super.setInviteOnly(only);
 	}
 
+	@Override
+	public void setHealthShared(boolean enabled)
+	{
+		if(enabled)
+		{
+			//...
+			informMembersMessage("party-shared-health-enable-inform");
+		}
+		else
+		{
+			//...
+			informMembersMessage("party-shared-health-disable-inform");
+		}
+		super.setHealthShared(enabled);
+	}
+	@Override
 	public Double getHealth()
 	{
 		return health;
 	}
-	public void enableHealth()
-	{
-		Set<IMember> mems = getMembersAlive();
-		health = 1.0*mems.size();
-		for(IMember m : mems)
-		{
-			Bukkit.getPlayer(m.getUuid()).setMaxHealth(20.0*mems.size());
-		}
-		informMembersMessage("party-shared-health-xp-enable-inform");
-	}
-	public void disableHealth()
-	{
-		health = null;
-		for(IMember m : getMembersOnline())
-		{
-			Bukkit.getPlayer(m.getUuid()).resetMaxHealth();
-		}
-		informMembersMessage("party-shared-health-xp-disable-inform");
-	}
+	@Override
 	public void setHealth(double v)
 	{
-		if(health == null)
-		{
-			enableHealth();
-		}
+		setHealthShared(true);
 		health = v;
-	}
-
-	public boolean arePotionsSmart()
-	{
-		return potions;
-	}
-	public void setPotionsSmart(boolean v)
-	{
-		potions = v;
-		if(v)
-		{
-			informMembersMessage("party-smart-potions-enable-inform");
-		}
-		else
-		{
-			informMembersMessage("party-smart-potions-disable-inform");
-		}
 	}
 
 	@Override

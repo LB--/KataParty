@@ -83,6 +83,16 @@ public interface IPartySettings extends IMetadatable
 	 * @param sticky Whether the party should be exempt from automatic closure.
 	 */
 	void setSticky(boolean sticky);
+	/**
+	 * Returns whether health is shared by all party members.
+	 * @return Whether health is shared by all party members.
+	 */
+	boolean isHealthShared();
+	/**
+	 * Changes whether health is shared by all party members.
+	 * @param shared Whether health is shared by all party members.
+	 */
+	void setHealthShared(boolean shared);
 
 	/**
 	 * Holds settings for an {@link IParty.IMember}.

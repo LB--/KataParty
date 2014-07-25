@@ -9,9 +9,14 @@ party-defaults:
   inventory: false
   visible: true
   invite-only: false
+  shared-health: false
   self-teleports: true
 
 remove-empty-parties: true
+
+share-xp-gain: true
+
+smart-splash-potions: true
 
 chat-filtering:
     prefix-when-party-preferred: "&l{%1$s}&r "
@@ -125,10 +130,8 @@ messages:
   party-inventory-disable-inform: "Shared Inventory has been &cdisabled&r for your KataParty"
   party-invite-only-inform: "Your KataParty has been made &binvite only"
   party-public-inform: "Your KataParty has been made &bopen for anyone to join"
-  party-shared-health-xp-enable-inform: "Shared Health + XP Gain has been &aenabled&r for your KataParty"
-  party-shared-health-xp-disable-inform: "Shared Health + XP Gain has been &cdisabled&r for your KataParty"
-  party-smart-potions-enable-inform: "Smart Potions has been &aenabled&r for your KataParty"
-  party-smart-potions-disable-inform: "Smart Potions has been &cdisabled&r for your KataParty"
+  party-shared-health-enable-inform: "Shared Health has been &aenabled&r for your KataParty"
+  party-shared-health-disable-inform: "Shared Health has been &cdisabled&r for your KataParty"
   party-rank-inform: "Your &brank&r has been set to &b%1$s&r"
   party-rank-admin: "Admin"
   party-rank-moderator: "Moderator"

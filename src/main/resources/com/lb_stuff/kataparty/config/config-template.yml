@@ -22,12 +22,20 @@ party-defaults:
   visible: [%party-defaults.visible%]
   # Whether party requires an invitation ticket to join
   invite-only: [%party-defaults.invite-only%]
+  # Whether party members share the same health bar
+  shared-health: [%party-defaults.shared-health%]
   # Teleportation setting for individual party members
   self-teleports: [%party-defaults.self-teleports%]
 
 # Set to true to have empty parties automatically be disbanded. If
 # you want to instead keep empty parties, set to false instead.
 remove-empty-parties: [%remove-empty-parties%]
+
+# Distributes experience gain among party members
+share-xp-gain: [%share-xp-gain%]
+
+# Makes potions smart when PvP is disabled within a party
+smart-splash-potions: [%smart-splash-potions%]
 
 # Here you can configure the formatting used for chat filtering
 chat-filtering:
@@ -153,10 +161,8 @@ messages:
   party-inventory-disable-inform: "[%messages.party-inventory-disable-inform%]"
   party-invite-only-inform: "[%messages.party-invite-only-inform%]"
   party-public-inform: "[%messages.party-public-inform%]"
-  party-shared-health-xp-enable-inform: "[%messages.party-shared-health-xp-enable-inform%]"
-  party-shared-health-xp-disable-inform: "[%messages.party-shared-health-xp-disable-inform%]"
-  party-smart-potions-enable-inform: "[%messages.party-smart-potions-enable-inform%]"
-  party-smart-potions-disable-inform: "[%messages.party-smart-potions-disable-inform%]"
+  party-shared-health-enable-inform: "[%messages.party-shared-health-enable-inform%]"
+  party-shared-health-disable-inform: "[%messages.party-shared-health-disable-inform%]"
   party-rank-inform: "[%messages.party-rank-inform%]"
   party-rank-admin: "[%messages.party-rank-admin%]"
   party-rank-moderator: "[%messages.party-rank-moderator%]"

@@ -146,6 +146,19 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	 */
 	@Override @Deprecated
 	void setInventory(boolean enabled);
+	/**
+	 * Returns the shared health for this party, or <code>null</code> if
+	 * {@link #isHealthShared()} returns <code>false</code>.
+	 * @return The shared health for this party, or <code>null</code> if
+	 * {@link #isHealthShared()} returns <code>false</code>.
+	 */
+	Double getHealth();
+	/**
+	 * Calls {@link #setHealthShared(boolean)} with <code>true</code> and
+	 * assigns the given health value to the party.
+	 * @param v The health value this party should have.
+	 */
+	void setHealth(double v);
 
 	/**
 	 * Retrieves the user-defined name of the given {@link PartyRank} from the config file via

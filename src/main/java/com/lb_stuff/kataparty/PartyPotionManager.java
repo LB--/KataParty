@@ -7,12 +7,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.projectiles.ProjectileSource;
 
-public class PartyPotionListener implements Listener
+public class PartyPotionManager implements Listener
 {
 	private final KataPartyPlugin inst;
-	public PartyPotionListener(KataPartyPlugin plugin)
+	public PartyPotionManager(KataPartyPlugin plugin)
 	{
 		inst = plugin;
 	}

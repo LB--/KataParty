@@ -108,6 +108,9 @@ permissions:
       KataParty.teleport.*: true
       KataParty.inventory.*: true
       KataParty.invite.*: true
+      KataParty.shared-health.*: true
+      KataParty.shared-xp.*: true
+      KataParty.smart-splash-potions.*: true
     default: op
   KataParty.teleport.*:
     description: "Gives access to all teleportation features"
@@ -126,6 +129,21 @@ permissions:
       KataParty.invite.enforce: true
       KataParty.invite.create: true
       KataParty.invite.accept: true
+  KataParty.shared-health.*:
+    description: "Gives access to all shared health permissions"
+    children:
+      KataParty.shared-health.toggle: true
+      KataParty.shared-health.contribute: true
+  KataParty.shared-xp.*:
+    description: "Gives access to all shared xp permissions"
+    children:
+      KataParty.shared-xp.contribute: true
+      KataParty.shared-xp.benefit: true
+  KataParty.smart-splash-potions.*:
+    description: "Gives access to all smart splash potions permissions"
+    children:
+      KataParty.smart-splash-potions.contribute: true
+      KataParty.smart-splash-potions.benefit: true
   KataParty.info:
     description: "See version/author infrmation about KataParty"
     default: true
@@ -189,3 +207,21 @@ permissions:
   KataParty.update-notify:
     description: "Players with this permission are notified of updates to KataParty"
     default: op
+  KataParty.shared-health.toggle:
+    description: "Allows toggling shared health for a party"
+    default: true
+  KataParty.shared-health.contribute:
+    description: "Allows a player to contribute to the party's overall hared health (or be excluded)"
+    default: true
+  KataParty.shared-xp.contribute:
+    description: "Allows contributing shared xp to the rest of the party"
+    default: true
+  KataParty.shared-xp.benefit:
+    description: "Allows benefitting from shared xp from other party members"
+    default: true
+  KataParty.smart-splash-potions.contribute:
+    description: "Allows throwing potions that know what they're doing with their life"
+    default: true
+  KataParty.smart-splash-potions.benefit:
+    description: "Allows players to benefit from potions that know what they're doing with their life"
+    default: true

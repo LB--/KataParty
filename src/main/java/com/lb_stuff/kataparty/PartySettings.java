@@ -28,6 +28,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		data.put("inv", hasInventory());
 		data.put("invite", isInviteOnly());
 		data.put("sticky", isSticky());
+		data.put("health", isHealthShared());
 		return data;
 	}
 	public static PartySettings deserialize(Map<String, Object> data)
@@ -41,6 +42,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		s.inv = (Boolean)data.get("inv");
 		s.invite = (Boolean)data.get("invite");
 		s.sticky = (Boolean)data.get("sticky");
+		s.health = (Boolean)data.get("health");
 		return s;
 	}
 
@@ -60,6 +62,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		inv = other.hasInventory();
 		invite = other.isInviteOnly();
 		sticky = other.isSticky();
+		health = other.isHealthShared();
 	}
 
 	@Override
@@ -161,6 +164,18 @@ public class PartySettings extends Metadatable implements IPartySettings
 	public void setSticky(boolean enabled)
 	{
 		sticky = enabled;
+	}
+
+	private boolean health = getDefault("shared-health");
+	@Override
+	public boolean isHealthShared()
+	{
+		return health;
+	}
+	@Override
+	public void setHealthShared(boolean enabled)
+	{
+		health = enabled;
 	}
 
 	public static class MemberSettings extends Metadatable implements IMemberSettings

@@ -48,9 +48,9 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	private final File partiesFile = new File(getDataFolder(), "parties.yml");
 	private final PartyFactory pfact = new PartyFactory();
 	private final PartyFactory.MemberFactory mfact = pfact.new MemberFactory();
-	private final PartyPvpListener pvp = new PartyPvpListener(this);
-	private final PartyPotionListener potions = new PartyPotionListener(this);
-	private final PartyHealthListener shxp = new PartyHealthListener(this);
+	private final PartyPvpManager pvp = new PartyPvpManager(this);
+	private final PartyPotionManager potions = new PartyPotionManager(this);
+	private final PartyHealthManager shxp = new PartyHealthManager(this);
 	private MainConfig config;
 	private Updater updater = null;
 	@Override

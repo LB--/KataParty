@@ -13,10 +13,10 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-public class PartyHealthListener implements Listener
+public class PartyHealthManager implements Listener
 {
 	private final KataPartyPlugin inst;
-	public PartyHealthListener(KataPartyPlugin plugin)
+	public PartyHealthManager(KataPartyPlugin plugin)
 	{
 		inst = plugin;
 	}

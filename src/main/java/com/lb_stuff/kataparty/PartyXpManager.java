@@ -8,10 +8,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 
-public class PartyXpDistributor implements Listener
+public class PartyXpManager implements Listener
 {
 	private final KataPartyPlugin inst;
-	public PartyXpDistributor(KataPartyPlugin plugin)
+	public PartyXpManager(KataPartyPlugin plugin)
 	{
 		inst = plugin;
 	}
