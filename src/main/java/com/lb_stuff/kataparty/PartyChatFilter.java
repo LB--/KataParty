@@ -102,7 +102,11 @@ public class PartyChatFilter implements Listener
 			Set<IParty.IMember> online = p.getMembersOnline();
 			for(IParty.IMember m : p)
 			{
-				getSettings(m.getUuid()).setAlone(online.size() == 1);
+				AsyncMemberSettings ms = getSettings(m.getUuid());
+				if(ms != null)
+				{
+					ms.setAlone(online.size() == 1);
+				}
 			}
 		}});
 	}
