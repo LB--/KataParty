@@ -1,6 +1,9 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.IPartySettings;
+import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
+import com.lb_stuff.kataparty.api.event.PartySettingsChangeEvent;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -12,6 +15,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+
+import java.util.Map;
+import java.util.HashMap;
 
 public class PartyHealthManager implements Listener
 {
@@ -83,6 +91,66 @@ public class PartyHealthManager implements Listener
 //		if(m != null && m.getParty().getHealth() != null)
 		{
 			//TODO: shared health stuff
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPartyCreate(PartyCreateEvent e)
+	{
+		if(e.getSettings().isHealthShared())
+		{
+			HealthMeta.addTo(e.getSettings());
+		}
+	}
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onSettingsChange(PartySettingsChangeEvent e)
+	{
+		if(!e.getParty().isHealthShared() && e.getChanges().isHealthShared())
+		{
+			HealthMeta.addTo(e.getParty());
+		}
+		if(e.getParty().isHealthShared() && !e.getChanges().isHealthShared())
+		{
+			HealthMeta.removeFrom(e.getParty());
+		}
+	}
+
+	public static class HealthMeta implements ConfigurationSerializable
+	{
+		static
+		{
+			ConfigurationSerialization.registerClass(HealthMeta.class);
+		}
+
+		@Override
+		public Map<String, Object> serialize()
+		{
+			Map<String, Object> data = new HashMap<>();
+			data.put("percent", percent);
+			return data;
+		}
+		public HealthMeta(Map<String, Object> data)
+		{
+			percent = (Double)data.get("percent");
+		}
+
+		private double percent = 1.0;
+		public HealthMeta()
+		{
+		}
+
+		public static void addTo(IPartySettings p)
+		{
+			p.set(HealthMeta.class, new HealthMeta());
+		}
+		public static void removeFrom(IPartySettings p)
+		{
+			p.set(HealthMeta.class, null);
+		}
+
+		public double getPercentScale()
+		{
+			return percent;
 		}
 	}
 }

@@ -11,6 +11,7 @@ import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
+import com.lb_stuff.kataparty.api.event.PartySettingsChangeEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -28,7 +29,6 @@ public final class Party extends PartySettings implements IParty
 	private final IMessenger messenger;
 	private final Set<IMember> members = new HashSet<>();
 	private Inventory inv = null;
-	private Double health = null;
 
 	@Override
 	public Map<String, Object> serialize()
@@ -67,6 +67,7 @@ public final class Party extends PartySettings implements IParty
 		super(settings);
 		parties = ps;
 		messenger = ps.getMessenger();
+		cloneAll(settings);
 
 		if(super.hasInventory())
 		{
@@ -97,9 +98,22 @@ public final class Party extends PartySettings implements IParty
 		return parties;
 	}
 
+	private boolean changeSettings(IPartySettings s)
+	{
+		PartySettingsChangeEvent psce = new PartySettingsChangeEvent(this, s);
+		Bukkit.getPluginManager().callEvent(psce);
+		return psce.isCancelled();
+	}
+
 	@Override
 	public void setName(String n)
 	{
+		PartySettings changes = new PartySettings(this);
+		changes.setName(n);
+		if(!changeSettings(changes))
+		{
+			return;
+		}
 		for(Map.Entry<UUID, PartySet.IAsyncMemberSettings> e : parties.getPartyMembers())
 		{
 			if(e.getValue().getPartyName().equals(getName()))
@@ -328,6 +342,12 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public void setTp(boolean enabled)
 	{
+		PartySettings changes = new PartySettings(this);
+		changes.setTp(enabled);
+		if(!changeSettings(changes))
+		{
+			return;
+		}
 		if(enabled)
 		{
 			informMembersMessage("party-teleports-enabled-inform");
@@ -342,6 +362,12 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public void setPvp(boolean enabled)
 	{
+		PartySettings changes = new PartySettings(this);
+		changes.setPvp(enabled);
+		if(!changeSettings(changes))
+		{
+			return;
+		}
 		if(enabled)
 		{
 			informMembersMessage("party-pvp-enabled-inform");
@@ -356,6 +382,12 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public void setVisible(boolean enabled)
 	{
+		PartySettings changes = new PartySettings(this);
+		changes.setVisible(enabled);
+		if(!changeSettings(changes))
+		{
+			return;
+		}
 		if(enabled)
 		{
 			informMembersMessage("party-visibility-enabled-inform");
@@ -375,6 +407,12 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public void enableInventory()
 	{
+		PartySettings changes = new PartySettings(this);
+		changes.setInventory(true);
+		if(!changeSettings(changes))
+		{
+			return;
+		}
 		if(inv == null)
 		{
 			inv = Bukkit.createInventory(null, 4 * 9, messenger.getMessage("party-inventory-gui-title", getName()));
@@ -390,6 +428,12 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public void disableInventory(Location droploc)
 	{
+		PartySettings changes = new PartySettings(this);
+		changes.setInventory(false);
+		if(!changeSettings(changes))
+		{
+			return;
+		}
 		if(inv != null)
 		{
 			for(ItemStack i : inv.getContents())
@@ -426,9 +470,15 @@ public final class Party extends PartySettings implements IParty
 	}
 
 	@Override
-	public void setInviteOnly(boolean only)
+	public void setInviteOnly(boolean enabled)
 	{
-		if(only)
+		PartySettings changes = new PartySettings(this);
+		changes.setInviteOnly(enabled);
+		if(!changeSettings(changes))
+		{
+			return;
+		}
+		if(enabled)
 		{
 			informMembersMessage("party-invite-only-inform");
 		}
@@ -436,12 +486,18 @@ public final class Party extends PartySettings implements IParty
 		{
 			informMembersMessage("party-public-inform");
 		}
-		super.setInviteOnly(only);
+		super.setInviteOnly(enabled);
 	}
 
 	@Override
 	public void setHealthShared(boolean enabled)
 	{
+		PartySettings changes = new PartySettings(this);
+		changes.setHealthShared(enabled);
+		if(!changeSettings(changes))
+		{
+			return;
+		}
 		if(enabled)
 		{
 			//...
@@ -453,17 +509,6 @@ public final class Party extends PartySettings implements IParty
 			informMembersMessage("party-shared-health-disable-inform");
 		}
 		super.setHealthShared(enabled);
-	}
-	@Override
-	public Double getHealth()
-	{
-		return health;
-	}
-	@Override
-	public void setHealth(double v)
-	{
-		setHealthShared(true);
-		health = v;
 	}
 
 	@Override

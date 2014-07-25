@@ -64,4 +64,8 @@ public class EventDebugLogger implements Listener, IDebugLogger
 	@EventHandler(priority = EventPriority.LOWEST , ignoreCancelled = false) public void onStart(TicketInventoryEvent e){ onEventStart      (e); }
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false) public void onEnd  (TicketInventoryEvent e){ onEventEnd        (e); }
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false) public void on     (TicketInventoryEvent e){ onCancellableEvent(e); }
+
+	@EventHandler(priority = EventPriority.LOWEST , ignoreCancelled = false) public void onStart(PartySettingsChangeEvent e){ onEventStart      (e); }
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false) public void onEnd  (PartySettingsChangeEvent e){ onEventEnd        (e); }
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false) public void on     (PartySettingsChangeEvent e){ onCancellableEvent(e); }
 }

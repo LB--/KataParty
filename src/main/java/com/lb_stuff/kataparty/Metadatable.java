@@ -4,6 +4,7 @@ import com.lb_stuff.kataparty.api.IMetadatable;
 
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.MemoryConfiguration;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -69,6 +70,17 @@ public class Metadatable implements IMetadatable
 		for(Map.Entry<Class<? extends ConfigurationSerializable>, ConfigurationSerializable> e : m.getAll().entrySet())
 		{
 			set(e.getKey(), e.getValue());
+		}
+	}
+	private static final MemoryConfiguration mc = new MemoryConfiguration();
+	@Override
+	public void cloneAll(IMetadatable m)
+	{
+		for(Map.Entry<Class<? extends ConfigurationSerializable>, ConfigurationSerializable> e : m.getAll().entrySet())
+		{
+			mc.set("v", e.getValue());
+			set(e.getKey(), (ConfigurationSerializable)mc.get("v"));
+			mc.set("v", null);
 		}
 	}
 }

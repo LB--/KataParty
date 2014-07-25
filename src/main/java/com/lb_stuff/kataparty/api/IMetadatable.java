@@ -32,4 +32,9 @@ public interface IMetadatable extends ConfigurationSerializable
 	 * @param m The other {@link IMedatable} instance.
 	 */
 	void setAll(IMetadatable m);
+	/**
+	 * Clones all metadata from another {@link IMetadatable} instance.
+	 * @param m The other {@link IMedatable} instance.
+	 */
+	void cloneAll(IMetadatable m);
 }
