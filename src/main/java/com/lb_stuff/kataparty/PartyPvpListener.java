@@ -6,6 +6,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Projectile;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Wolf;
 
@@ -20,7 +23,17 @@ public class PartyPvpListener implements Listener
 	@EventHandler(ignoreCancelled = true)
 	public void onDamageBy(EntityDamageByEntityEvent e)
 	{
-		IParty.IMember a = inst.getPartySet().findMember(e.getDamager().getUniqueId());
+		Entity damager = e.getDamager();
+		if(damager instanceof Projectile)
+		{
+			Projectile proj = (Projectile)damager;
+			ProjectileSource source = proj.getShooter();
+			if(source instanceof Entity)
+			{
+				damager = (Entity)source;
+			}
+		}
+		IParty.IMember a = inst.getPartySet().findMember(damager.getUniqueId());
 		IParty.IMember b = inst.getPartySet().findMember(e.getEntity().getUniqueId());
 		if(a != null && !a.getParty().canPvp())
 		{
