@@ -147,6 +147,7 @@ public class PartyHealthManager implements Listener
 					p.setHealth(p.getMaxHealth()*(hm.getPercent()/contribs.size()));
 				}
 			}
+			scheduleUpdate(m.getParty());
 		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -191,7 +192,7 @@ public class PartyHealthManager implements Listener
 		if(e.getEntity() instanceof Player)
 		{
 			final IParty.IMember m = inst.getPartySet().findMember(e.getEntity().getUniqueId());
-			if(m != null && contributors(m.getParty()).contains(m))
+			if(m != null && canContribute(m))
 			{
 				final Player p = (Player)e.getEntity();
 				Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
