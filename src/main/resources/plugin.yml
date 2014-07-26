@@ -1,11 +1,17 @@
 
 name: "KataParty"
-main: com.lb_stuff.kataparty.KataPartyPlugin
 version: ${project.version}
+description: "A party chat plugin made for Katatunka"
+#load: POSTWORLD
+main: com.lb_stuff.kataparty.KataPartyPlugin
 authors:
   - "Nicholas \"LB\" Braden"
-description: "A party chat plugin made for Katatunka"
 website: http://dev.bukkit.org/bukkit-plugins/kataparty/
+database: false
+depend: []
+#prefix: "\xa7bKataParty\xa7r"
+softdepend: []
+loadbefore: []
 
 commands:
   KataParty:
