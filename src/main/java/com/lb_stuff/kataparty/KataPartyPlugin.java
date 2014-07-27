@@ -12,6 +12,7 @@ import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.PartyRank;
 import com.lb_stuff.kataparty.api.ChatFilterPref;
 import com.lb_stuff.service.ChatFilterService;
+import com.lb_stuff.service.PotionFilterService;
 
 import net.gravitydevelopment.updater.Updater;
 
@@ -49,7 +50,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	private final PartyFactory pfact = new PartyFactory();
 	private final PartyFactory.MemberFactory mfact = pfact.new MemberFactory();
 	private final PartyPvpManager pvp = new PartyPvpManager(this);
-	private final PartyPotionManager potions = new PartyPotionManager(this);
+	private final PartyPotionFilter potions = new PartyPotionFilter(this);
 	private final PartyHealthManager shxp = new PartyHealthManager(this);
 	private MainConfig config;
 	private Updater updater = null;
@@ -57,6 +58,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	public void onEnable()
 	{
 		new ChatFilterService(ServicePriority.Normal).start();
+		new PotionFilterService(ServicePriority.Normal).start();
 		getServer().getServicesManager().register(KataPartyService.class, service, this, ServicePriority.Highest);
 
 		ConfigurationSerialization.registerClass(Metadatable.class);

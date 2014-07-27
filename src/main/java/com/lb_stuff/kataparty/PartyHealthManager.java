@@ -43,7 +43,7 @@ public class PartyHealthManager implements Listener
 		if(offp.isOnline())
 		{
 			Player onp = offp.getPlayer();
-			if(onp.hasPermission("KataParty.shared-health.contribute") && !onp.isDead())
+			if(onp.hasPermission("KataParty.shared-health.contribute"))
 			{
 				return true;
 			}
@@ -203,8 +203,8 @@ public class PartyHealthManager implements Listener
 						Bukkit.getPlayer(mem.getUuid()).setHealth(0.0);
 					}
 					HealthMeta.getFrom(m.getParty()).setPercent(1.0);
+					update(m.getParty());
 				}});
-				scheduleUpdate(m.getParty());
 			}
 		}
 	}
