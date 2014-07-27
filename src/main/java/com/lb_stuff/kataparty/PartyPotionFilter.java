@@ -100,7 +100,7 @@ public class PartyPotionFilter implements Listener
 					}
 					if(source.getParty() == target.getParty())
 					{
-						if(!pd.isBeneficial())
+						if(!source.getParty().canPvp() && !pd.isBeneficial())
 						{
 							s.setIntensity(pe, 0.0);
 						}
