@@ -99,7 +99,7 @@ public final class Party extends PartySettings implements IParty
 		return parties;
 	}
 
-	private boolean changeSettings(IPartySettings s)
+	private boolean canChangeSettings(IPartySettings s)
 	{
 		PartySettingsChangeEvent psce = new PartySettingsChangeEvent(this, s);
 		Bukkit.getPluginManager().callEvent(psce);
@@ -111,7 +111,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		PartySettings changes = new PartySettings(this);
 		changes.setName(n);
-		if(!changeSettings(changes))
+		if(!canChangeSettings(changes))
 		{
 			return;
 		}
@@ -338,7 +338,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		PartySettings changes = new PartySettings(this);
 		changes.setTp(enabled);
-		if(!changeSettings(changes))
+		if(!canChangeSettings(changes))
 		{
 			return;
 		}
@@ -358,7 +358,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		PartySettings changes = new PartySettings(this);
 		changes.setPvp(enabled);
-		if(!changeSettings(changes))
+		if(!canChangeSettings(changes))
 		{
 			return;
 		}
@@ -378,7 +378,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		PartySettings changes = new PartySettings(this);
 		changes.setVisible(enabled);
-		if(!changeSettings(changes))
+		if(!canChangeSettings(changes))
 		{
 			return;
 		}
@@ -403,7 +403,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		PartySettings changes = new PartySettings(this);
 		changes.setInventory(true);
-		if(!changeSettings(changes))
+		if(!canChangeSettings(changes))
 		{
 			return;
 		}
@@ -424,7 +424,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		PartySettings changes = new PartySettings(this);
 		changes.setInventory(false);
-		if(!changeSettings(changes))
+		if(!canChangeSettings(changes))
 		{
 			return;
 		}
@@ -468,7 +468,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		PartySettings changes = new PartySettings(this);
 		changes.setInviteOnly(enabled);
-		if(!changeSettings(changes))
+		if(!canChangeSettings(changes))
 		{
 			return;
 		}
@@ -488,7 +488,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		PartySettings changes = new PartySettings(this);
 		changes.setHealthShared(enabled);
-		if(!changeSettings(changes))
+		if(!canChangeSettings(changes))
 		{
 			return;
 		}
