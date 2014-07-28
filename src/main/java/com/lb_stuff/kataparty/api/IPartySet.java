@@ -1,14 +1,13 @@
 package com.lb_stuff.kataparty.api;
 
-import static com.lb_stuff.kataparty.api.IPartyFactory.IMemberFactory;
-import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
+import com.lb_stuff.kataparty.api.IPartyFactory.IMemberFactory;
+import com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
-import java.util.Map;
 
 /**
  * Holds and manages a {@link java.util.Set} of {@link IParty}s.

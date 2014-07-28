@@ -1,16 +1,16 @@
 package com.lb_stuff.kataparty.api;
 
-import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
+import com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.Location;
 
-import java.util.UUID;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Represents a party.

@@ -2,36 +2,52 @@ package com.lb_stuff.kataparty;
 
 import com.lb_stuff.command.PluginInfoCommand;
 import com.lb_stuff.command.PluginReloadCommand;
-import com.lb_stuff.kataparty.command.*;
-import com.lb_stuff.kataparty.config.MainConfig;
-import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.PartyFactory.MemberFactory;
 import com.lb_stuff.kataparty.api.IMessenger;
-import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.KataPartyService;
 import com.lb_stuff.kataparty.api.PartyRank;
-import com.lb_stuff.kataparty.api.ChatFilterPref;
+import com.lb_stuff.kataparty.command.PartyAdminCommand;
+import com.lb_stuff.kataparty.command.PartyChatToggleCommand;
+import com.lb_stuff.kataparty.command.PartyCloseCommand;
+import com.lb_stuff.kataparty.command.PartyCreateCommand;
+import com.lb_stuff.kataparty.command.PartyDisbandCommand;
+import com.lb_stuff.kataparty.command.PartyInventoryCommand;
+import com.lb_stuff.kataparty.command.PartyJoinCommand;
+import com.lb_stuff.kataparty.command.PartyLeaveCommand;
+import com.lb_stuff.kataparty.command.PartyListCommand;
+import com.lb_stuff.kataparty.command.PartyManageCommand;
+import com.lb_stuff.kataparty.command.PartyTeleportCommand;
+import com.lb_stuff.kataparty.config.MainConfig;
 import com.lb_stuff.service.ChatFilterService;
 import com.lb_stuff.service.PotionFilterService;
 
 import net.gravitydevelopment.updater.Updater;
 
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import static org.bukkit.ChatColor.*;
 import org.bukkit.plugin.ServicePriority;
-import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
-import java.io.*;
+import static org.bukkit.ChatColor.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.IllegalFormatException;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 {
@@ -64,14 +80,14 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		ConfigurationSerialization.registerClass(Metadatable.class);
 		ConfigurationSerialization.registerClass(Metadatable.EntrySerializer.class);
 		ConfigurationSerialization.registerClass(PartySettings.class);
-		ConfigurationSerialization.registerClass(MemberSettings.class);
+		ConfigurationSerialization.registerClass(PartySettings.MemberSettings.class);
 		ConfigurationSerialization.registerClass(Party.class);
 		ConfigurationSerialization.registerClass(Party.Member.class);
 		ConfigurationSerialization.registerClass(PartySet.class);
 		ConfigurationSerialization.registerClass(PartyHealthManager.HealthMeta.class);
 
 		getPartySet().registerPartyFactory(PartySettings.class, pfact);
-		getPartySet().registerMemberFactory(MemberSettings.class, mfact);
+		getPartySet().registerMemberFactory(PartySettings.MemberSettings.class, mfact);
 
 		implementCommand("kataparty", new PluginInfoCommand(this));
 		implementCommand("kpreload", new PluginReloadCommand(this));
@@ -167,7 +183,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 						for(Map.Entry<String, Object> me : ps.getConfigurationSection("members").getValues(false).entrySet())
 						{
 							ConfigurationSection ms = (ConfigurationSection)me.getValue();
-							IParty.IMember m = party.newMember(new MemberSettings(UUID.fromString(me.getKey())), null);
+							IParty.IMember m = party.newMember(new PartySettings.MemberSettings(UUID.fromString(me.getKey())), null);
 							m.setRank(PartyRank.valueOf(ms.getString("rank")));
 							m.setTp(ms.getBoolean("tp"));
 						}

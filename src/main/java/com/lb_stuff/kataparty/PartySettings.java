@@ -1,13 +1,10 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IPartySettings;
-import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
+import com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import com.lb_stuff.kataparty.api.PartyRank;
 
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-
 import java.util.Map;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class PartySettings extends Metadatable implements IPartySettings

@@ -1,12 +1,16 @@
 package com.lb_stuff.kataparty.config;
 
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.*;
-import java.io.*;
+import java.io.CharArrayReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 public final class MainConfig extends YamlConfiguration
 {

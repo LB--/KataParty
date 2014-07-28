@@ -1,13 +1,13 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IParty;
-import static com.lb_stuff.service.PotionFilterService.Splash;
+import com.lb_stuff.service.PotionFilterService.Splash;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;

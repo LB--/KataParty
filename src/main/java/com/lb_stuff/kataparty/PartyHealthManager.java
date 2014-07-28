@@ -1,33 +1,33 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.IHealthMeta;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings;
-import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
-import com.lb_stuff.kataparty.api.IHealthMeta;
+import com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
-import com.lb_stuff.kataparty.api.event.PartySettingsChangeEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
+import com.lb_stuff.kataparty.api.event.PartySettingsChangeEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import java.util.Set;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.Set;
 
 public class PartyHealthManager implements Listener
 {

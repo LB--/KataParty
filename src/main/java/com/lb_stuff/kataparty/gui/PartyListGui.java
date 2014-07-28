@@ -1,15 +1,15 @@
 package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
+import com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 

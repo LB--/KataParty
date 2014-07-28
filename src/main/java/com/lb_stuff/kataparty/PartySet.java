@@ -1,9 +1,15 @@
 package com.lb_stuff.kataparty;
 
-import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
-import com.lb_stuff.kataparty.api.*;
-import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
-import static com.lb_stuff.kataparty.api.IPartyFactory.IMemberFactory;
+import com.lb_stuff.kataparty.PartySettings.MemberSettings;
+import com.lb_stuff.kataparty.api.IMessenger;
+import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.IPartyFactory;
+import com.lb_stuff.kataparty.api.IPartyFactory.IMemberFactory;
+import com.lb_stuff.kataparty.api.IPartySet;
+import com.lb_stuff.kataparty.api.IPartySettings;
+import com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
+import com.lb_stuff.kataparty.api.KataPartyService;
+import com.lb_stuff.kataparty.api.PartyRank;
 import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
@@ -11,12 +17,12 @@ import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class PartySet implements IPartySet

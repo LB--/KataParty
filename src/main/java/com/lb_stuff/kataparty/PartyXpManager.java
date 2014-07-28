@@ -2,10 +2,9 @@ package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IParty;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 
 public class PartyXpManager implements Listener

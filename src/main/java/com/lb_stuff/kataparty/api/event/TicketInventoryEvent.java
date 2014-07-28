@@ -1,9 +1,9 @@
 package com.lb_stuff.kataparty.api.event;
 
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.event.inventory.InventoryAction;
 
 /**
  * Event called when a {@link org.bukkit.entity.Player} tries to place or remove an

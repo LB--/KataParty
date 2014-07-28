@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
+import com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 

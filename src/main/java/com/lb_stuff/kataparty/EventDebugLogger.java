@@ -1,11 +1,20 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IDebugLogger;
-import com.lb_stuff.kataparty.api.event.*;
+import com.lb_stuff.kataparty.api.event.CancellableKataPartyEvent;
+import com.lb_stuff.kataparty.api.event.KataPartyEvent;
+import com.lb_stuff.kataparty.api.event.MetadataAttachEvent;
+import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
+import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
+import com.lb_stuff.kataparty.api.event.PartySettingsChangeEvent;
+import com.lb_stuff.kataparty.api.event.TicketInventoryEvent;
 
-import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+
 import static org.bukkit.ChatColor.*;
 
 public class EventDebugLogger implements Listener, IDebugLogger
@@ -17,6 +26,7 @@ public class EventDebugLogger implements Listener, IDebugLogger
 	}
 
 	private int indent = 0;
+	@Override
 	public void log(String msg)
 	{
 		for(int i = 0; i < indent; ++i)
@@ -68,4 +78,7 @@ public class EventDebugLogger implements Listener, IDebugLogger
 	@EventHandler(priority = EventPriority.LOWEST , ignoreCancelled = false) public void onStart(PartySettingsChangeEvent e){ onEventStart      (e); }
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false) public void onEnd  (PartySettingsChangeEvent e){ onEventEnd        (e); }
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false) public void on     (PartySettingsChangeEvent e){ onCancellableEvent(e); }
+
+	@EventHandler(priority = EventPriority.LOWEST ) public void onStart(MetadataAttachEvent e){ onEventStart(e); }
+	@EventHandler(priority = EventPriority.MONITOR) public void onEnd  (MetadataAttachEvent e){ onEventEnd  (e); }
 }

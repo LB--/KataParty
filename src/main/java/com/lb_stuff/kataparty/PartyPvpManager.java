@@ -2,16 +2,16 @@ package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IParty;
 
-import org.bukkit.event.Listener;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
-import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Wolf;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.projectiles.ProjectileSource;
 
 public class PartyPvpManager implements Listener
 {

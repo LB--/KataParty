@@ -1,35 +1,36 @@
 package com.lb_stuff.kataparty;
 
-import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
-import com.lb_stuff.kataparty.api.IPartyTicketManager;
-import com.lb_stuff.kataparty.api.event.TicketInventoryEvent;
+import com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.IPartyTicketManager;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
+import com.lb_stuff.kataparty.api.event.TicketInventoryEvent;
 
-import org.bukkit.event.Listener;
+import org.bukkit.Material;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Item;
+
 import static org.bukkit.ChatColor.*;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PartyTicketManager implements IPartyTicketManager, Listener
 {

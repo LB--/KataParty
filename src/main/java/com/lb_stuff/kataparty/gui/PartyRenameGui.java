@@ -3,10 +3,10 @@ package com.lb_stuff.kataparty.gui;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryType;
 
 public final class PartyRenameGui extends PartyGui

@@ -2,10 +2,11 @@ package com.lb_stuff.kataparty;
 
 import net.gravitydevelopment.updater.Updater;
 
-import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+
 import static org.bukkit.ChatColor.*;
 
 import java.io.File;

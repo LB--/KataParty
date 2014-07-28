@@ -1,12 +1,12 @@
 package com.lb_stuff.kataparty;
 
-import com.lb_stuff.kataparty.api.IPartyFactory;
+import com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.IPartyFactory;
+import com.lb_stuff.kataparty.api.IPartyFactory.IMemberFactory;
 import com.lb_stuff.kataparty.api.IPartySet;
 import com.lb_stuff.kataparty.api.IPartySettings;
-import static com.lb_stuff.kataparty.api.IPartyFactory.IMemberFactory;
-import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
-import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
+import com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 
 public class PartyFactory implements IPartyFactory
 {

@@ -4,7 +4,6 @@ import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings;
 
 import org.bukkit.event.HandlerList;
-import org.bukkit.entity.Player;
 
 /**
  * Event called when an {@link com.lb_stuff.kataparty.api.IParty}

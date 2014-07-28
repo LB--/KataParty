@@ -3,14 +3,14 @@ package com.lb_stuff.kataparty;
 import com.lb_stuff.kataparty.api.IMetadatable;
 import com.lb_stuff.kataparty.api.event.MetadataAttachEvent;
 
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 
 public class Metadatable implements IMetadatable
 {

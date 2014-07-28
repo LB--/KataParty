@@ -4,10 +4,10 @@ import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.gui.PartyTeleportGui;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
 import java.util.List;

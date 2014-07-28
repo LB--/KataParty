@@ -11,12 +11,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 public class PartyManageGui extends PartyCreateGui
 {

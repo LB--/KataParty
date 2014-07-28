@@ -3,11 +3,11 @@ package com.lb_stuff.kataparty.gui;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
 
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.entity.Player;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 

@@ -2,13 +2,13 @@ package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.api.IGuiButton;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 public class GenericGuiButton implements IGuiButton
 {

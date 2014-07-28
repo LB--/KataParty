@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty.api;
 
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Represents an item in an inventory GUI that can be clicked

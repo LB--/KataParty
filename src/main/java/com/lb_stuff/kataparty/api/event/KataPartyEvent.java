@@ -2,9 +2,9 @@ package com.lb_stuff.kataparty.api.event;
 
 import com.lb_stuff.kataparty.api.KataPartyService;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.Bukkit;
 
 /**
  * An {@link org.bukkit.event.Event} called by KataParty.

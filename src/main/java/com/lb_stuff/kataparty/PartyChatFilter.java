@@ -1,26 +1,27 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.ChatFilterPref;
-import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 import com.lb_stuff.kataparty.api.event.PartySettingsChangeEvent;
-import static com.lb_stuff.service.ChatFilterService.AsyncMessage;
+import com.lb_stuff.service.ChatFilterService.AsyncMessage;
+
+import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class PartyChatFilter implements Listener

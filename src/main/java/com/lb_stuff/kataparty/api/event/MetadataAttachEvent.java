@@ -2,8 +2,8 @@ package com.lb_stuff.kataparty.api.event;
 
 import com.lb_stuff.kataparty.api.IMetadatable;
 
-import org.bukkit.event.HandlerList;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.event.HandlerList;
 
 /**
  * Event called when a {@link ConfigurationSerializable} is attached

@@ -2,8 +2,8 @@ package com.lb_stuff.kataparty.api.event;
 
 import com.lb_stuff.kataparty.api.IParty;
 
-import org.bukkit.event.HandlerList;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 
 /**
  * Event called when an {@link com.lb_stuff.kataparty.api.IParty}

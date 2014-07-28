@@ -1,12 +1,12 @@
 package com.lb_stuff.kataparty.gui;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.Material;
-import org.bukkit.Bukkit;
 
-import java.util.UUID;
 import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
 
 public abstract class SkullGenerator
 {
