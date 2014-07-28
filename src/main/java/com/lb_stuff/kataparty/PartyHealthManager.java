@@ -198,12 +198,20 @@ public class PartyHealthManager implements Listener
 				Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
 				{
 					p.resetMaxHealth();
-					for(IParty.IMember mem : contributors(m.getParty()))
+					for(IParty.IMember mem : m.getParty().getMembersOnline())
 					{
-						Bukkit.getPlayer(mem.getUuid()).setHealth(0.0);
+						if(canContribute(mem))
+						{
+							Player mp = Bukkit.getPlayer(mem.getUuid());
+							mp.resetMaxHealth();
+							if(!mp.isDead())
+							{
+								mp.setHealth(0.0);
+							}
+						}
 					}
 					HealthMeta.getFrom(m.getParty()).setPercent(1.0);
-					update(m.getParty());
+					//update(m.getParty());
 				}});
 			}
 		}
@@ -211,9 +219,11 @@ public class PartyHealthManager implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onRespawn(PlayerRespawnEvent e)
 	{
-		final IParty.IMember m = inst.getPartySet().findMember(e.getPlayer().getUniqueId());
+		final Player p = e.getPlayer();
+		final IParty.IMember m = inst.getPartySet().findMember(p.getUniqueId());
 		if(m != null)
 		{
+			p.resetMaxHealth();
 			Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
 			{
 				scheduleUpdate(m, 0.0);
