@@ -23,7 +23,6 @@ public class PartyCreateGui extends PartyGui
 		public boolean onClick(ClickType click)
 		{
 			inst.getPartySet().newParty(player, s);
-			inst.getFilter().tellFilterPref(player);
 			hide();
 			return true;
 		}

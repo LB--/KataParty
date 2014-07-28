@@ -177,7 +177,6 @@ public class PartyTicketManager implements IPartyTicketManager, Listener
 						if(p.newMember(new MemberSettings(player.getUniqueId()), PartyMemberJoinEvent.Reason.INVITATION) != null)
 						{
 							inst.tellMessage(player, "ticket-accept-inform", p.getName());
-							inst.getFilter().tellFilterPref(player);
 						}
 					}
 				}

@@ -115,13 +115,6 @@ public final class Party extends PartySettings implements IParty
 		{
 			return;
 		}
-		for(Map.Entry<UUID, PartySet.IAsyncMemberSettings> e : parties.getPartyMembers())
-		{
-			if(e.getValue().getPartyName().equals(getName()))
-			{
-				e.getValue().setPartyName(n);
-			}
-		}
 		informMembersMessage("party-rename-inform", getName(), n);
 		super.setName(n);
 	}
@@ -157,6 +150,16 @@ public final class Party extends PartySettings implements IParty
 			return null;
 		}
 
+		{
+			IMember m;
+			while((m = getPartySet().findMember(settings.getUuid())) != null)
+			{
+				if(!m.getParty().removeMember(settings.getUuid(), PartyMemberLeaveEvent.Reason.SWITCH_PARTIES))
+				{
+					return null;
+				}
+			}
+		}
 		if(r != null)
 		{
 			PartyMemberJoinEvent pmje = new PartyMemberJoinEvent(this, settings, r);
@@ -166,19 +169,10 @@ public final class Party extends PartySettings implements IParty
 				return null;
 			}
 		}
-
-		{
-			IMember m;
-			while((m = getPartySet().findMember(settings.getUuid())) != null)
-			{
-				m.getParty().removeMember(settings.getUuid(), PartyMemberLeaveEvent.Reason.SWITCH_PARTIES);
-			}
-		}
 		IMember m = getPartySet().getMemberFactory(settings.getClass()).create(this, settings);
 		if(m != null)
 		{
 			members.add(m);
-			parties.addSettings(settings.getUuid(), getName());
 			OfflinePlayer offp = Bukkit.getOfflinePlayer(settings.getUuid());
 			if(offp.isOnline())
 			{
@@ -189,13 +183,12 @@ public final class Party extends PartySettings implements IParty
 			{
 				informMembersMessage("party-join-inform", offp.getName());
 			}
-			getPartySet().getSettings(settings.getUuid()).setPref(KataPartyPlugin.getInst().getJoinFilterPref());
 			m.setTp(m.canTp()); //shows message
 		}
 		return m;
 	}
 	@Override
-	public void removeMember(UUID uuid, PartyMemberLeaveEvent.Reason r)
+	public boolean removeMember(UUID uuid, PartyMemberLeaveEvent.Reason r)
 	{
 		final boolean hadmembers = (numMembers() > 0);
 		IMember m = null;
@@ -208,14 +201,13 @@ public final class Party extends PartySettings implements IParty
 				Bukkit.getServer().getPluginManager().callEvent(pmle);
 				if(pmle.isCancelled())
 				{
-					continue;
+					return false;
 				}
 				if(!disbanded)
 				{
 					m.informMessage("party-left-inform");
 				}
 				it.remove();
-				parties.removeSettings(uuid);
 				break;
 			}
 			m = null;
@@ -236,6 +228,7 @@ public final class Party extends PartySettings implements IParty
 		{
 			m.setParty(null);
 		}
+		return true;
 	}
 	@Override
 	public IMember findMember(UUID uuid)

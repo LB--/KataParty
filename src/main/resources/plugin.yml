@@ -16,7 +16,7 @@ loadbefore: []
 commands:
   KataParty:
     description: "Display \xa7ainfo\xa7r about \xa7bKataParty"
-    usage: "/kataparty"
+    usage: "/<command>"
     permission: KataParty.info
     permission-message: "\xa7cYou do not have permission."
     aliases:
@@ -34,62 +34,62 @@ commands:
       - pc
   kptoggle:
     description: "Toggle \xa7bchat filtering\xa7r between \xa7byour party\xa7r and \xa7bglobal chat"
-    usage: "/kptoggle"
+    usage: "/<command>"
     permission: KataParty.toggle
     permission-message: "\xa7cYou do not have permission."
   kpcreate:
     description: "\xa7aCreate\xa7r a \xa7bKataParty\xa7r via a \xa7bGUI"
-    usage: "/kpcreate <KataParty-name>"
+    usage: "/<command> <KataParty-name>"
     permission: KataParty.create
     permission-message: "\xa7cYou do not have permission to create KataParties."
   kplist:
     description: "Show a \xa7bGUI\xa7r with a \xa7blist\xa7r of available \xa7bKataParties"
-    usage: "/kplist"
+    usage: "/<command>"
     permission: KataParty.list
     permission-message: "\xa7cYou do not have permission to list KataParties."
   kpjoin:
     description: "\xa7aJoin\xa7r a \xa7bKataParty\xa7r by name instead of \xa7bvia /kplist"
-    usage: "/kpjoin <KataParty-name>"
+    usage: "/<command> <KataParty-name>"
     permission: KataParty.join
     permission-message: "\xa7cYou do not have permission to join KataParties."
   kpmanage:
     description: "\xa7aManage\xa7r your \xa7bpersonal settings\xa7r, or the \xa7bparty-wide settings"
-    usage: "/kpmanage"
+    usage: "/<command>"
     permission: KataParty.manage
     permission-message: "\xa7cYou do not have permission to manage your KataParty's settings."
   kptp:
     description: "\xa7aTeleport\xa7r to someone \xa7bvia GUI\xa7r or username"
-    usage: "/kptp [optional-username]"
+    usage: "/<command> [optional-username]"
     permission: KataParty.teleport.do
     permission-message: "\xa7cYou do not have permission to teleport to KataParty members."
   kpshare:
     description: "\xa7aOpen\xa7r the \xa7bshared inventory\xa7r for your \xa7bKataParty\xa7r"
-    usage: "/kpshare"
+    usage: "/<command>"
     permission: KataParty.inventory.use
     permission-message: "\xa7cYou do not have permission to access your KataParty's shared inventory."
   kpleave:
     description: "\xa7cLeave\xa7r the \xa7bKataParty\xa7b you are in instead of \xa7bvia /kpmanage"
-    usage: "/kpleave"
+    usage: "/<command>"
     permission: KataParty.leave
     permission-message: "\xa7cYou do not have permission to leave your KataParty."
   kpdisband:
     description: "\xa7cDisband\xa7r your \xa7bKataParty\xa7r instead of \xa7bvia /kpmanage"
-    usage: "/kpdisband"
+    usage: "/<command>"
     permission: KataParty.disband
     permission-message: "\xa7cYou do not have permission to disband your KataParty."
   kpclose:
     description: "\xa7dForce a\xa7r \xa7bKataParty\xa7r \xa7dto close"
-    usage: "/kpclose <KataParty-name>"
+    usage: "/<command> <KataParty-name>"
     permission: KataParty.close
     permission-message: "\xa7cYou do not have permission to force-close KataParties."
   kpadmin:
     description: "\xa7dManage a specific\xa7r \xa7bKataParty\xa7r\xa7d's settings"
-    usage: "/kpadmin <KataParty-name>"
+    usage: "/<command> <KataParty-name>"
     permission: KataParty.admin
     permission-message: "\xa7cYou do not have permission to edit the settings of other KataParties."
   kpreload:
     description: "\xa7dReload and regenerate the config file"
-    usage: "/kpreload"
+    usage: "/<command>"
     permission: KataParty.reload
     permission-message: "You do not have permission."
 

@@ -4,8 +4,6 @@ import static com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.*;
 import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import static com.lb_stuff.kataparty.api.IPartyFactory.IMemberFactory;
-import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
-import static com.lb_stuff.kataparty.api.IPartySet.IAsyncMemberSettings;
 import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
@@ -13,8 +11,13 @@ import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.UUID;
 
 public class PartySet implements IPartySet
 {
@@ -116,10 +119,7 @@ public class PartySet implements IPartySet
 					{
 						MemberSettings ms = new MemberSettings(creator.getUniqueId());
 						ms.setRank(PartyRank.ADMIN);
-						if(p.newMember(ms, PartyMemberJoinEvent.Reason.CREATOR) != null)
-						{
-							getSettings(ms.getUuid()).setPref(inst.getFilter().getDefaultFilterPref("on-party-create"));
-						}
+						p.newMember(ms, PartyMemberJoinEvent.Reason.CREATOR);
 					}
 				}
 				return p;
@@ -165,89 +165,6 @@ public class PartySet implements IPartySet
 		Set<IParty> copy = new HashSet<>();
 		copy.addAll(parties);
 		return copy.iterator();
-	}
-
-	public static class AsyncMemberSettings implements IAsyncMemberSettings
-	{
-		private String partyname;
-		private ChatFilterPref pref = PREFER_PARTY;
-		private boolean alone = true;
-		public AsyncMemberSettings(String pname)
-		{
-			partyname = pname;
-		}
-
-		@Override
-		public String getPartyName()
-		{
-			return partyname;
-		}
-		@Override
-		public void setPartyName(String partyname)
-		{
-			this.partyname = partyname;
-		}
-
-		@Override
-		public ChatFilterPref getPref()
-		{
-			return pref;
-		}
-		@Override
-		public void setPref(ChatFilterPref cfp)
-		{
-			pref = cfp;
-		}
-		@Override
-		public void togglePref()
-		{
-			pref = pref.opposite();
-		}
-
-		public boolean isAlone()
-		{
-			return alone;
-		}
-		public void setAlone(boolean isalone)
-		{
-			alone = isalone;
-		}
-	}
-	private final ConcurrentSkipListMap<UUID, AsyncMemberSettings> partiers = new ConcurrentSkipListMap<>();
-	@Override
-	public void addSettings(UUID uuid, String pname)
-	{
-		partiers.put(uuid, new AsyncMemberSettings(pname));
-	}
-	@Override
-	public AsyncMemberSettings getSettings(UUID uuid)
-	{
-		return partiers.get(uuid);
-	}
-	@Override
-	public void removeSettings(UUID uuid)
-	{
-		partiers.remove(uuid);
-	}
-
-	private class PartyMembers implements Iterable<Map.Entry<UUID, IAsyncMemberSettings>>
-	{
-		@Override
-		public Iterator<Map.Entry<UUID, IAsyncMemberSettings>> iterator()
-		{
-			Map<UUID, IAsyncMemberSettings> mems = new HashMap<>();
-			for(Map.Entry<UUID, AsyncMemberSettings> m : partiers.entrySet())
-			{
-				mems.put(m.getKey(), m.getValue());
-			}
-			return mems.entrySet().iterator();
-		}
-	}
-	private final PartyMembers pms = new PartyMembers();
-	@Override
-	public Iterable<Map.Entry<UUID, IAsyncMemberSettings>> getPartyMembers()
-	{
-		return pms;
 	}
 
 	@Override

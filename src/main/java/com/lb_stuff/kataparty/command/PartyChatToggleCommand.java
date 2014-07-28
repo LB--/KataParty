@@ -1,7 +1,6 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import static com.lb_stuff.kataparty.PartySet.AsyncMemberSettings;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,12 +21,10 @@ public class PartyChatToggleCommand extends PartyCommand
 			Player player = (Player)sender;
 			if(args.length == 0)
 			{
-				AsyncMemberSettings ms = inst.getPartySet().getSettings(player.getUniqueId());
-				if(ms != null)
+				if(inst.getPartySet().findMember(player.getUniqueId()) != null)
 				{
-					ms.togglePref();
 					inst.tellMessage(player, "chat-filtering-toggled");
-					inst.getFilter().tellFilterPref(player);
+					inst.getFilter().togglePref(player.getUniqueId());
 				}
 				else
 				{

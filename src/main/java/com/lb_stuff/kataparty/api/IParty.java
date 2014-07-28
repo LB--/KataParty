@@ -70,8 +70,9 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	 * when the last {@link IMember} is removed.
 	 * @param uuid The {@link java.util.UUID} of the {@link org.bukkit.OfflinePlayer}.
 	 * @param r The {@link com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent.Reason}.
+	 * @return Whether the {@link IMember} was actually removed.
 	 */
-	void removeMember(UUID uuid, PartyMemberLeaveEvent.Reason r);
+	boolean removeMember(UUID uuid, PartyMemberLeaveEvent.Reason r);
 	/**
 	 * Finds an {@link IMember} based on {@link java.util.UUID}.
 	 * @param uuid The {@link java.util.UUID} of the {@link org.bukkit.OfflinePlayer}.

@@ -132,7 +132,7 @@
 		<dependency>
 			<groupId>com.lb_stuff.service</groupId>
 			<artifactId>PotionFilterService</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 </project>

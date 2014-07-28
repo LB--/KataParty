@@ -234,11 +234,6 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		return filter;
 	}
 
-	public ChatFilterPref getJoinFilterPref()
-	{
-		return getFilter().getDefaultFilterPref("on-party-join");
-	}
-
 	private final PartyTicketManager tickets = new PartyTicketManager(this);
 	public PartyTicketManager getTicketManager()
 	{

@@ -86,8 +86,18 @@ public class PartyPotionFilter implements Listener
 		LivingEntity le = s.getTarget();
 		if(ps instanceof Player && le instanceof Player)
 		{
-			IParty.IMember source = inst.getPartySet().findMember(((Player)ps).getUniqueId());
-			IParty.IMember target = inst.getPartySet().findMember(((Player)le).getUniqueId());
+			Player psource = (Player)ps;
+			if(!psource.hasPermission("KataParty.smart-splash-potions.contribute"))
+			{
+				return;
+			}
+			Player ptarget = (Player)le;
+			if(!ptarget.hasPermission("KataParty.smart-splash-potions.benefit"))
+			{
+				return;
+			}
+			IParty.IMember source = inst.getPartySet().findMember(psource.getUniqueId());
+			IParty.IMember target = inst.getPartySet().findMember(ptarget.getUniqueId());
 			if(source != null && target != null)
 			{
 				for(PotionEffect pe : s.getEffects())
