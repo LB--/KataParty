@@ -5,8 +5,6 @@ import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 
 import org.bukkit.event.HandlerList;
 
-import java.util.UUID;
-
 /**
  * Event called when a {@link org.bukkit.entity.Player} tries to join an
  * {@link com.lb_stuff.kataparty.api.IParty}.

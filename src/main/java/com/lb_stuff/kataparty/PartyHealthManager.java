@@ -1,8 +1,9 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.IPartySettings;
 import static com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
-import com.lb_stuff.kataparty.api.IMetadatable;
+import com.lb_stuff.kataparty.api.IHealthMeta;
 import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
 import com.lb_stuff.kataparty.api.event.PartySettingsChangeEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
@@ -22,7 +23,6 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.Set;
 import java.util.Iterator;
@@ -66,7 +66,7 @@ public class PartyHealthManager implements Listener
 	}
 	private static void update(IParty party)
 	{
-		HealthMeta hm = HealthMeta.getFrom(party);
+		IHealthMeta hm = HealthMeta.getFrom(party);
 		Set<IParty.IMember> contribs = contributors(party);
 		for(IParty.IMember m : party.getMembersAlive())
 		{
@@ -99,7 +99,7 @@ public class PartyHealthManager implements Listener
 		{
 			Player p = Bukkit.getPlayer(m.getUuid());
 			double change = p.getHealth() - oldhealth;
-			HealthMeta hm = HealthMeta.getFrom(m.getParty());
+			IHealthMeta hm = HealthMeta.getFrom(m.getParty());
 			if(hm != null)
 			{
 				hm.setPercent(hm.getPercent() + change/p.getMaxHealth());
@@ -111,7 +111,7 @@ public class PartyHealthManager implements Listener
 	{
 		Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
 		{
-			HealthMeta hm = HealthMeta.getFrom(p);
+			IHealthMeta hm = HealthMeta.getFrom(p);
 			if(hm != null)
 			{
 				hm.setPercent(hm.getPercent() + change);
@@ -141,7 +141,7 @@ public class PartyHealthManager implements Listener
 			p.resetMaxHealth();
 			if(contribs.contains(m))
 			{
-				HealthMeta hm = HealthMeta.getFrom(m.getParty());
+				IHealthMeta hm = HealthMeta.getFrom(m.getParty());
 				if(hm != null)
 				{
 					p.setHealth(p.getMaxHealth()*(hm.getPercent()/contribs.size()));
@@ -260,7 +260,7 @@ public class PartyHealthManager implements Listener
 		{
 			Player onp = offp.getPlayer();
 			onp.resetMaxHealth();
-			HealthMeta hm = HealthMeta.getFrom(e.getMember().getParty());
+			IHealthMeta hm = HealthMeta.getFrom(e.getMember().getParty());
 			Set<IParty.IMember> contribs = contributors(e.getMember().getParty());
 			if(hm != null && contribs.contains(e.getMember()))
 			{
@@ -270,7 +270,7 @@ public class PartyHealthManager implements Listener
 		}
 	}
 
-	public static class HealthMeta implements ConfigurationSerializable
+	public static class HealthMeta extends IHealthMeta
 	{
 		@Override
 		public Map<String, Object> serialize()
@@ -289,23 +289,21 @@ public class PartyHealthManager implements Listener
 		{
 		}
 
-		public static void addTo(IMetadatable m)
+		public static void addTo(IPartySettings m)
 		{
-			m.set(HealthMeta.class, new HealthMeta());
+			m.set(IHealthMeta.class, new HealthMeta());
 		}
-		public static HealthMeta getFrom(IMetadatable m)
+		public static void removeFrom(IPartySettings m)
 		{
-			return (HealthMeta)m.get(HealthMeta.class);
-		}
-		public static void removeFrom(IMetadatable m)
-		{
-			m.set(HealthMeta.class, null);
+			m.set(IHealthMeta.class, null);
 		}
 
+		@Override
 		public double getPercent()
 		{
 			return percent;
 		}
+		@Override
 		public void setPercent(double v)
 		{
 			KataPartyPlugin.getInst().getLogger().info(String.format("#### %1$.3f -> %2$.4f", percent, v));

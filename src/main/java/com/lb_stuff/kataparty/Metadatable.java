@@ -1,9 +1,11 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IMetadatable;
+import com.lb_stuff.kataparty.api.event.MetadataAttachEvent;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.Bukkit;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -75,6 +77,7 @@ public class Metadatable implements IMetadatable
 	@Override
 	public ConfigurationSerializable set(Class<? extends ConfigurationSerializable> clazz, ConfigurationSerializable v)
 	{
+		Bukkit.getPluginManager().callEvent(new MetadataAttachEvent(this, clazz, v));
 		if(v == null)
 		{
 			return meta.remove(clazz);
