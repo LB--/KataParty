@@ -32,9 +32,15 @@ import java.util.Set;
 public class PartyHealthManager implements Listener
 {
 	private final KataPartyPlugin inst;
+	private final NMS_Helper nms;
 	public PartyHealthManager(KataPartyPlugin plugin)
 	{
 		inst = plugin;
+		nms = new NMS_Helper(inst);
+		if(!nms.canUse())
+		{
+			inst.getLogger().warning("Can't hook into NMS, some features of Shared Health disabled");
+		}
 	}
 
 	private static boolean canContribute(IMemberSettings ms)
@@ -156,10 +162,22 @@ public class PartyHealthManager implements Listener
 		if(e.getEntity() instanceof Player)
 		{
 			IParty.IMember m = inst.getPartySet().findMember(e.getEntity().getUniqueId());
-			if(m != null && contributors(m.getParty()).contains(m))
+			Set<IParty.IMember> contribs = contributors(m.getParty());
+			if(m != null && contribs.contains(m))
 			{
 				Player p = (Player)e.getEntity();
 				scheduleUpdate(m, p.getHealth());
+				if(nms.canUse())
+				{
+					for(IParty.IMember mem : contribs)
+					{
+						if(mem != m)
+						{
+							Player mp = Bukkit.getPlayer(mem.getUuid());
+							nms.copyLastDamage(p, mp);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -206,6 +224,10 @@ public class PartyHealthManager implements Listener
 							mp.resetMaxHealth();
 							if(!mp.isDead())
 							{
+								if(nms.canUse() && mem != m)
+								{
+									nms.copyLastDamage(p, mp);
+								}
 								mp.setHealth(0.0);
 							}
 						}
