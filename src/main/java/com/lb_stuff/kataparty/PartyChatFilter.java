@@ -22,7 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PartyChatFilter implements Listener
 {
@@ -100,7 +100,7 @@ public class PartyChatFilter implements Listener
 			alone = isalone;
 		}
 	}
-	private final ConcurrentSkipListMap<UUID, AsyncMemberSettings> partiers = new ConcurrentSkipListMap<>();
+	private final ConcurrentHashMap<UUID, AsyncMemberSettings> partiers = new ConcurrentHashMap<>();
 	private AsyncMemberSettings addSettings(UUID uuid, String pname)
 	{
 		AsyncMemberSettings ms = new AsyncMemberSettings(uuid, pname);
