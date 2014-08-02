@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -54,8 +55,9 @@ public final class Party extends PartySettings implements IParty
 		Object inventory = data.get("inv");
 		if(!(inventory instanceof Boolean))
 		{
-			enableInventory();
-			inv.setContents(((List<ItemStack>)inventory).toArray(new ItemStack[0]));
+			ItemStack[] items = ((List<ItemStack>)inventory).toArray(new ItemStack[0]);
+			enableInventory(items.length/9);
+			inv.setContents(items);
 			data.put("inv", true);
 		}
 		super.apply(PartySettings.deserialize(data));
@@ -77,7 +79,7 @@ public final class Party extends PartySettings implements IParty
 
 		if(super.hasInventory())
 		{
-			enableInventory();
+			setInventory(true);
 		}
 	}
 
@@ -114,14 +116,15 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public void setName(String n)
 	{
+		String oldname = getName();
 		PartySettings changes = new PartySettings(this);
 		changes.setName(n);
 		if(!canChangeSettings(changes))
 		{
 			return;
 		}
-		informMembersMessage("party-rename-inform", getName(), n);
 		super.setName(n);
+		informMembersMessage("party-rename-inform", oldname, getName());
 	}
 
 	@Override
@@ -323,6 +326,7 @@ public final class Party extends PartySettings implements IParty
 		if(!pde.isCancelled())
 		{
 			disbanded = true;
+			disableInventory(p.getEyeLocation());
 			for(Member m : this.members.toArray(new Member[0]))
 			{
 				m.informMessage("party-disband-inform");
@@ -404,7 +408,7 @@ public final class Party extends PartySettings implements IParty
 		return inv != null;
 	}
 	@Override
-	public void enableInventory()
+	public void enableInventory(int rows)
 	{
 		PartySettings changes = new PartySettings(this);
 		changes.setInventory(true);
@@ -414,7 +418,7 @@ public final class Party extends PartySettings implements IParty
 		}
 		if(inv == null)
 		{
-			inv = Bukkit.createInventory(null, 4 * 9, messenger.getMessage("party-inventory-gui-title", getName()));
+			inv = Bukkit.createInventory(this, rows*9, messenger.getMessage("party-inventory-gui-title", getName()));
 			informMembersMessage("party-inventory-enable-inform");
 		}
 		super.setInventory(true);
@@ -425,6 +429,43 @@ public final class Party extends PartySettings implements IParty
 		return inv;
 	}
 	@Override
+	public void resizeInventory(Location droploc, int rows)
+	{
+		ItemStack[] old = inv.getContents();
+		for(int i = rows*9; i < inv.getSize(); ++i)
+		{
+			if(old[i] != null)
+			{
+				if(droploc != null)
+				{
+					droploc.getWorld().dropItem(droploc, old[i]).setPickupDelay(0);
+				}
+				else
+				{
+					World w = Bukkit.getServer().getWorlds().get(0);
+					w.dropItemNaturally(w.getSpawnLocation(), old[i]);
+				}
+			}
+		}
+		ItemStack[] items = new ItemStack[rows*9];
+		for(int i = 0; i < items.length && i < old.length; ++i)
+		{
+			items[i] = old[i];
+		}
+		inv.clear();
+		List<HumanEntity> viewers = inv.getViewers();
+		for(HumanEntity he : viewers)
+		{
+			he.closeInventory();
+		}
+		inv = Bukkit.createInventory(this, rows*9, messenger.getMessage("party-inventory-gui-title", getName()));
+		inv.setContents(items);
+		for(HumanEntity he : viewers)
+		{
+			he.openInventory(inv);
+		}
+	}
+	@Override
 	public void disableInventory(Location droploc)
 	{
 		PartySettings changes = new PartySettings(this);
@@ -432,6 +473,10 @@ public final class Party extends PartySettings implements IParty
 		if(!canChangeSettings(changes))
 		{
 			return;
+		}
+		for(HumanEntity he : inv.getViewers())
+		{
+			he.closeInventory();
 		}
 		if(inv != null)
 		{
@@ -460,7 +505,7 @@ public final class Party extends PartySettings implements IParty
 	{
 		if(enabled)
 		{
-			enableInventory();
+			enableInventory(KataPartyPlugin.getInst().getConfig().getInt("shared-inventory-rows"));
 		}
 		else
 		{

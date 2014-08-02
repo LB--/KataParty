@@ -8,6 +8,7 @@ import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
 import java.util.Set;
 import java.util.UUID;
@@ -16,7 +17,7 @@ import java.util.UUID;
  * Represents a party.
  * This interface may be implemented by plugins other than KataParty.
  */
-public interface IParty extends Iterable<IParty.IMember>, IPartySettings
+public interface IParty extends Iterable<IParty.IMember>, IPartySettings, InventoryHolder
 {
 	/**
 	 * Should return the hash code of {@link IPartySettings#getName()} converted to lower case
@@ -125,13 +126,14 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings
 	/**
 	 * Enables the shared inventory for this party.
 	 * Preferred over {@link IPartySettings#setInventory(boolean)}.
+	 * @param rows The number of rows the shared inventory should have.
 	 */
-	void enableInventory();
+	void enableInventory(int rows);
 	/**
-	 * Returns the party-wide {@link org.bukkit.inventory.Inventory}.
-	 * @return The party-wide {@link org.bukkit.inventory.Inventory}.
+	 * Resizes the party-wide {@link org.bukkit.inventory.Inventory}.
+	 * @param rows The new number of rows the shared inventory should have.
 	 */
-	Inventory getInventory();
+	void resizeInventory(Location droploc, int rows);
 	/**
 	 * Disables the shared inventory for this party and drops all contained items
 	 * at the given {@link org.bukkit.Location}.

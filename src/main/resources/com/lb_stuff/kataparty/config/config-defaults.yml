@@ -12,6 +12,8 @@ party-defaults:
   shared-health: false
   self-teleports: true
 
+shared-inventory-rows: 4
+
 remove-empty-parties: true
 
 share-xp-gain: true
@@ -19,14 +21,14 @@ share-xp-gain: true
 smart-splash-potions: true
 
 chat-filtering:
-    prefix-when-party-preferred: "&l{%1$s}&r "
-    prefix-when-global-preferred: "&o{%1$s}&r "
-    filtered-chat-format: "&7&o"
-    swap-string: "!"
-    defaults:
-      on-party-create: party
-      on-party-join: party
-      on-join-server: global
+  prefix-when-party-preferred: "&l{%1$s}&r "
+  prefix-when-global-preferred: "&o{%1$s}&r "
+  filtered-chat-format: "&7&o"
+  swap-string: "!"
+  defaults:
+    on-party-create: party
+    on-party-join: party
+    on-join-server: global
 
 messages:
   party-member-inform: "You are in KataParty &b%1$s&r"

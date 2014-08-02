@@ -137,7 +137,7 @@ public class PartyManageGui extends PartyCreateGui
 				}
 				else
 				{
-					party.enableInventory();
+					party.setInventory(true);
 				}
 				return true;
 			}

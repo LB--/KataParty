@@ -27,6 +27,10 @@ party-defaults:
   # Teleportation setting for individual party members
   self-teleports: [%party-defaults.self-teleports%]
 
+# This is the number of rows in party shared inventories.
+# Values above 6 will not display properly to clients.
+shared-inventory-rows: [%shared-inventory-rows%]
+
 # Set to true to have empty parties automatically be disbanded. If
 # you want to instead keep empty parties, set to false instead.
 remove-empty-parties: [%remove-empty-parties%]
@@ -39,24 +43,24 @@ smart-splash-potions: [%smart-splash-potions%]
 
 # Here you can configure the formatting used for chat filtering
 chat-filtering:
-    # This is the prefix to use for party messages when the
-    # receiver prefers party chat
-    prefix-when-party-preferred: "[%chat-filtering.prefix-when-party-preferred%]"
-    # This is the prefix to use for party messages when the
-    # reveiever prefers global chat
-    prefix-when-global-preferred: "[%chat-filtering.prefix-when-global-preferred%]"
-    # Ths is the prefix to use after username and before chat
-    # message for chat coming from the non-preferred source
-    filtered-chat-format: "[%chat-filtering.filtered-chat-format%]"
-    # This is what should be at the start of a message to send to the
-    # opposite chat; global instead of party or vice-versa.
-    swap-string: "[%chat-filtering.swap-string%]"
-    # Here you can change the default preferred chat in certain cases
-    # Only valid strings are "party" and "global"
-    defaults:
-      on-party-create: [%chat-filtering.defaults.on-party-create%]
-      on-party-join: [%chat-filtering.defaults.on-party-join%]
-      on-join-server: [%chat-filtering.defaults.on-join-server%]
+  # This is the prefix to use for party messages when the
+  # receiver prefers party chat
+  prefix-when-party-preferred: "[%chat-filtering.prefix-when-party-preferred%]"
+  # This is the prefix to use for party messages when the
+  # reveiever prefers global chat
+  prefix-when-global-preferred: "[%chat-filtering.prefix-when-global-preferred%]"
+  # Ths is the prefix to use after username and before chat
+  # message for chat coming from the non-preferred source
+  filtered-chat-format: "[%chat-filtering.filtered-chat-format%]"
+  # This is what should be at the start of a message to send to the
+  # opposite chat; global instead of party or vice-versa.
+  swap-string: "[%chat-filtering.swap-string%]"
+  # Here you can change the default preferred chat in certain cases
+  # Only valid strings are "party" and "global"
+  defaults:
+    on-party-create: [%chat-filtering.defaults.on-party-create%]
+    on-party-join: [%chat-filtering.defaults.on-party-join%]
+    on-join-server: [%chat-filtering.defaults.on-join-server%]
 
 # Below, you can customize the messages that are sent/shown to players.
 messages:

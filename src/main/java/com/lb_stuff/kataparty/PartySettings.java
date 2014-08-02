@@ -28,6 +28,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		PartySettings s = new PartySettings();
 		s.setAll(Metadatable.deserialize(data));
 		s.name = (String)data.get("name");
+		s.name = s.name.replaceAll("\\s", "-");
 		s.tp = (Boolean)data.get("tp");
 		s.pvp = (Boolean)data.get("pvp");
 		s.visible = (Boolean)data.get("visible");
@@ -43,11 +44,11 @@ public class PartySettings extends Metadatable implements IPartySettings
 	}
 	public PartySettings(String pname)
 	{
-		setName(pname);
+		setName(pname.replaceAll("\\s", "-"));
 	}
 	public PartySettings(IPartySettings other)
 	{
-		name = other.getName();
+		name = other.getName().replaceAll("\\s", "-");
 		tp = other.canTp();
 		pvp = other.canPvp();
 		visible = other.isVisible();
@@ -60,7 +61,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 	@Override
 	public void apply(IPartySettings s)
 	{
-		setName(s.getName());
+		setName(s.getName().replaceAll("\\s", "-"));
 		setTp(s.canTp());
 		setPvp(s.canPvp());
 		setVisible(s.isVisible());
@@ -74,7 +75,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		return KataPartyPlugin.getInst().getConfig().getBoolean("party-defaults."+path);
 	}
 
-	private String name = "KataParty";
+	private String name = "default-party-name";
 	@Override
 	public String getName()
 	{
@@ -83,7 +84,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 	@Override
 	public void setName(String n)
 	{
-		name = n;
+		name = n.replaceAll("\\s", "-");
 	}
 
 	private boolean tp = getDefault("teleports");

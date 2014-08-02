@@ -174,7 +174,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 						if(!ps.isBoolean("inventory"))
 						{
 							List<ItemStack> items = (List<ItemStack>)ps.getList("inventory", new ArrayList<ItemStack>());
-							party.enableInventory();
+							party.setInventory(true);
 							for(int i = 0; i < items.size() && i < party.getInventory().getSize(); ++i)
 							{
 								party.getInventory().setItem(i, items.get(i));
