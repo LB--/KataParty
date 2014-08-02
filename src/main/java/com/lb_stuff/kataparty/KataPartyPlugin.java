@@ -262,6 +262,15 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		return service;
 	}
 
+	public static String chopInvTitle(String name)
+	{
+		if(name.length() >= 32)
+		{
+			return name.substring(0, 32);
+		}
+		return name;
+	}
+
 	@Override
 	public String getMessage(String name, Object... parameters)
 	{

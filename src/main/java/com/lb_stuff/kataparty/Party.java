@@ -55,12 +55,15 @@ public final class Party extends PartySettings implements IParty
 		Object inventory = data.get("inv");
 		if(!(inventory instanceof Boolean))
 		{
-			ItemStack[] items = ((List<ItemStack>)inventory).toArray(new ItemStack[0]);
-			enableInventory(items.length/9);
-			inv.setContents(items);
 			data.put("inv", true);
 		}
 		super.apply(PartySettings.deserialize(data));
+		if(!(inventory instanceof Boolean))
+		{
+			ItemStack[] items = ((List<ItemStack>)inventory).toArray(new ItemStack[0]);
+			enableInventory(items.length/9);
+			inv.setContents(items);
+		}
 		List<IMember> mems = (List<IMember>)data.get("members");
 		for(IMember m : mems)
 		{
@@ -402,6 +405,10 @@ public final class Party extends PartySettings implements IParty
 		super.setVisible(enabled);
 	}
 
+	private String getInvTitle()
+	{
+		return KataPartyPlugin.chopInvTitle(messenger.getMessage("party-inventory-gui-title", getName()));
+	}
 	@Override
 	public boolean hasInventory()
 	{
@@ -410,15 +417,15 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public void enableInventory(int rows)
 	{
-		PartySettings changes = new PartySettings(this);
-		changes.setInventory(true);
-		if(!canChangeSettings(changes))
-		{
-			return;
-		}
 		if(inv == null)
 		{
-			inv = Bukkit.createInventory(this, rows*9, messenger.getMessage("party-inventory-gui-title", getName()));
+			PartySettings changes = new PartySettings(this);
+			changes.setInventory(true);
+			if(!canChangeSettings(changes))
+			{
+				return;
+			}
+			inv = Bukkit.createInventory(this, rows*9, getInvTitle());
 			informMembersMessage("party-inventory-enable-inform");
 		}
 		super.setInventory(true);
@@ -458,7 +465,7 @@ public final class Party extends PartySettings implements IParty
 		{
 			he.closeInventory();
 		}
-		inv = Bukkit.createInventory(this, rows*9, messenger.getMessage("party-inventory-gui-title", getName()));
+		inv = Bukkit.createInventory(this, rows*9, getInvTitle());
 		inv.setContents(items);
 		for(HumanEntity he : viewers)
 		{
@@ -468,18 +475,18 @@ public final class Party extends PartySettings implements IParty
 	@Override
 	public void disableInventory(Location droploc)
 	{
-		PartySettings changes = new PartySettings(this);
-		changes.setInventory(false);
-		if(!canChangeSettings(changes))
-		{
-			return;
-		}
-		for(HumanEntity he : inv.getViewers())
-		{
-			he.closeInventory();
-		}
 		if(inv != null)
 		{
+			PartySettings changes = new PartySettings(this);
+			changes.setInventory(false);
+			if(!canChangeSettings(changes))
+			{
+				return;
+			}
+			for(HumanEntity he : inv.getViewers())
+			{
+				he.closeInventory();
+			}
 			for(ItemStack i : inv.getContents())
 			{
 				if(i != null)

@@ -21,15 +21,20 @@ public class PartyCreateCommand extends PartyCommand
 		if(sender instanceof Player)
 		{
 			Player player = (Player)sender;
-			if(args.length == 1)
+			if(args.length >= 1)
 			{
-				if(inst.getPartySet().findParty(args[0]) != null)
+				PartySettings ps = new PartySettings(args[0]);
+				for(int i = 1; i < args.length; ++i)
 				{
-					inst.tellMessage(player, "party-already-exists", args[0]);
+					ps.setName(ps.getName()+" "+args[i]);
+				}
+				if(inst.getPartySet().findParty(ps.getName()) != null)
+				{
+					inst.tellMessage(player, "party-already-exists", ps.getName());
 				}
 				else
 				{
-					new PartyCreateGui(inst, player, new PartySettings(args[0])).show();
+					new PartyCreateGui(inst, player, ps).show();
 				}
 				return true;
 			}

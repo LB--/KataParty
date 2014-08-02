@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -30,7 +31,7 @@ public abstract class PartyGui implements InventoryHolder, Listener
 	{
 		inst = plugin;
 		player = p;
-		inv = Bukkit.createInventory(this, 9*guirows, guiname);
+		inv = Bukkit.createInventory(this, 9*guirows, KataPartyPlugin.chopInvTitle(guiname));
 	}
 	public PartyGui(KataPartyPlugin plugin, Player p, Inventory inventory)
 	{
@@ -41,7 +42,7 @@ public abstract class PartyGui implements InventoryHolder, Listener
 	}
 	protected final void rename(String guiname)
 	{
-		Inventory newinv = Bukkit.createInventory(this, inv.getSize(), guiname);
+		Inventory newinv = Bukkit.createInventory(this, inv.getSize(), KataPartyPlugin.chopInvTitle(guiname));
 		newinv.setContents(inv.getContents());
 		inv = newinv;
 	}
@@ -126,6 +127,10 @@ public abstract class PartyGui implements InventoryHolder, Listener
 						b.onClick(e.getClick());
 					}
 				}
+			}
+			if(e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY)
+			{
+				e.setCancelled(true);
 			}
 			update();
 			e.getView().getTopInventory().setContents(inv.getContents());
