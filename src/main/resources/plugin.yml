@@ -8,9 +8,9 @@ authors:
   - "Nicholas \"LB\" Braden"
 website: http://dev.bukkit.org/bukkit-plugins/kataparty/
 database: false
-depend: []
+#depend: ["ChatFilterServices"]
 #prefix: "\xa7bKataParty\xa7r"
-softdepend: []
+softdepend: ["TagAPI"]
 loadbefore: []
 
 commands:

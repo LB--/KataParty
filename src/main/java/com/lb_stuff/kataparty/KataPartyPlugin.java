@@ -68,6 +68,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	private final PartyPvpManager pvp = new PartyPvpManager(this);
 	private final PartyPotionFilter potions = new PartyPotionFilter(this);
 	private final PartyHealthManager shxp = new PartyHealthManager(this);
+	private final PartyNametagManager nametags = new PartyNametagManager(this);
 	private MainConfig config;
 	private Updater updater = null;
 	@Override
@@ -121,6 +122,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		{
 			throw new RuntimeException(e);
 		}
+
 		if(!firstrun)
 		{
 			Updater.UpdateType type = Updater.UpdateType.DEFAULT;
@@ -134,6 +136,18 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		else
 		{
 			getLogger().warning("This plugin supports auto-updating - you may disable it in the config.");
+		}
+
+		if(config.getBoolean("color-nametags"))
+		{
+			if(nametags.hasTagAPI())
+			{
+				nametags.start();
+			}
+			else
+			{
+				getLogger().warning("This plugin requires TagAPI to be installed in order to use the \"color-nametags\" feature (disable in config)");
+			}
 		}
 
 		if(partiesFile.exists())

@@ -5,9 +5,21 @@
 # will be re-generated keeping your existing settings and defaulting
 # any missing settings. Any comments you make are erased, however.
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Notice! EventFilterServices is a required plugin dependency!  #
+# You must have it installed for this plugin to work properly!  #
+# http://dev.bukkit.org/bukkit-plugins/eventfilter/             #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 # Set this to false to disable use of Gravity's Updater
 # http://forums.bukkit.org/threads/Gravity-Updater.96681/
 auto-updater: [%auto-updater%]
+
+# If set to true, this nametag will try to use TagAPI to color
+# nametags for party members. For this feature to work you must
+# have installed TagAPI:
+# http://dev.bukkit.org/bukkit-plugins/tag/
+color-nametags: [%color-nametags%]
 
 # Here, you can change the default settings for newly created parties.
 # Some settings require permission nodes to be changed.

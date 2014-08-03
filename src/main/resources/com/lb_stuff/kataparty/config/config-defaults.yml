@@ -3,6 +3,8 @@
 
 auto-updater: true
 
+color-nametags: true
+
 party-defaults:
   teleports: true
   pvp: false

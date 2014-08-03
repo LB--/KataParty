@@ -270,7 +270,7 @@ public class PartyChatFilter implements Listener
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
 		Player p = e.getPlayer();
-		final IParty.IMember m = inst.getPartySet().findMember(p.getUniqueId());
+		IParty.IMember m = inst.getPartySet().findMember(p.getUniqueId());
 		if(m != null)
 		{
 			inst.tellMessage(p, "party-member-inform", m.getParty().getName());
