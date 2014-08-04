@@ -15,7 +15,7 @@
 # http://forums.bukkit.org/threads/Gravity-Updater.96681/
 auto-updater: [%auto-updater%]
 
-# If set to true, this nametag will try to use TagAPI to color
+# If set to true, this plugin will try to use TagAPI to color
 # nametags for party members. For this feature to work you must
 # have installed TagAPI:
 # http://dev.bukkit.org/bukkit-plugins/tag/
