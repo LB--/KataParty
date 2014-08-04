@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyMemberTeleportEvent;
 import com.lb_stuff.kataparty.gui.PartyTeleportGui;
 
 import org.bukkit.OfflinePlayer;
@@ -71,7 +72,13 @@ public class PartyTeleportCommand extends TabbablePartyCommand
 						IParty.IMember t = inst.getPartySet().findMember(tp.getUniqueId());
 						if(t != null && t.getParty() == m.getParty())
 						{
-							if(m.getParty().canTp() && t.canTp())
+							PartyMemberTeleportEvent pmte = new PartyMemberTeleportEvent(m, PartyMemberTeleportEvent.Reason.GOTO, t);
+							if(!(m.getParty().canTp() && t.canTp()))
+							{
+								pmte.setCancelled(true);
+							}
+							inst.getServer().getPluginManager().callEvent(pmte);
+							if(!pmte.isCancelled())
 							{
 								player.teleport(tp);
 								inst.tellMessage(player, "member-teleported-to", tp.getDisplayName());

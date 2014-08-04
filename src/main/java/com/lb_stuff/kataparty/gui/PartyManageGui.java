@@ -5,6 +5,7 @@ import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.PartyRank;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
+import com.lb_stuff.kataparty.api.event.PartyMemberTeleportEvent;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -259,12 +260,23 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		public boolean onClick(ClickType click)
 		{
+			IParty.IMember tm = getMember();
 			if(isAdmin() || (player.hasPermission("KataParty.teleport.do") && isPartyAdmin()))
 			{
 				for(IParty.IMember mem : party)
 				{
-					if(!mem.getUuid().equals(player.getUniqueId()) && mem.canTp())
+					if(!mem.getUuid().equals(player.getUniqueId()))
 					{
+						if(tm != null)
+						{
+							PartyMemberTeleportEvent pmte = new PartyMemberTeleportEvent(mem, PartyMemberTeleportEvent.Reason.SUMMON, tm);
+							pmte.setCancelled(!mem.canTp());
+							inst.getServer().getPluginManager().callEvent(pmte);
+							if(pmte.isCancelled())
+							{
+								continue;
+							}
+						}
 						OfflinePlayer offp = inst.getServer().getOfflinePlayer(mem.getUuid());
 						if(offp.isOnline())
 						{

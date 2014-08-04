@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty.gui;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.event.PartyMemberTeleportEvent;
 
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -41,25 +42,25 @@ public final class PartyTeleportGui extends PartyGui
 
 	private class ListedMemberButton extends GenericGuiButton
 	{
-		private final IParty.IMember m;
+		private final IParty.IMember tm;
 		public ListedMemberButton(IParty.IMember m)
 		{
 			super(SkullGenerator.getPlayerSkull(m.getUuid()));
-			this.m = m;
+			this.tm = m;
 		}
 		@Override
 		public ItemStack display()
 		{
-			if(m.getParty() == party)
+			if(tm.getParty() == party)
 			{
-				final OfflinePlayer offp = inst.getServer().getOfflinePlayer(m.getUuid());
+				final OfflinePlayer offp = inst.getServer().getOfflinePlayer(tm.getUuid());
 				final Player onp = offp.getPlayer();
 				setName(offp.getName());
 				setLore(new ArrayList<String>(){
 				{
-					add(inst.getMessage("members-rank", m.getRankName()));
+					add(inst.getMessage("members-rank", tm.getRankName()));
 					add(inst.getMessage("members-online", (offp.isOnline() && player.canSee(onp))));
-					add(inst.getMessage("members-teleports", m.canTp()));
+					add(inst.getMessage("members-teleports", tm.canTp()));
 					if(offp.isOnline() && player.canSee(onp))
 					{
 						setName(onp.getDisplayName());
@@ -73,10 +74,22 @@ public final class PartyTeleportGui extends PartyGui
 		@Override
 		public boolean onClick(ClickType click)
 		{
-			if(m.getParty() == party)
+			if(tm.getParty() == party)
 			{
-				OfflinePlayer target = inst.getServer().getOfflinePlayer(m.getUuid());
-				if(target.isOnline() && m.canTp() && player.canSee(target.getPlayer()))
+				IParty.IMember sm = inst.getPartySet().findMember(player.getUniqueId());
+				if(sm == null || sm.getParty() != tm.getParty())
+				{
+					update();
+					return false;
+				}
+				OfflinePlayer target = inst.getServer().getOfflinePlayer(tm.getUuid());
+				PartyMemberTeleportEvent pmte = new PartyMemberTeleportEvent(sm, PartyMemberTeleportEvent.Reason.GOTO, tm);
+				if(!(target.isOnline() && tm.canTp() && player.canSee(target.getPlayer())))
+				{
+					pmte.setCancelled(true);
+				}
+				inst.getServer().getPluginManager().callEvent(pmte);
+				if(!pmte.isCancelled())
 				{
 					player.teleport(target.getPlayer());
 					hide();
