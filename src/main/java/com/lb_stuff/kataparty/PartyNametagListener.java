@@ -33,22 +33,38 @@ import java.util.concurrent.ConcurrentHashMap;
 		inst = plugin;
 	}
 
+	private boolean started = false;
+	@Override
+	public boolean isStarted()
+	{
+		return started;
+	}
 	@Override
 	public void start()
 	{
+		if(isStarted())
+		{
+			return;
+		}
 		for(IParty.IMember m : inst.getService().getOnlineMembers())
 		{
 			partiers.put(m.getUuid(), m.getParty().getName());
 		}
 		Bukkit.getPluginManager().registerEvents(this, inst);
 		refreshAll();
+		started = true;
 	}
 	@Override
 	public void stop()
 	{
+		if(!isStarted())
+		{
+			return;
+		}
 		HandlerList.unregisterAll(this);
 		partiers.clear();
 		refreshAll();
+		started = false;
 	}
 
 	private final ConcurrentHashMap<UUID, String> partiers = new ConcurrentHashMap<>();

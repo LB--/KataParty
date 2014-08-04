@@ -32,20 +32,36 @@ public final class PartyNametagManager implements OptionalComponent
 		return hastagapi;
 	}
 
+	private boolean started = false;
+	@Override
+	public boolean isStarted()
+	{
+		return started;
+	}
 	@Override
 	public void start()
 	{
+		if(isStarted())
+		{
+			return;
+		}
 		if(nametaglistener != null)
 		{
 			nametaglistener.start();
 		}
+		started = true;
 	}
 	@Override
 	public void stop()
 	{
+		if(!isStarted())
+		{
+			return;
+		}
 		if(nametaglistener != null)
 		{
 			nametaglistener.stop();
 		}
+		started = false;
 	}
 }

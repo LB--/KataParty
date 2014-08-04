@@ -112,7 +112,6 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		getServer().getPluginManager().registerEvents(edl, this);
 
 		boolean firstrun = !configFile.exists();
-
 		try
 		{
 			getDataFolder().mkdirs();
@@ -122,33 +121,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		{
 			throw new RuntimeException(e);
 		}
-
-		if(!firstrun)
-		{
-			Updater.UpdateType type = Updater.UpdateType.DEFAULT;
-			if(!config.getBoolean("auto-updater"))
-			{
-				type = Updater.UpdateType.NO_DOWNLOAD;
-				getLogger().info("Automatic update downloading disabled in config");
-			}
-			updater = new KataPartyUpdater(this, getFile(), type);
-		}
-		else
-		{
-			getLogger().warning("This plugin supports auto-updating - you may disable it in the config.");
-		}
-
-		if(config.getBoolean("color-nametags"))
-		{
-			if(nametags.hasTagAPI())
-			{
-				nametags.start();
-			}
-			else
-			{
-				getLogger().warning("This plugin requires TagAPI to be installed in order to use the \"color-nametags\" feature (disable in config)");
-			}
-		}
+		reloadSettings(firstrun);
 
 		if(partiesFile.exists())
 		{
@@ -240,11 +213,53 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		{
 			throw new RuntimeException(e);
 		}
+		if(isEnabled())
+		{
+			reloadSettings(false);
+		}
 	}
 	@Override
 	public void saveDefaultConfig()
 	{
 		reloadConfig();
+	}
+
+	private void reloadSettings(boolean firstrun)
+	{
+		if(!firstrun)
+		{
+			if(config.getBoolean("auto-updater"))
+			{
+				if(updater == null)
+				{
+					updater = new KataPartyUpdater(this, getFile(), Updater.UpdateType.DEFAULT);
+				}
+			}
+			else
+			{
+				getLogger().info("Automatic update downloading disabled in config");
+			}
+		}
+		else
+		{
+			getLogger().warning("This plugin supports auto-updating - you may disable it in the config.");
+		}
+
+		if(config.getBoolean("color-nametags"))
+		{
+			if(nametags.hasTagAPI())
+			{
+				nametags.start();
+			}
+			else
+			{
+				getLogger().warning("This plugin requires TagAPI to be installed in order to use the \"color-nametags\" feature (disable in config)");
+			}
+		}
+		else
+		{
+			nametags.stop();
+		}
 	}
 
 	public static KataPartyPlugin getInst()
