@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.lb_stuff</groupId>
+	<groupId>com.lb_stuff.kataparty</groupId>
 	<artifactId>KataParty</artifactId>
 	<version>1.3.0</version>
 	<name>KataParty</name>
@@ -45,8 +45,6 @@
 								<includes>
 									<include>com.lb_stuff.command:PluginInfoCommand</include>
 									<include>com.lb_stuff.command:PluginReloadCommand</include>
-									<include>com.lb_stuff.service:ChatFilterService</include>
-									<include>com.lb_stuff.service:PotionFilterService</include>
 									<include>net.gravitydevelopment.updater:updater</include>
 								</includes>
 							</artifactSet>
@@ -54,10 +52,6 @@
 								<relocation>
 									<pattern>com.lb_stuff.command</pattern>
 									<shadedPattern>com.lb_stuff.kataparty.command</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>com.lb_stuff.service</pattern>
-									<shadedPattern>com.lb_stuff.kataparty.service</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>net.gravitydevelopment.updater</pattern>
@@ -97,16 +91,8 @@
 			<url>http://repo.gravitydevelopment.net</url>
 		</repository>
 		<repository>
-			<id>ChatFilterService.java-mvn-repo</id>
-			<url>https://raw.github.com/LB--/ChatFilterService.java/mvn-repo/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>PotionFilterService.java-mvn-repo</id>
-			<url>https://raw.github.com/LB--/PotionFilterService.java/mvn-repo/</url>
+			<id>EventFilterServices-repo</id>
+			<url>https://raw.github.com/LB--/EventFilterServices/mvn-repo/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
@@ -131,14 +117,9 @@
 			<version>2.2</version>
 		</dependency>
 		<dependency>
-			<groupId>com.lb_stuff.service</groupId>
-			<artifactId>ChatFilterService</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.lb_stuff.service</groupId>
-			<artifactId>PotionFilterService</artifactId>
-			<version>1.0.2</version>
+			<groupId>com.lb_stuff.eventfilterservices</groupId>
+			<artifactId>EventFilterServices</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.kitteh</groupId>

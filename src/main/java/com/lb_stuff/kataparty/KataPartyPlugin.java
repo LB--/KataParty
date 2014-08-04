@@ -19,8 +19,7 @@ import com.lb_stuff.kataparty.command.PartyListCommand;
 import com.lb_stuff.kataparty.command.PartyManageCommand;
 import com.lb_stuff.kataparty.command.PartyTeleportCommand;
 import com.lb_stuff.kataparty.config.MainConfig;
-import com.lb_stuff.service.ChatFilterService;
-import com.lb_stuff.service.PotionFilterService;
+import com.lb_stuff.eventfilterservices.EventFilterServices;
 
 import net.gravitydevelopment.updater.Updater;
 
@@ -74,8 +73,8 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	@Override
 	public void onEnable()
 	{
-		new ChatFilterService(ServicePriority.Normal).start();
-		new PotionFilterService(ServicePriority.Normal).start();
+		EventFilterServices.ChatFilter.depend(this, EventFilterServices.DependencyType.REQUIRED);
+		EventFilterServices.PotionFilter.depend(this, EventFilterServices.DependencyType.REQUIRED);
 		getServer().getServicesManager().register(KataPartyService.class, service, this, ServicePriority.Highest);
 
 		ConfigurationSerialization.registerClass(Metadatable.class);

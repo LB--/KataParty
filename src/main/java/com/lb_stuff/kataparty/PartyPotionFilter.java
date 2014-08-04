@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IParty;
-import com.lb_stuff.service.PotionFilterService.Splash;
+import com.lb_stuff.eventfilterservices.PotionFilterService.Splash;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

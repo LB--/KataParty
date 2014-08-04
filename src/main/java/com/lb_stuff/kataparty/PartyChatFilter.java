@@ -5,7 +5,7 @@ import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 import com.lb_stuff.kataparty.api.event.PartySettingsChangeEvent;
-import com.lb_stuff.service.ChatFilterService.AsyncMessage;
+import com.lb_stuff.eventfilterservices.ChatFilterService.AsyncMessage;
 
 import static com.lb_stuff.kataparty.api.ChatFilterPref.*;
 
