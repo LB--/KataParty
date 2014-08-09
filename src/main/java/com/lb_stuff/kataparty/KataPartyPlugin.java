@@ -194,8 +194,8 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 				}
 				if(conf.contains("player-metadata"))
 				{
-					Map<String, Object> pmetas = (Map<String, Object>)conf.get("player-metadata");
-					for(Map.Entry<String, Object> e : pmetas.entrySet())
+					ConfigurationSection pmetas = (ConfigurationSection)conf.get("player-metadata");
+					for(Map.Entry<String, Object> e : pmetas.getValues(false).entrySet())
 					{
 						pmeta.put(UUID.fromString(e.getKey()), (IMetadatable)e.getValue());
 					}
