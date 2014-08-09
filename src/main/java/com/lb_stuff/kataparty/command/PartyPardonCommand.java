@@ -1,12 +1,11 @@
 package com.lb_stuff.kataparty.command;
 
 import com.lb_stuff.kataparty.KataPartyPlugin;
-import com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings;
-import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -78,9 +77,61 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 		if(sender instanceof Player)
 		{
 			Player player = (Player)sender;
-			if(args.length >= 1)
+			if(args.length == 1)
 			{
-				//
+				IParty.IMember mem = inst.getPartySet().findMember(player.getUniqueId());
+				if(mem != null)
+				{
+					PardonMeta m = PardonMeta.getFrom(mem.getParty());
+					OfflinePlayer offp = inst.getServer().getOfflinePlayer(args[0]);
+					Long tick = m.getKickTick(offp.getUniqueId());
+					if(tick == null)
+					{
+						inst.tellMessage(player, "player-never-kicked-your");
+					}
+					else
+					{
+						m.setKickTick(offp.getUniqueId(), null);
+					}
+				}
+				else
+				{
+					inst.tellMessage(player, "not-in-party");
+					if(player.hasPermission("KataParty.admin"))
+					{
+						return false; //show usage as hint to use second parameter
+					}
+				}
+				return true;
+			}
+			else if(args.length == 2)
+			{
+				if(player.hasPermission("KataParty.admin"))
+				{
+					IParty p = inst.getPartySet().findParty(args[1]);
+					if(p != null)
+					{
+						PardonMeta m = PardonMeta.getFrom(p);
+						OfflinePlayer offp = inst.getServer().getOfflinePlayer(args[0]);
+						Long tick = m.getKickTick(offp.getUniqueId());
+						if(tick == null)
+						{
+							inst.tellMessage(player, "player-never-kicked-that", p.getName());
+						}
+						else
+						{
+							m.setKickTick(offp.getUniqueId(), null);
+						}
+					}
+					else
+					{
+						inst.tellMessage(player, "party-does-not-exist", args[1]);
+					}
+				}
+				else
+				{
+					inst.tellMessage(player, "generic-missing-permission");
+				}
 				return true;
 			}
 		}

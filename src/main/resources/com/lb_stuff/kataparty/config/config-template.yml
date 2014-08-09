@@ -93,6 +93,7 @@ chat-filtering:
 
 # Below, you can customize the messages that are sent/shown to players.
 messages:
+  generic-missing-permission: "[%messages.generic-missing-permission%]"
   party-member-inform: "[%messages.party-member-inform%]"
   party-introvert-inform: "[%messages.party-introvert-inform%]"
   party-already-exists: "[%messages.party-already-exists%]"
@@ -102,6 +103,9 @@ messages:
   not-in-party: "[%messages.not-in-party%]"
   never-in-party: "[%messages.never-in-party%]"
   never-in-any-party: "[%messages.never-in-any-party%]"
+  grace-period-ended: "[%messages.grace-period-ended%]"
+  player-never-kicked-your: "[%messages.player-never-kicked-your%]"
+  player-never-kicked-that: "[%messages.player-never-kicked-that%]"
   missing-disband-permission: "[%messages.missing-disband-permission%]"
   party-teleports-disabled: "[%messages.party-teleports-disabled%]"
   member-teleported-to: "[%messages.member-teleported-to%]"

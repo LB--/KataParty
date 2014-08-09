@@ -39,6 +39,7 @@ chat-filtering:
     on-join-server: global
 
 messages:
+  generic-missing-permission: "&cYou do not have permission."
   party-member-inform: "You are in KataParty &b%1$s&r"
   party-introvert-inform: "You &care not&r in a KataParty"
   party-already-exists: "There is &calready&r a KataParty named &b%1$s&r"
@@ -49,6 +50,8 @@ messages:
   never-in-party: "You &cwere never&r in a KataParty named &c%1$s&r"
   never-in-any-party: "You &cwere never&r in &oany&r KataParty"
   grace-period-ended: "Your &bgrace period&r has &cended&r for rejoining &b%1$s&r"
+  player-never-kicked-your: "&c&oNo&r &cplayer&r named &b%1$s&r was ever &ckicked&r from your &bKataParty"
+  player-never-kicked-that: "&c&oNo&r &cplayer&r named &b%1$s&r was ever &ckicked&r from &b%2$s"
   missing-disband-permission: "You &cdo not&r have permission to disband your KataParty"
   party-teleports-disabled: "Your KataParty &cdoes not&r allow teleportations"
   member-teleported-to: "You were &bteleported&r to %1$s"
