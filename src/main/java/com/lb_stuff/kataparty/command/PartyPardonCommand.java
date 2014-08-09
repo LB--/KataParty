@@ -3,6 +3,7 @@ package com.lb_stuff.kataparty.command;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings;
+import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
 import org.bukkit.OfflinePlayer;
@@ -42,6 +43,45 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 				m.setKickTick(e.getMember().getUuid(), null);
 			} break;
 		}
+	}
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onMemberJoin(PartyMemberJoinEvent e)
+	{
+		PardonMeta m = PardonMeta.getFrom(e.getParty());
+		Long tick = m.getKickTick(e.getApplicant().getUuid());
+		if(tick == null)
+		{
+			return;
+		}
+		final long delta = KataPartyPlugin.getTick() - tick;
+		final long timeout = inst.getConfig().getLong("party-kick-timeout");
+		switch(e.getReason())
+		{
+			case VOLUNTARY:
+			{
+				OfflinePlayer offp = inst.getServer().getOfflinePlayer(e.getApplicant().getUuid());
+				if(timeout < 0)
+				{
+					e.setCancelled(true);
+					if(offp.isOnline())
+					{
+						inst.tellMessage(offp.getPlayer(), "party-banned-message", e.getParty().getName());
+					}
+					return;
+				}
+				else if(delta <= timeout)
+				{
+					e.setCancelled(true);
+					if(offp.isOnline())
+					{
+						inst.tellMessage(offp.getPlayer(), "party-kick-timeout-message", e.getParty().getName(), timeout/20.0);
+					}
+					return;
+				}
+			} break;
+			default: break;
+		}
+		m.setKickTick(e.getApplicant().getUuid(), null);
 	}
 
 	@Override

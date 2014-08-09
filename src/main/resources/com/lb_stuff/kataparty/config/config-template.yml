@@ -106,6 +106,8 @@ messages:
   grace-period-ended: "[%messages.grace-period-ended%]"
   player-never-kicked-your: "[%messages.player-never-kicked-your%]"
   player-never-kicked-that: "[%messages.player-never-kicked-that%]"
+  party-kick-timeout-message: "[%messages.party-kick-timeout-message%]"
+  party-banned-message: "[%messages.party-banned-message%]"
   missing-disband-permission: "[%messages.missing-disband-permission%]"
   party-teleports-disabled: "[%messages.party-teleports-disabled%]"
   member-teleported-to: "[%messages.member-teleported-to%]"
