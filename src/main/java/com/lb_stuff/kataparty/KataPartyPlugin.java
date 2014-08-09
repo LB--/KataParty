@@ -53,6 +53,7 @@ import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 {
@@ -101,7 +102,9 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		ConfigurationSerialization.registerClass(PartyPardonCommand.PardonMeta.class);
 
 		getPartySet().registerPartyFactory(PartySettings.class, pfact);
+		getPartySet().registerPartyFactory(Party.class, pfact);
 		getPartySet().registerMemberFactory(PartySettings.MemberSettings.class, mfact);
+		getPartySet().registerMemberFactory(Party.Member.class, mfact);
 
 		implementCommand("kataparty", new PluginInfoCommand(this));
 		implementCommand("kpreload", new PluginReloadCommand(this));
@@ -341,13 +344,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 			}
 			catch(IllegalFormatException e)
 			{
-				getLogger().warning("Error when using translation \""+name+"\":");
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				try(PrintStream ps = new PrintStream(baos))
-				{
-					e.printStackTrace(ps);
-				}
-				getLogger().warning(baos.toString());
+				getLogger().log(Level.WARNING, "Error when using translation \""+name+"\": ", e);
 				return "<Broken translation \""+name+"\">";
 			}
 		}

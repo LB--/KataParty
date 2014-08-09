@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -68,7 +69,7 @@ public class PartyBackCommand extends TabbablePartyCommand implements Listener
 	private long getGracePeriod(Player p)
 	{
 		long period = 0;
-		for(String perm : ((Map<String, Object>)inst.getConfig().get("back-command-grace-periods")).keySet())
+		for(String perm : ((ConfigurationSection)inst.getConfig().get("back-command-grace-periods")).getValues(false).keySet())
 		{
 			if(p.hasPermission("KataParty.back.grace-periods."+perm))
 			{
@@ -186,6 +187,10 @@ public class PartyBackCommand extends TabbablePartyCommand implements Listener
 			{
 				for(Map.Entry<String, Object> e : data.entrySet())
 				{
+					if(e.getKey().equals("=="))
+					{
+						continue;
+					}
 					leaves.put(KataPartyPlugin.getInst().getPartySet().findParty(e.getKey()), (Info)e.getValue());
 				}
 			}});

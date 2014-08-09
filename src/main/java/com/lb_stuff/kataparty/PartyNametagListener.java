@@ -89,6 +89,10 @@ import java.util.concurrent.ConcurrentHashMap;
 	public void refreshAll()
 	{
 		Set<Player> members = KataPartyService.getOnlinePlayers(inst.getService().getOnlineMembers());
+		if(members.isEmpty())
+		{
+			return; //TagAPI is a baby and throws an exception instead of ignoring it
+		}
 		for(Player p : members)
 		{
 			TagAPI.refreshPlayer(p, members);
@@ -101,6 +105,10 @@ import java.util.concurrent.ConcurrentHashMap;
 		{
 			final Player onp = offp.getPlayer();
 			final Set<Player> members = KataPartyService.getOnlinePlayers(inst.getService().getOnlineMembers());
+			if(members.isEmpty())
+			{
+				return; //TagAPI is a baby and throws an exception instead of ignoring it
+			}
 			Bukkit.getScheduler().runTask(inst, new Runnable(){@Override public void run()
 			{
 				TagAPI.refreshPlayer(onp, members);

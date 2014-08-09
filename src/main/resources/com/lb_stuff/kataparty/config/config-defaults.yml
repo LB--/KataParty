@@ -52,7 +52,7 @@ messages:
   grace-period-ended: "Your &bgrace period&r has &cended&r for rejoining &b%1$s&r"
   player-never-kicked-your: "&c&oNo&r &cplayer&r named &b%1$s&r was ever &ckicked&r from your &bKataParty"
   player-never-kicked-that: "&c&oNo&r &cplayer&r named &b%1$s&r was ever &ckicked&r from &b%2$s"
-  party-kick-timeout-message: "You were recently &ckicked&c from &b%1$s&r, please wait &c%2$.2f&r more seconds to rejoin"
+  party-kick-timeout-message: "You were recently &ckicked&r from &b%1$s&r\nPlease wait &c%2$.2f&r more seconds to rejoin"
   party-banned-message: "You are &cbanned&r from &b%1$s"
   missing-disband-permission: "You &cdo not&r have permission to disband your KataParty"
   party-teleports-disabled: "Your KataParty &cdoes not&r allow teleportations"

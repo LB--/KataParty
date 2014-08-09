@@ -131,6 +131,7 @@ permissions:
       KataParty.smart-splash-potions.*: true
       KataParty.back.use: true
       KataParty.pardon: true
+      KataParty.back.grace-periods.admin: true
     default: op
   KataParty.teleport.*:
     description: "Gives access to all teleportation features"

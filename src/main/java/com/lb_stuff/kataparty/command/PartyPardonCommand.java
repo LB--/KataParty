@@ -74,7 +74,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 					e.setCancelled(true);
 					if(offp.isOnline())
 					{
-						inst.tellMessage(offp.getPlayer(), "party-kick-timeout-message", e.getParty().getName(), timeout/20.0);
+						inst.tellMessage(offp.getPlayer(), "party-kick-timeout-message", e.getParty().getName(), (timeout-delta)/20.0);
 					}
 					return;
 				}
@@ -156,7 +156,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 						Long tick = m.getKickTick(offp.getUniqueId());
 						if(tick == null)
 						{
-							inst.tellMessage(player, "player-never-kicked-that", p.getName());
+							inst.tellMessage(player, "player-never-kicked-that", args[0], p.getName());
 						}
 						else
 						{
@@ -194,6 +194,10 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 		{
 			for(Map.Entry<String, Object> e : data.entrySet())
 			{
+				if(e.getKey().equals("=="))
+				{
+					continue;
+				}
 				leaves.put(UUID.fromString(e.getKey()), (Long)e.getValue());
 			}
 		}

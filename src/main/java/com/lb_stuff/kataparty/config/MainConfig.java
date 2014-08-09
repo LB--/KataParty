@@ -36,19 +36,31 @@ public final class MainConfig extends YamlConfiguration
 			result += t.substring(0, i1);
 			String value = t.substring(i1+2, i2);
 			t = t.substring(i2+2);
-			if(value.startsWith("*"))
+			if(value.startsWith("!"))
 			{
 				value = value.substring(1);
+				//
+			}
+			else
+			{
 				YamlConfiguration node = new YamlConfiguration();
 				if(!current.contains(value))
 				{
-					node.set(value, getDefaultConfig().get(value));
+					node.set("t", getDefaultConfig().get(value));
 				}
 				else
 				{
-					node.set(value, current.get(value));
+					node.set("t", current.get(value));
 				}
-				String replacement = node.saveToString().substring(value.length()+1);
+				String replacement;
+				if(node.saveToString().length() < 2)
+				{
+					replacement = "null";
+				}
+				else
+				{
+					replacement = node.saveToString().substring(2);
+				}
 				if(replacement.endsWith("\n"))
 				{
 					replacement = replacement.substring(0, replacement.length()-1);
@@ -58,15 +70,6 @@ public final class MainConfig extends YamlConfiguration
 					result = result.substring(0, result.length()-1);
 				}
 				result += replacement;
-			}
-			else
-			{
-				Object v = current.get(value);
-				if(!current.contains(value))
-				{
-					v = getDefaultConfig().get(value);
-				}
-				result += v.toString().replaceAll("\"", "\\\\\"");
 			}
 		}
 		result += t;

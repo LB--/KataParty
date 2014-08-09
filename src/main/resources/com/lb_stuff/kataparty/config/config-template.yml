@@ -62,7 +62,7 @@ smart-splash-potions: [%smart-splash-potions%]
 # unit of measurement for grace periods is ticks/second - note
 # there are 20 ticks per second in vanilla Minecraft. 1200 ticks
 # is 1 minute. If you use -1 the grace period will be infinite.
-back-command-grace-periods: [%*back-command-grace-periods%]
+back-command-grace-periods: [%back-command-grace-periods%]
 
 # The number of ticks a player must wait before being allowed
 # to rejoin a party they were kicked from. Set to -1 to make
@@ -74,16 +74,16 @@ party-kick-timeout: [%party-kick-timeout%]
 chat-filtering:
   # This is the prefix to use for party messages when the
   # receiver prefers party chat
-  prefix-when-party-preferred: "[%chat-filtering.prefix-when-party-preferred%]"
+  prefix-when-party-preferred: [%chat-filtering.prefix-when-party-preferred%]
   # This is the prefix to use for party messages when the
   # reveiever prefers global chat
-  prefix-when-global-preferred: "[%chat-filtering.prefix-when-global-preferred%]"
+  prefix-when-global-preferred: [%chat-filtering.prefix-when-global-preferred%]
   # Ths is the prefix to use after username and before chat
   # message for chat coming from the non-preferred source
-  filtered-chat-format: "[%chat-filtering.filtered-chat-format%]"
+  filtered-chat-format: [%chat-filtering.filtered-chat-format%]
   # This is what should be at the start of a message to send to the
   # opposite chat; global instead of party or vice-versa.
-  swap-string: "[%chat-filtering.swap-string%]"
+  swap-string: [%chat-filtering.swap-string%]
   # Here you can change the default preferred chat in certain cases
   # Only valid strings are "party" and "global"
   defaults:
@@ -93,132 +93,132 @@ chat-filtering:
 
 # Below, you can customize the messages that are sent/shown to players.
 messages:
-  generic-missing-permission: "[%messages.generic-missing-permission%]"
-  party-member-inform: "[%messages.party-member-inform%]"
-  party-introvert-inform: "[%messages.party-introvert-inform%]"
-  party-already-exists: "[%messages.party-already-exists%]"
-  party-does-not-exist: "[%messages.party-does-not-exist%]"
-  join-already-member: "[%messages.join-already-member%]"
-  party-join-invite-only-fail: "[%messages.party-join-invite-only-fail%]"
-  not-in-party: "[%messages.not-in-party%]"
-  never-in-party: "[%messages.never-in-party%]"
-  never-in-any-party: "[%messages.never-in-any-party%]"
-  grace-period-ended: "[%messages.grace-period-ended%]"
-  player-never-kicked-your: "[%messages.player-never-kicked-your%]"
-  player-never-kicked-that: "[%messages.player-never-kicked-that%]"
-  party-kick-timeout-message: "[%messages.party-kick-timeout-message%]"
-  party-banned-message: "[%messages.party-banned-message%]"
-  missing-disband-permission: "[%messages.missing-disband-permission%]"
-  party-teleports-disabled: "[%messages.party-teleports-disabled%]"
-  member-teleported-to: "[%messages.member-teleported-to%]"
-  member-teleported-from: "[%messages.member-teleported-from%]"
-  member-teleport-disabled: "[%messages.member-teleport-disabled%]"
-  player-not-member: "[%messages.player-not-member%]"
-  player-not-found: "[%messages.player-not-found%]"
-  shared-inventory-disabled: "[%messages.shared-inventory-disabled%]"
-  chat-filtering-toggled: "[%messages.chat-filtering-toggled%]"
-  chat-filtering-party: "[%messages.chat-filtering-party%]"
-  chat-filtering-global: "[%messages.chat-filtering-global%]"
-  chat-filtering-howto: "[%messages.chat-filtering-howto%]"
-  chat-filtering-alone: "[%messages.chat-filtering-alone%]"
-  create-gui-title: "[%messages.create-gui-title%]"
-  create-create: "[%messages.create-create%]"
-  create-cancel: "[%messages.create-cancel%]"
-  create-name-taken: "[%messages.create-name-taken%]"
-  manage-hint: "[%messages.manage-hint%]"
-  create-cancelled: "[%messages.create-cancelled%]"
-  manage-gui-title: "[%messages.manage-gui-title%]"
-  manage-click-to-change: "[%messages.manage-click-to-change%]"
-  manage-cannot-change: "[%messages.manage-cannot-change%]"
-  manage-click-to-use: "[%messages.manage-click-to-use%]"
-  manage-cannot-use: "[%messages.manage-cannot-use%]"
-  manage-your-rank: "[%messages.manage-your-rank%]"
-  manage-leave: "[%messages.manage-leave%]"
-  manage-not-member: "[%messages.manage-not-member%]"
-  manage-rename: "[%messages.manage-rename%]"
-  manage-admin: "[%messages.manage-admin%]"
-  manage-members: "[%messages.manage-members%]"
-  manage-members-online: "[%messages.manage-members-online%]"
-  manage-mods-online: "[%messages.manage-mods-online%]"
-  manage-admins-online: "[%messages.manage-admins-online%]"
-  manage-teleports-enabled: "[%messages.manage-teleports-enabled%]"
-  manage-teleports-disabled: "[%messages.manage-teleports-disabled%]"
-  manage-pvp-enabled: "[%messages.manage-pvp-enabled%]"
-  manage-pvp-disabled: "[%messages.manage-pvp-disabled%]"
-  manage-inventory-enabled: "[%messages.manage-inventory-enabled%]"
-  manage-inventory-disabled: "[%messages.manage-inventory-disabled%]"
-  manage-visibility-enabled: "[%messages.manage-visibility-enabled%]"
-  manage-visibility-disabled: "[%messages.manage-visibility-disabled%]"
-  manage-invites-enabled: "[%messages.manage-invites-enabled%]"
-  manage-invites-disabled: "[%messages.manage-invites-disabled%]"
-  manage-sticky-enabled: "[%messages.manage-sticky-enabled%]"
-  manage-sticky-disabled: "[%messages.manage-sticky-disabled%]"
-  manage-generate-ticket: "[%messages.manage-generate-ticket%]"
-  manage-disband: "[%messages.manage-disband%]"
-  manage-close: "[%messages.manage-close%]"
-  manage-summon: "[%messages.manage-summon%]"
-  manage-self-teleports-enabled: "[%messages.manage-self-teleports-enabled%]"
-  manage-self-teleports-disabled: "[%messages.manage-self-teleports-disabled%]"
-  rename-gui-title: "[%messages.rename-gui-title%]"
-  rename-name-requirements: "[%messages.rename-name-requirements%]"
-  members-gui-title: "[%messages.members-gui-title%]"
-  members-return: "[%messages.members-return%]"
-  members-missing-player-file: "[%messages.members-missing-player-file%]"
-  members-yourself: "[%messages.members-yourself%]"
-  members-rank: "[%messages.members-rank%]"
-  members-promote-moderator: "[%messages.members-promote-moderator%]"
-  members-demote-kick: "[%messages.members-demote-kick%]"
-  members-promote-admin: "[%messages.members-promote-admin%]"
-  members-demote-member: "[%messages.members-demote-member%]"
-  members-demote-moderator: "[%messages.members-demote-moderator%]"
-  members-online: "[%messages.members-online%]"
-  members-teleports: "[%messages.members-teleports%]"
-  members-alive: "[%messages.members-alive%]"
-  list-gui-title: "[%messages.list-gui-title%]"
-  list-invisible: "[%messages.list-invisible%]"
-  list-members-online: "[%messages.list-members-online%]"
-  list-pvp: "[%messages.list-pvp%]"
-  list-teleports: "[%messages.list-teleports%]"
-  list-inventory: "[%messages.list-inventory%]"
-  list-invite-only: "[%messages.list-invite-only%]"
-  list-join: "[%messages.list-join%]"
-  list-member: "[%messages.list-member%]"
-  list-admin: "[%messages.list-admin%]"
-  teleport-gui-title: "[%messages.teleport-gui-title%]"
-  party-rename-inform: "[%messages.party-rename-inform%]"
-  party-join-inform: "[%messages.party-join-inform%]"
-  party-left-inform: "[%messages.party-left-inform%]"
-  party-leave-inform: "[%messages.party-leave-inform%]"
-  party-closed-on-leave-inform: "[%messages.party-closed-on-leave-inform%]"
-  party-disband-inform: "[%messages.party-disband-inform%]"
-  party-teleports-enabled-inform: "[%messages.party-teleports-enabled-inform%]"
-  party-teleports-disabled-inform: "[%messages.party-teleports-disabled-inform%]"
-  party-pvp-enabled-inform: "[%messages.party-pvp-enabled-inform%]"
-  party-pvp-disabled-inform: "[%messages.party-pvp-disabled-inform%]"
-  party-visibility-enabled-inform: "[%messages.party-visibility-enabled-inform%]"
-  party-visibility-disabled-inform: "[%messages.party-visibility-disabled-inform%]"
-  party-inventory-gui-title: "[%messages.party-inventory-gui-title%]"
-  party-inventory-enable-inform: "[%messages.party-inventory-enable-inform%]"
-  party-inventory-disable-inform: "[%messages.party-inventory-disable-inform%]"
-  party-invite-only-inform: "[%messages.party-invite-only-inform%]"
-  party-public-inform: "[%messages.party-public-inform%]"
-  party-shared-health-enable-inform: "[%messages.party-shared-health-enable-inform%]"
-  party-shared-health-disable-inform: "[%messages.party-shared-health-disable-inform%]"
-  party-rank-inform: "[%messages.party-rank-inform%]"
-  party-rank-admin: "[%messages.party-rank-admin%]"
-  party-rank-moderator: "[%messages.party-rank-moderator%]"
-  party-rank-member: "[%messages.party-rank-member%]"
-  party-self-teleports-enable-inform: "[%messages.party-self-teleports-enable-inform%]"
-  party-self-teleports-disable-inform: "[%messages.party-self-teleports-disable-inform%]"
-  ticket-name: "[%messages.ticket-name%]"
-  ticket-giver-instructions-1: "[%messages.ticket-giver-instructions-1%]"
-  ticket-giver-instructions-2: "[%messages.ticket-giver-instructions-2%]"
-  ticket-receive-inform: "[%messages.ticket-receive-inform%]"
-  ticket-receiver-instructions-1: "[%messages.ticket-receiver-instructions-1%]"
-  ticket-receiver-instructions-2: "[%messages.ticket-receiver-instructions-2%]"
-  ticket-reject-inform: "[%messages.ticket-reject-inform%]"
-  ticket-accept-inform: "[%messages.ticket-accept-inform%]"
-  ticket-reject-inform-members: "[%messages.ticket-reject-inform-members%]"
+  generic-missing-permission: [%messages.generic-missing-permission%]
+  party-member-inform: [%messages.party-member-inform%]
+  party-introvert-inform: [%messages.party-introvert-inform%]
+  party-already-exists: [%messages.party-already-exists%]
+  party-does-not-exist: [%messages.party-does-not-exist%]
+  join-already-member: [%messages.join-already-member%]
+  party-join-invite-only-fail: [%messages.party-join-invite-only-fail%]
+  not-in-party: [%messages.not-in-party%]
+  never-in-party: [%messages.never-in-party%]
+  never-in-any-party: [%messages.never-in-any-party%]
+  grace-period-ended: [%messages.grace-period-ended%]
+  player-never-kicked-your: [%messages.player-never-kicked-your%]
+  player-never-kicked-that: [%messages.player-never-kicked-that%]
+  party-kick-timeout-message: [%messages.party-kick-timeout-message%]
+  party-banned-message: [%messages.party-banned-message%]
+  missing-disband-permission: [%messages.missing-disband-permission%]
+  party-teleports-disabled: [%messages.party-teleports-disabled%]
+  member-teleported-to: [%messages.member-teleported-to%]
+  member-teleported-from: [%messages.member-teleported-from%]
+  member-teleport-disabled: [%messages.member-teleport-disabled%]
+  player-not-member: [%messages.player-not-member%]
+  player-not-found: [%messages.player-not-found%]
+  shared-inventory-disabled: [%messages.shared-inventory-disabled%]
+  chat-filtering-toggled: [%messages.chat-filtering-toggled%]
+  chat-filtering-party: [%messages.chat-filtering-party%]
+  chat-filtering-global: [%messages.chat-filtering-global%]
+  chat-filtering-howto: [%messages.chat-filtering-howto%]
+  chat-filtering-alone: [%messages.chat-filtering-alone%]
+  create-gui-title: [%messages.create-gui-title%]
+  create-create: [%messages.create-create%]
+  create-cancel: [%messages.create-cancel%]
+  create-name-taken: [%messages.create-name-taken%]
+  manage-hint: [%messages.manage-hint%]
+  create-cancelled: [%messages.create-cancelled%]
+  manage-gui-title: [%messages.manage-gui-title%]
+  manage-click-to-change: [%messages.manage-click-to-change%]
+  manage-cannot-change: [%messages.manage-cannot-change%]
+  manage-click-to-use: [%messages.manage-click-to-use%]
+  manage-cannot-use: [%messages.manage-cannot-use%]
+  manage-your-rank: [%messages.manage-your-rank%]
+  manage-leave: [%messages.manage-leave%]
+  manage-not-member: [%messages.manage-not-member%]
+  manage-rename: [%messages.manage-rename%]
+  manage-admin: [%messages.manage-admin%]
+  manage-members: [%messages.manage-members%]
+  manage-members-online: [%messages.manage-members-online%]
+  manage-mods-online: [%messages.manage-mods-online%]
+  manage-admins-online: [%messages.manage-admins-online%]
+  manage-teleports-enabled: [%messages.manage-teleports-enabled%]
+  manage-teleports-disabled: [%messages.manage-teleports-disabled%]
+  manage-pvp-enabled: [%messages.manage-pvp-enabled%]
+  manage-pvp-disabled: [%messages.manage-pvp-disabled%]
+  manage-inventory-enabled: [%messages.manage-inventory-enabled%]
+  manage-inventory-disabled: [%messages.manage-inventory-disabled%]
+  manage-visibility-enabled: [%messages.manage-visibility-enabled%]
+  manage-visibility-disabled: [%messages.manage-visibility-disabled%]
+  manage-invites-enabled: [%messages.manage-invites-enabled%]
+  manage-invites-disabled: [%messages.manage-invites-disabled%]
+  manage-sticky-enabled: [%messages.manage-sticky-enabled%]
+  manage-sticky-disabled: [%messages.manage-sticky-disabled%]
+  manage-generate-ticket: [%messages.manage-generate-ticket%]
+  manage-disband: [%messages.manage-disband%]
+  manage-close: [%messages.manage-close%]
+  manage-summon: [%messages.manage-summon%]
+  manage-self-teleports-enabled: [%messages.manage-self-teleports-enabled%]
+  manage-self-teleports-disabled: [%messages.manage-self-teleports-disabled%]
+  rename-gui-title: [%messages.rename-gui-title%]
+  rename-name-requirements: [%messages.rename-name-requirements%]
+  members-gui-title: [%messages.members-gui-title%]
+  members-return: [%messages.members-return%]
+  members-missing-player-file: [%messages.members-missing-player-file%]
+  members-yourself: [%messages.members-yourself%]
+  members-rank: [%messages.members-rank%]
+  members-promote-moderator: [%messages.members-promote-moderator%]
+  members-demote-kick: [%messages.members-demote-kick%]
+  members-promote-admin: [%messages.members-promote-admin%]
+  members-demote-member: [%messages.members-demote-member%]
+  members-demote-moderator: [%messages.members-demote-moderator%]
+  members-online: [%messages.members-online%]
+  members-teleports: [%messages.members-teleports%]
+  members-alive: [%messages.members-alive%]
+  list-gui-title: [%messages.list-gui-title%]
+  list-invisible: [%messages.list-invisible%]
+  list-members-online: [%messages.list-members-online%]
+  list-pvp: [%messages.list-pvp%]
+  list-teleports: [%messages.list-teleports%]
+  list-inventory: [%messages.list-inventory%]
+  list-invite-only: [%messages.list-invite-only%]
+  list-join: [%messages.list-join%]
+  list-member: [%messages.list-member%]
+  list-admin: [%messages.list-admin%]
+  teleport-gui-title: [%messages.teleport-gui-title%]
+  party-rename-inform: [%messages.party-rename-inform%]
+  party-join-inform: [%messages.party-join-inform%]
+  party-left-inform: [%messages.party-left-inform%]
+  party-leave-inform: [%messages.party-leave-inform%]
+  party-closed-on-leave-inform: [%messages.party-closed-on-leave-inform%]
+  party-disband-inform: [%messages.party-disband-inform%]
+  party-teleports-enabled-inform: [%messages.party-teleports-enabled-inform%]
+  party-teleports-disabled-inform: [%messages.party-teleports-disabled-inform%]
+  party-pvp-enabled-inform: [%messages.party-pvp-enabled-inform%]
+  party-pvp-disabled-inform: [%messages.party-pvp-disabled-inform%]
+  party-visibility-enabled-inform: [%messages.party-visibility-enabled-inform%]
+  party-visibility-disabled-inform: [%messages.party-visibility-disabled-inform%]
+  party-inventory-gui-title: [%messages.party-inventory-gui-title%]
+  party-inventory-enable-inform: [%messages.party-inventory-enable-inform%]
+  party-inventory-disable-inform: [%messages.party-inventory-disable-inform%]
+  party-invite-only-inform: [%messages.party-invite-only-inform%]
+  party-public-inform: [%messages.party-public-inform%]
+  party-shared-health-enable-inform: [%messages.party-shared-health-enable-inform%]
+  party-shared-health-disable-inform: [%messages.party-shared-health-disable-inform%]
+  party-rank-inform: [%messages.party-rank-inform%]
+  party-rank-admin: [%messages.party-rank-admin%]
+  party-rank-moderator: [%messages.party-rank-moderator%]
+  party-rank-member: [%messages.party-rank-member%]
+  party-self-teleports-enable-inform: [%messages.party-self-teleports-enable-inform%]
+  party-self-teleports-disable-inform: [%messages.party-self-teleports-disable-inform%]
+  ticket-name: [%messages.ticket-name%]
+  ticket-giver-instructions-1: [%messages.ticket-giver-instructions-1%]
+  ticket-giver-instructions-2: [%messages.ticket-giver-instructions-2%]
+  ticket-receive-inform: [%messages.ticket-receive-inform%]
+  ticket-receiver-instructions-1: [%messages.ticket-receiver-instructions-1%]
+  ticket-receiver-instructions-2: [%messages.ticket-receiver-instructions-2%]
+  ticket-reject-inform: [%messages.ticket-reject-inform%]
+  ticket-accept-inform: [%messages.ticket-accept-inform%]
+  ticket-reject-inform-members: [%messages.ticket-reject-inform-members%]
 
 # If you're a developer (or just curious), then set this to true for colorful console spam.
 debug: [%debug%]
