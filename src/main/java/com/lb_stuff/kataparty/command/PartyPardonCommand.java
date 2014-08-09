@@ -48,6 +48,12 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 	public void onMemberJoin(PartyMemberJoinEvent e)
 	{
 		PardonMeta m = PardonMeta.getFrom(e.getParty());
+		OfflinePlayer offp = inst.getServer().getOfflinePlayer(e.getApplicant().getUuid());
+		if(offp.isOnline() && offp.getPlayer().hasPermission("KataParty.admin"))
+		{
+			m.setKickTick(e.getApplicant().getUuid(), null);
+			return;
+		}
 		Long tick = m.getKickTick(e.getApplicant().getUuid());
 		if(tick == null)
 		{
@@ -59,7 +65,6 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 		{
 			case VOLUNTARY:
 			{
-				OfflinePlayer offp = inst.getServer().getOfflinePlayer(e.getApplicant().getUuid());
 				if(timeout < 0)
 				{
 					e.setCancelled(true);
@@ -92,7 +97,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 		{
 			for(Player p : inst.getServer().getOnlinePlayers())
 			{
-				if((!(sender instanceof Player) || ((Player)sender).canSee(p)) && p.getName().startsWith(args[0].toLowerCase()))
+				if((!(sender instanceof Player) || ((Player)sender).canSee(p)) && p.getName().toLowerCase().startsWith(args[0].toLowerCase()))
 				{
 					ret.add(p.getName());
 				}
@@ -132,6 +137,14 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 					else
 					{
 						m.setKickTick(offp.getUniqueId(), null);
+						if(offp.isOnline() && player.canSee(offp.getPlayer()))
+						{
+							inst.tellMessage(player, "player-pardon-your", offp.getPlayer().getDisplayName());
+						}
+						else
+						{
+							inst.tellMessage(player, "player-pardon-your", offp.getName());
+						}
 					}
 				}
 				else
@@ -161,6 +174,14 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 						else
 						{
 							m.setKickTick(offp.getUniqueId(), null);
+							if(offp.isOnline() && player.canSee(offp.getPlayer()))
+							{
+								inst.tellMessage(player, "player-pardon-that", offp.getPlayer().getDisplayName(), p.getName());
+							}
+							else
+							{
+								inst.tellMessage(player, "player-pardon-that", offp.getName(), p.getName());
+							}
 						}
 					}
 					else

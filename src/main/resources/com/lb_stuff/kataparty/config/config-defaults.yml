@@ -54,6 +54,8 @@ messages:
   player-never-kicked-that: "&c&oNo&r &cplayer&r named &b%1$s&r was ever &ckicked&r from &b%2$s"
   party-kick-timeout-message: "You were recently &ckicked&r from &b%1$s&r\nPlease wait &c%2$.2f&r more seconds to rejoin"
   party-banned-message: "You are &cbanned&r from &b%1$s"
+  player-pardon-your: "You pardoned &b%1$s&r; they may &arejoin&r your KataParty"
+  player-pardon-that: "You pardoned &b%1$s&r for &b%2$s&r"
   missing-disband-permission: "You &cdo not&r have permission to disband your KataParty"
   party-teleports-disabled: "Your KataParty &cdoes not&r allow teleportations"
   member-teleported-to: "You were &bteleported&r to %1$s"
