@@ -12,7 +12,8 @@ depend: ["EventFilterServices"]
 #prefix: "\xa7bKataParty\xa7r"
 softdepend: ["TagAPI"]
 loadbefore: []
-awareness: ["!@UTF8"]
+awareness:
+- !@UTF8
 
 commands:
   KataParty:
@@ -73,6 +74,16 @@ commands:
     usage: "/<command>"
     permission: KataParty.leave
     permission-message: "\xa7cYou do not have permission to leave your KataParty."
+  kpback:
+    description: "\xa7aReturn\xa7r to the/a \xa7bKataParty\xa7b you were previously in."
+    usage: "/<command> [optional-KataParty-name]"
+    permission: KataParty.back.use
+    permission-message: "\xa7cYou do not have permission."
+  kppardon:
+    description: "\xa7aPardon\xa7r a player you \xa7ckicked\xa7r from your \xa7bKataParty\xa7b."
+    usage: "/<command> <player-name> [optional-KataParty-name-for-admins]"
+    permission: KataParty.pardon
+    permission-message: "\xa7cYou do not have permission."
   kpdisband:
     description: "\xa7cDisband\xa7r your \xa7bKataParty\xa7r instead of \xa7bvia /kpmanage"
     usage: "/<command>"
@@ -118,6 +129,8 @@ permissions:
       KataParty.shared-health.*: true
       KataParty.shared-xp.*: true
       KataParty.smart-splash-potions.*: true
+      KataParty.back.use: true
+      KataParty.pardon: true
     default: op
   KataParty.teleport.*:
     description: "Gives access to all teleportation features"
@@ -231,4 +244,16 @@ permissions:
     default: true
   KataParty.smart-splash-potions.benefit:
     description: "Allows players to benefit from potions that know what they're doing with their life"
+    default: true
+  KataParty.back.use:
+    description: "Allows use of the /kpback command"
+    default: true
+  KataParty.back.grace-periods.default:
+    description: "Default grace period for /kpback unless changed in config"
+    default: true
+  KataParty.back.grace-periods.admin:
+    description: "Infinie grace period for /kpback unless changed in config"
+    default: op
+  KataParty.pardon:
+    description: "Allows use of the /kppardon command"
     default: true

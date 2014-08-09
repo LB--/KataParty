@@ -22,11 +22,14 @@ public class PartyAdminCommand extends TabbablePartyCommand
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		List<String> ret = new ArrayList<>();
-		for(IParty p : inst.getPartySet())
+		if(args.length == 1)
 		{
-			if(p.getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+			for(IParty p : inst.getPartySet())
 			{
-				ret.add(p.getName());
+				if(p.getName().toLowerCase().startsWith(args[args.length-1].toLowerCase()))
+				{
+					ret.add(p.getName());
+				}
 			}
 		}
 		return ret;

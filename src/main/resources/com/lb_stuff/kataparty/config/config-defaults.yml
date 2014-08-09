@@ -22,6 +22,12 @@ share-xp-gain: true
 
 smart-splash-potions: true
 
+back-command-grace-periods:
+  default: 1200
+  admin: -1
+
+party-kick-timeout: 6000
+
 chat-filtering:
   prefix-when-party-preferred: "&l{%1$s}&r "
   prefix-when-global-preferred: "&o{%1$s}&r "
@@ -40,6 +46,9 @@ messages:
   join-already-member: "You are &aalready&r a member of &b%1$s&r"
   party-join-invite-only-fail: "&b%1$s&r is &cinvite-only&r; request an &binvitiation ticket"
   not-in-party: "You &care not&r in &oany&r KataParty"
+  never-in-party: "You &cwere never&r in a KataParty named &c%1$s&r"
+  never-in-any-party: "You &cwere never&r in &oany&r KataParty"
+  grace-period-ended: "Your &bgrace period&r has &cended&r for rejoining &b%1$s&r"
   missing-disband-permission: "You &cdo not&r have permission to disband your KataParty"
   party-teleports-disabled: "Your KataParty &cdoes not&r allow teleportations"
   member-teleported-to: "You were &bteleported&r to %1$s"

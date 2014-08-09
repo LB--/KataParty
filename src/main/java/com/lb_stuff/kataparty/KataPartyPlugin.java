@@ -20,10 +20,14 @@ import com.lb_stuff.kataparty.command.PartyManageCommand;
 import com.lb_stuff.kataparty.command.PartyTeleportCommand;
 import com.lb_stuff.kataparty.config.MainConfig;
 import com.lb_stuff.eventfilterservices.EventFilterServices;
+import com.lb_stuff.kataparty.api.IMetadatable;
+import com.lb_stuff.kataparty.command.PartyBackCommand;
+import com.lb_stuff.kataparty.command.PartyPardonCommand;
 
 import net.gravitydevelopment.updater.Updater;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -32,6 +36,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Map;
@@ -53,11 +59,15 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	private void implementCommand(String name, CommandExecutor command)
 	{
 		getCommand(name).setExecutor(command);
+		if(command instanceof Listener)
+		{
+			getServer().getPluginManager().registerEvents((Listener)command, this);
+		}
 	}
 	private void implementCommand(String name, TabExecutor command)
 	{
+		implementCommand(name, (CommandExecutor)command);
 		getCommand(name).setTabCompleter(command);
-		getCommand(name).setExecutor(command);
 	}
 
 	private final File configFile = new File(getDataFolder(), "config.yml");
@@ -85,6 +95,10 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		ConfigurationSerialization.registerClass(Party.Member.class);
 		ConfigurationSerialization.registerClass(PartySet.class);
 		ConfigurationSerialization.registerClass(PartyHealthManager.HealthMeta.class);
+		ConfigurationSerialization.registerClass(PartyXpManager.XpMeta.class);
+		ConfigurationSerialization.registerClass(PartyBackCommand.BackMeta.class);
+		ConfigurationSerialization.registerClass(PartyBackCommand.BackMeta.Info.class);
+		ConfigurationSerialization.registerClass(PartyPardonCommand.PardonMeta.class);
 
 		getPartySet().registerPartyFactory(PartySettings.class, pfact);
 		getPartySet().registerMemberFactory(PartySettings.MemberSettings.class, mfact);
@@ -102,6 +116,8 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		implementCommand("kptp", new PartyTeleportCommand(this));
 		implementCommand("kpshare", new PartyInventoryCommand(this));
 		implementCommand("kptoggle", new PartyChatToggleCommand(this));
+		implementCommand("kpback", new PartyBackCommand(this));
+		implementCommand("kppardon", new PartyPardonCommand(this));
 
 		getServer().getPluginManager().registerEvents(pvp, this);
 		getServer().getPluginManager().registerEvents(potions, this);
@@ -176,6 +192,14 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 					}
 					getLogger().info("Done upgrading parties.");
 				}
+				if(conf.contains("player-metadata"))
+				{
+					Map<String, Object> pmetas = (Map<String, Object>)conf.get("player-metadata");
+					for(Map.Entry<String, Object> e : pmetas.entrySet())
+					{
+						pmeta.put(UUID.fromString(e.getKey()), (IMetadatable)e.getValue());
+					}
+				}
 				getLogger().info("Done loading parties.");
 			}});
 		}
@@ -187,6 +211,12 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	{
 		YamlConfiguration conf = new YamlConfiguration();
 		conf.set("party-set", parties);
+		Map<String, Object> pmetas = new HashMap<>();
+		for(Map.Entry<UUID, IMetadatable> e : pmeta.entrySet())
+		{
+			pmetas.put(e.getKey().toString(), e.getValue());
+		}
+		conf.set("player-metadata", pmetas);
 		try
 		{
 			conf.save(partiesFile);
@@ -348,5 +378,20 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	public EventDebugLogger getEventDebugLogger()
 	{
 		return edl;
+	}
+
+	private final Map<UUID, IMetadatable> pmeta = new HashMap<>();
+	public IMetadatable getPlayerMetadata(OfflinePlayer p)
+	{
+		if(!pmeta.containsKey(p.getUniqueId()))
+		{
+			pmeta.put(p.getUniqueId(), new Metadatable());
+		}
+		return pmeta.get(p.getUniqueId());
+	}
+
+	public static long getTick()
+	{
+		return System.currentTimeMillis()/50;
 	}
 }

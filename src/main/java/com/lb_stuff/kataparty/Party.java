@@ -278,6 +278,13 @@ public final class Party extends PartySettings implements IParty
 		return members.size();
 	}
 	@Override
+	public Set<IMember> getMembers()
+	{
+		Set<IMember> mems = new HashSet<>();
+		mems.addAll(members);
+		return mems;
+	}
+	@Override
 	public Set<IMember> getMembersOnline()
 	{
 		Set<IMember> mems = new HashSet<>();

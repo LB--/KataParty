@@ -93,6 +93,11 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings, Invent
 	 */
 	int numMembers();
 	/**
+	 * Returns the {@linl IMember}s in this {@link IParty}.
+	 * @return The {@linl IMember}s in this {@link IParty}.
+	 */
+	Set<IMember> getMembers();
+	/**
 	 * Generates a {@link java.util.Set} of {@link IMember}s for which
 	 * {@link org.bukkit.OfflinePlayer#isOnline()} returns <code>true</code>.
 	 * @return A {@link java.util.Set} of online {@link IMember}s.

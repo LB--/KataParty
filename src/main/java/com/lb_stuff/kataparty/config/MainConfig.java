@@ -36,12 +36,38 @@ public final class MainConfig extends YamlConfiguration
 			result += t.substring(0, i1);
 			String value = t.substring(i1+2, i2);
 			t = t.substring(i2+2);
-			Object v = current.get(value);
-			if(v == null)
+			if(value.startsWith("*"))
 			{
-				v = getDefaultConfig().get(value);
+				value = value.substring(1);
+				YamlConfiguration node = new YamlConfiguration();
+				if(!current.contains(value))
+				{
+					node.set(value, getDefaultConfig().get(value));
+				}
+				else
+				{
+					node.set(value, current.get(value));
+				}
+				String replacement = node.saveToString().substring(value.length()+1);
+				if(replacement.endsWith("\n"))
+				{
+					replacement = replacement.substring(0, replacement.length()-1);
+				}
+				if(result.endsWith(" "))
+				{
+					result = result.substring(0, result.length()-1);
+				}
+				result += replacement;
 			}
-			result += v.toString().replaceAll("\"", "\\\\\"");
+			else
+			{
+				Object v = current.get(value);
+				if(!current.contains(value))
+				{
+					v = getDefaultConfig().get(value);
+				}
+				result += v.toString().replaceAll("\"", "\\\\\"");
+			}
 		}
 		result += t;
 		f.createNewFile();

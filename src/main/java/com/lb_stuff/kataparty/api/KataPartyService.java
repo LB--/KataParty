@@ -6,8 +6,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * The main service for the KataParty API.
@@ -42,7 +45,7 @@ public class KataPartyService
 	}
 	/**
 	 * Get the manager for invitation tickets.
-	 * @return The {@link ITicketManager} instance.
+	 * @return The {@link IPartyTicketManager} instance.
 	 */
 	public IPartyTicketManager getTicketManager()
 	{
@@ -58,6 +61,10 @@ public class KataPartyService
 		return inst.getEventDebugLogger();
 	}
 
+	/**
+	 * Returns a set containing all valid {@link IParty.IMember} instances.
+	 * @return A set containing all valid {@link IParty.IMember} instances.
+	 */
 	public Set<IParty.IMember> getAllMembers()
 	{
 		Set<IParty.IMember> partiers = new HashSet<>();
@@ -70,6 +77,13 @@ public class KataPartyService
 		}
 		return partiers;
 	}
+	/**
+	 * Returns a set of {@link OfflinePlayer}s for each {@link IParty.IMember}
+	 * in the given {@link IParty}.
+	 * @param partiers The {@link IParty}
+	 * @return A set of {@link OfflinePlayer}s for each {@link IParty.IMember}
+	 * in the given {@link IParty}.
+	 */
 	public static Set<OfflinePlayer> getAllPlayers(Set<IParty.IMember> partiers)
 	{
 		Set<OfflinePlayer> players = new HashSet<>();
@@ -79,6 +93,10 @@ public class KataPartyService
 		}
 		return players;
 	}
+	/**
+	 * Returns a set of all {@link IParty.IMember}s that are online.
+	 * @return A set of all {@link IParty.IMember}s that are online.
+	 */
 	public Set<IParty.IMember> getOnlineMembers()
 	{
 		Set<IParty.IMember> partiers = new HashSet<>();
@@ -91,6 +109,13 @@ public class KataPartyService
 		}
 		return partiers;
 	}
+	/**
+	 * Returns a set of {@link Player}s for each {@link IParty.IMember}
+	 * in the given {@link Set}.
+	 * @param partiers The {@link Set} of {@link IParty.IMember}s.
+	 * @return A set of {@link OfflinePlayer}s for each {@link IParty.IMember}
+	 * in the given {@link Set}.
+	 */
 	public static Set<Player> getOnlinePlayers(Set<IParty.IMember> partiers)
 	{
 		Set<Player> players = new HashSet<>();
@@ -102,5 +127,16 @@ public class KataPartyService
 			}
 		}
 		return players;
+	}
+
+	/**
+	 * Returns an {@link IMetadatable} for the given {@link OfflinePlayer},
+	 * creating one if it does not yet exist.
+	 * @param p The {@link OfflinePlayer}.
+	 * @return An {@link IMetadatable} for the given {@link OfflinePlayer}.
+	 */
+	public IMetadatable getPlayerMetadata(OfflinePlayer p)
+	{
+		return inst.getPlayerMetadata(p);
 	}
 }

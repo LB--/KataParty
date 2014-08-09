@@ -140,6 +140,10 @@ public class PartyXpManager implements Listener
 		}
 		public static XpMeta getFrom(IPartySettings m)
 		{
+			if(m.get(XpMeta.class) == null)
+			{
+				addTo(m);
+			}
 			return (XpMeta)m.get(XpMeta.class);
 		}
 		public static void removeFrom(IPartySettings m)
