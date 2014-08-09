@@ -78,7 +78,6 @@ public final class Party extends PartySettings implements IParty
 		super(settings);
 		parties = ps;
 		messenger = ps.getMessenger();
-		cloneAll(settings);
 
 		if(super.hasInventory())
 		{

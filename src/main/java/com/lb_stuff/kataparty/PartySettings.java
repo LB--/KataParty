@@ -56,6 +56,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		invite = other.isInviteOnly();
 		sticky = other.isSticky();
 		health = other.isHealthShared();
+		cloneAll(other);
 	}
 
 	@Override
@@ -68,6 +69,7 @@ public class PartySettings extends Metadatable implements IPartySettings
 		setInventory(s.hasInventory());
 		setInviteOnly(s.isInviteOnly());
 		setSticky(s.isSticky());
+		cloneAll(s);
 	}
 
 	private static boolean getDefault(String path)

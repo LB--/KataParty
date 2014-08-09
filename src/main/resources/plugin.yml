@@ -12,6 +12,7 @@ depend: ["EventFilterServices"]
 #prefix: "\xa7bKataParty\xa7r"
 softdepend: ["TagAPI"]
 loadbefore: []
+awareness: ["!@UTF8"]
 
 commands:
   KataParty:
