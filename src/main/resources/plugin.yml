@@ -59,6 +59,11 @@ commands:
     usage: "/<command>"
     permission: KataParty.manage
     permission-message: "\xa7cYou do not have permission to manage your KataParty's settings."
+  kpmembers:
+    description: "\xa7bToggle\xa7r display of a \xa7bscoreboard\xa7r showing your \xa7bparty members"
+    usage: "/<command>"
+    permission: KataParty.scoreboard
+    permission-message: "\xa7cYou do not have permission."
   kptp:
     description: "\xa7aTeleport\xa7r to someone \xa7bvia GUI\xa7r or username"
     usage: "/<command> [optional-username]"
@@ -132,6 +137,7 @@ permissions:
       KataParty.back.use: true
       KataParty.pardon: true
       KataParty.back.grace-periods.admin: true
+      KataParty.scoreboard: true
     default: op
   KataParty.teleport.*:
     description: "Gives access to all teleportation features"
@@ -257,4 +263,7 @@ permissions:
     default: op
   KataParty.pardon:
     description: "Allows use of the /kppardon command"
+    default: true
+  KataParty.scoreboard:
+    description: "Allows members to toggle a scoreboard showing all their members"
     default: true

@@ -22,6 +22,7 @@ import com.lb_stuff.kataparty.config.MainConfig;
 import com.lb_stuff.eventfilterservices.EventFilterServices;
 import com.lb_stuff.kataparty.api.IMetadatable;
 import com.lb_stuff.kataparty.command.PartyBackCommand;
+import com.lb_stuff.kataparty.command.PartyMembersCommand;
 import com.lb_stuff.kataparty.command.PartyPardonCommand;
 
 import net.gravitydevelopment.updater.Updater;
@@ -43,10 +44,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import static org.bukkit.ChatColor.*;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IllegalFormatException;
@@ -100,6 +99,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		ConfigurationSerialization.registerClass(PartyBackCommand.BackMeta.class);
 		ConfigurationSerialization.registerClass(PartyBackCommand.BackMeta.Info.class);
 		ConfigurationSerialization.registerClass(PartyPardonCommand.PardonMeta.class);
+		ConfigurationSerialization.registerClass(PartyMembersCommand.ScoreboardMeta.class);
 
 		getPartySet().registerPartyFactory(PartySettings.class, pfact);
 		getPartySet().registerPartyFactory(Party.class, pfact);
@@ -121,6 +121,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		implementCommand("kptoggle", new PartyChatToggleCommand(this));
 		implementCommand("kpback", new PartyBackCommand(this));
 		implementCommand("kppardon", new PartyPardonCommand(this));
+		implementCommand("kpmembers", new PartyMembersCommand(this));
 
 		getServer().getPluginManager().registerEvents(pvp, this);
 		getServer().getPluginManager().registerEvents(potions, this);
