@@ -42,8 +42,14 @@ public class PartySet implements IPartySet
 	{
 		KataPartyPlugin plugin = (KataPartyPlugin)Bukkit.getServicesManager().getRegistration(KataPartyService.class).getPlugin();
 		PartySet ps = plugin.getPartySet();
-		List<IParty> plist = (List<IParty>)data.get("parties");
-		ps.parties.addAll(plist);
+		List<?> plist = (List<?>)data.get("parties");
+		for(Object o : plist)
+		{
+			if(o instanceof IParty)
+			{
+				ps.parties.add((IParty)o);
+			}
+		}
 
 		return ps;
 	}

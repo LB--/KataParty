@@ -64,11 +64,15 @@ public final class Party extends PartySettings implements IParty
 			enableInventory(items.length/9);
 			inv.setContents(items);
 		}
-		List<IMember> mems = (List<IMember>)data.get("members");
-		for(IMember m : mems)
+		List<?> mems = (List<?>)data.get("members");
+		for(Object o : mems)
 		{
-			m.setParty(this);
-			members.add(m);
+			if(o instanceof IMember)
+			{
+				IMember m = (IMember)o;
+				m.setParty(this);
+				members.add(m);
+			}
 		}
 		setAll(Metadatable.deserialize(data));
 	}
@@ -513,7 +517,7 @@ public final class Party extends PartySettings implements IParty
 		}
 		super.setInventory(false);
 	}
-	@Override @Deprecated
+	@Override
 	public void setInventory(boolean enabled)
 	{
 		if(enabled)

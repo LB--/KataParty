@@ -147,12 +147,11 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings, Invent
 	 */
 	void disableInventory(Location droploc);
 	/**
-	 * Calls either {@link #enableInventory()} or {@link #disableInventory(org.bukkit.Location)}
+	 * Calls either {@link #enableInventory(int)} or {@link #disableInventory(org.bukkit.Location)}
 	 * with a <code>null</code> location.
 	 * @param enabled Whether to enable or disable the shared inventory.
-	 * @deprecated Calls {@link #disableInventory(org.bukkit.Location)} with <code>null</code>.
 	 */
-	@Override @Deprecated
+	@Override
 	void setInventory(boolean enabled);
 
 	/**

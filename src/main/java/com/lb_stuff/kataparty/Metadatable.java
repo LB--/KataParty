@@ -26,7 +26,15 @@ public class Metadatable implements IMetadatable
 		}
 		public EntrySerializer(Map<String, Object> data) throws ClassNotFoundException
 		{
-			c = (Class<? extends ConfigurationSerializable>)Class.forName((String)data.get("c"));
+			Class<? extends ConfigurationSerializable> temp = KataPartyPlugin.SerializableDummy.class;
+			try
+			{
+				temp = (Class<? extends ConfigurationSerializable>)Class.forName((String)data.get("c"));
+			}
+			catch(ClassNotFoundException e)
+			{
+			}
+			c = temp;
 			m = (ConfigurationSerializable)data.get("m");
 		}
 
