@@ -18,7 +18,7 @@ import com.lb_stuff.kataparty.command.PartyLeaveCommand;
 import com.lb_stuff.kataparty.command.PartyListCommand;
 import com.lb_stuff.kataparty.command.PartyManageCommand;
 import com.lb_stuff.kataparty.command.PartyTeleportCommand;
-import com.lb_stuff.kataparty.config.MainConfig;
+import com.lb_stuff.kataparty.config.SmartConfig;
 import com.lb_stuff.eventfilterservices.EventFilterServices;
 import com.lb_stuff.kataparty.api.IMetadatable;
 import com.lb_stuff.kataparty.command.PartyBackCommand;
@@ -78,7 +78,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	private final PartyPotionFilter potions = new PartyPotionFilter(this);
 	private final PartyHealthManager shxp = new PartyHealthManager(this);
 	private final PartyNametagManager nametags = new PartyNametagManager(this);
-	private MainConfig config;
+	private SmartConfig config;
 	private Updater updater = null;
 	@Override
 	public void onEnable()
@@ -134,7 +134,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		try
 		{
 			getDataFolder().mkdirs();
-			config = new MainConfig(configFile);
+			config = new SmartConfig(configFile);
 		}
 		catch(IOException|InvalidConfigurationException e)
 		{

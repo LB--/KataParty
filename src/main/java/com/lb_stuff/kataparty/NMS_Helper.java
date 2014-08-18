@@ -145,6 +145,11 @@ public class NMS_Helper
 		final Object c1 = getCombatTracker(from);
 		final Object c2 = getCombatTracker(to);
 
+		if(c1 == null || c2 == null)
+		{
+			return;
+		}
+
 		Field f = findField(findNMS("CombatTracker"), "a");
 		if(f.getType().equals(List.class))
 		{

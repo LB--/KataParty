@@ -10,14 +10,32 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
-public final class MainConfig extends YamlConfiguration
+public final class SmartConfig extends YamlConfiguration
 {
-	public MainConfig(File f) throws IOException, InvalidConfigurationException
+	public SmartConfig(File f) throws IOException, InvalidConfigurationException
 	{
 		reload(f);
 	}
+
+	public interface NodeProcessor
+	{
+		Object process(Configuration current, Configuration defaults, String node);
+	}
+
+	private final Map<String, NodeProcessor> procs = new HashMap<>();
+	public NodeProcessor setProcessor(String node, NodeProcessor processor)
+	{
+		if(processor == null)
+		{
+			return procs.remove(node);
+		}
+		return procs.put(node, processor);
+	}
+
 	public void reload(File f) throws IOException, InvalidConfigurationException
 	{
 		if(!f.exists())
@@ -36,14 +54,13 @@ public final class MainConfig extends YamlConfiguration
 			result += t.substring(0, i1);
 			String value = t.substring(i1+2, i2);
 			t = t.substring(i2+2);
-			if(value.startsWith("!"))
+			YamlConfiguration node = new YamlConfiguration();
+			if(value.startsWith("!") && procs.containsKey(value = value.substring(1)))
 			{
-				value = value.substring(1);
-				//
+				node.set("t", procs.get(value).process(current, getDefaultConfig(), value));
 			}
 			else
 			{
-				YamlConfiguration node = new YamlConfiguration();
 				if(!current.contains(value))
 				{
 					node.set("t", getDefaultConfig().get(value));
@@ -52,25 +69,25 @@ public final class MainConfig extends YamlConfiguration
 				{
 					node.set("t", current.get(value));
 				}
-				String replacement;
-				if(node.saveToString().length() < 2)
-				{
-					replacement = "null";
-				}
-				else
-				{
-					replacement = node.saveToString().substring(2);
-				}
-				if(replacement.endsWith("\n"))
-				{
-					replacement = replacement.substring(0, replacement.length()-1);
-				}
-				if(result.endsWith(" "))
-				{
-					result = result.substring(0, result.length()-1);
-				}
-				result += replacement;
 			}
+			String replacement;
+			if(node.saveToString().length() < 2)
+			{
+				replacement = "null";
+			}
+			else
+			{
+				replacement = node.saveToString().substring(2);
+			}
+			if(replacement.endsWith("\n"))
+			{
+				replacement = replacement.substring(0, replacement.length()-1);
+			}
+			if(result.endsWith(" "))
+			{
+				result = result.substring(0, result.length()-1);
+			}
+			result += replacement;
 		}
 		result += t;
 		f.createNewFile();
@@ -88,7 +105,7 @@ public final class MainConfig extends YamlConfiguration
 		{
 			defconfig = YamlConfiguration.loadConfiguration
 			(
-				new InputStreamReader(MainConfig.class.getResourceAsStream("config-defaults.yml"))
+				new InputStreamReader(SmartConfig.class.getResourceAsStream("config-defaults.yml"))
 			);
 		}
 		return defconfig;
@@ -100,7 +117,7 @@ public final class MainConfig extends YamlConfiguration
 		{
 			template = new Scanner
 			(
-				MainConfig.class.getResourceAsStream("config-template.yml")
+				SmartConfig.class.getResourceAsStream("config-template.yml")
 			).useDelimiter("\\A").next();
 		}
 		return template;

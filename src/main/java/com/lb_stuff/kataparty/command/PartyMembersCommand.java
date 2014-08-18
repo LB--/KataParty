@@ -153,7 +153,7 @@ public class PartyMembersCommand extends PartyCommand implements Listener
 				{
 					o = sb.registerNewObjective("Health", "health");
 				}
-				o.setDisplayName(""+ChatColor.AQUA+"Health");
+				o.setDisplayName(inst.getMessage("members-scoreboard-health"));
 				o.setDisplaySlot(DisplaySlot.BELOW_NAME);
 				for(IParty.IMember mem : m.getParty())
 				{
@@ -167,7 +167,7 @@ public class PartyMembersCommand extends PartyCommand implements Listener
 				{
 					o = sb.registerNewObjective("Distance", "dummy");
 				}
-				o.setDisplayName(""+ChatColor.AQUA+"Distance");
+				o.setDisplayName(inst.getMessage("members-scoreboard-distance"));
 				o.setDisplaySlot(DisplaySlot.SIDEBAR);
 				for(IParty.IMember mem : m.getParty())
 				{
@@ -187,7 +187,7 @@ public class PartyMembersCommand extends PartyCommand implements Listener
 				{
 					o = sb.registerNewObjective("Rank", "dummy");
 				}
-				o.setDisplayName(""+ChatColor.AQUA+"Rank");
+				o.setDisplayName(inst.getMessage("members-scoreboard-rank"));
 				o.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 				for(Player onp : inst.getServer().getOnlinePlayers())
 				{
