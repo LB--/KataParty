@@ -102,7 +102,7 @@ commands:
   kpadmin:
     description: "\xa7dManage a specific\xa7r \xa7bKataParty\xa7r\xa7d's settings"
     usage: "/<command> <KataParty-name>"
-    permission: KataParty.admin
+    permission: KataParty.arbiter
     permission-message: "\xa7cYou do not have permission to edit the settings of other KataParties."
   kpreload:
     description: "\xa7dReload and regenerate the config file"
@@ -125,7 +125,7 @@ permissions:
       KataParty.leave: true
       KataParty.disband: true
       KataParty.manage: true
-      KataParty.admin: true
+      KataParty.arbiter: true
       KataParty.reload: true
       KataParty.update-notify: true
       KataParty.teleport.*: true
@@ -201,7 +201,7 @@ permissions:
   KataParty.manage:
     description: "Allows management of a KataParty (features based on party rank)"
     default: true
-  KataParty.admin:
+  KataParty.arbiter:
     description: "Allows management of a KataParty bypassing party rank"
     default: op
   KataParty.teleport.do:
@@ -211,7 +211,7 @@ permissions:
     description: "Allows preventing other KataParty members from teleporting to you"
     default: true
   KataParty.teleport.disable:
-    description: "Allows disabling teleportaion for an entire KataParty (based on party rank or KataParty.admin)"
+    description: "Allows disabling teleportaion for an entire KataParty (based on party rank or KataParty.arbiter)"
     default: true
   KataParty.inventory.use:
     description: "Allows access to the shared KataParty inventory"

@@ -3,6 +3,7 @@ package com.lb_stuff.kataparty.command;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.Perms;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
 import org.bukkit.command.Command;
@@ -54,7 +55,7 @@ public class PartyJoinCommand extends TabbablePartyCommand
 					IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 					if(m == null || m.getParty() != p)
 					{
-						if(!p.isInviteOnly() || player/**/Perms.blah(p, "admin"))
+						if(!p.isInviteOnly() || Perms.arbiter(player))
 						{
 							p.newMember(new MemberSettings(player.getUniqueId()), PartyMemberJoinEvent.Reason.VOLUNTARY);
 						}

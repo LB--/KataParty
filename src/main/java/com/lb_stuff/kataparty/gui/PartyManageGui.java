@@ -37,11 +37,11 @@ public class PartyManageGui extends PartyCreateGui
 				{
 					add(inst.getMessage("manage-not-member"));
 				}
-				if(isAdmin() || isPartyAdmin())
+				if(isArbiter() || Perms.rename(getMember()))
 				{
 					add(inst.getMessage("manage-rename"));
 				}
-				if(isAdmin())
+				if(isArbiter())
 				{
 					add(inst.getMessage("manage-admin"));
 				}
@@ -62,7 +62,7 @@ public class PartyManageGui extends PartyCreateGui
 				} break;
 				case RIGHT:
 				{
-					if(isAdmin() || isPartyAdmin())
+					if(isArbiter() || Perms.rename(getMember()))
 					{
 						//Bukkit didn't support opening anvil inventories when ths code was written
 						PartyGui pg = new PartyRenameGui(inst, player, party);
@@ -115,7 +115,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		protected boolean hasRequirements()
 		{
-			return isAdmin() || isPartyMod();
+			return super.hasRequirements() && (isArbiter() || Perms.tpToggle(getMember()));
 		}
 	}
 	protected class ManagePvpButton extends PvpButton
@@ -123,7 +123,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		protected boolean hasRequirements()
 		{
-			return isAdmin() || isPartyMod();
+			return super.hasRequirements() && (isArbiter() || Perms.pvpToggle(getMember()));
 		}
 	}
 	protected class ManageInventoryButton extends InventoryButton
@@ -131,7 +131,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		protected boolean hasRequirements()
 		{
-			return super.hasRequirements() && (isAdmin() || isPartyMod());
+			return super.hasRequirements() && (isArbiter() || Perms.inventoryToggle(getMember()));
 		}
 		@Override
 		public boolean onClick(ClickType click)
@@ -156,7 +156,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		protected boolean hasRequirements()
 		{
-			return isAdmin() || isPartyAdmin();
+			return super.hasRequirements() && (isArbiter() || Perms.visibilityToggle(getMember()));
 		}
 	}
 	protected static final int TICKETS = 7;
@@ -172,7 +172,7 @@ public class PartyManageGui extends PartyCreateGui
 		{
 			setLore(new ArrayList<String>(){
 			{
-				if(isAdmin() || (Perms.inviteCreate(player) && isPartyAdmin()))
+				if(isArbiter() || (Perms.inviteCreate(player) && Perms.inviteCreate(getMember())))
 				{
 					add(inst.getMessage("manage-click-to-use"));
 				}
@@ -186,7 +186,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		public boolean onClick(ClickType click)
 		{
-			if(isAdmin() || (Perms.inviteCreate(player) && isPartyAdmin()))
+			if(isArbiter() || (Perms.inviteCreate(player) && Perms.inviteCreate(getMember())))
 			{
 				inst.getTicketManager().removeTickets(player.getInventory());
 				player.getWorld().dropItem(player.getLocation(), inst.getTicketManager().generateTicket(party)).setPickupDelay(0);
@@ -200,7 +200,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		protected boolean hasRequirements()
 		{
-			return isAdmin() || isPartyAdmin();
+			return super.hasRequirements() && (isArbiter() || Perms.stickyToggle(getMember()));
 		}
 	}
 	protected static final int DISBAND = 9;
@@ -216,7 +216,7 @@ public class PartyManageGui extends PartyCreateGui
 		{
 			setLore(new ArrayList<String>(){
 			{
-				if(isAdmin() || (Perms.partyDisband(player) && isPartyAdmin()))
+				if(isArbiter() || (Perms.disband(player) && Perms.disband(getMember())))
 				{
 					add(inst.getMessage("manage-click-to-use"));
 				}
@@ -230,7 +230,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		public boolean onClick(ClickType click)
 		{
-			if(isAdmin() || (Perms.partyDisband(player) && isPartyAdmin()))
+			if(isArbiter() || (Perms.disband(player) && Perms.disband(getMember())))
 			{
 				inst.getPartySet().remove(party, PartyDisbandEvent.Reason.PARTY_ADMIN_DISBAND, player);
 				hide();
@@ -252,7 +252,7 @@ public class PartyManageGui extends PartyCreateGui
 		{
 			setLore(new ArrayList<String>(){
 			{
-				if(isAdmin() || (Perms.teleportDo(player) && isPartyAdmin()))
+				if(isArbiter() || (Perms.tpGoto(player) && Perms.tpSummon(getMember())))
 				{
 					add(inst.getMessage("manage-click-to-use"));
 				}
@@ -267,7 +267,7 @@ public class PartyManageGui extends PartyCreateGui
 		public boolean onClick(ClickType click)
 		{
 			IParty.IMember tm = getMember();
-			if(isAdmin() || (Perms.teleportDo(player) && isPartyAdmin()))
+			if(isArbiter() || (Perms.tpGoto(player) && Perms.tpSummon(getMember())))
 			{
 				for(IParty.IMember mem : party)
 				{
@@ -309,7 +309,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		protected boolean hasRequirements()
 		{
-			return Perms.teleportPref(player);
+			return Perms.tpPref(player);
 		}
 		@Override
 		public ItemStack display()
@@ -353,19 +353,9 @@ public class PartyManageGui extends PartyCreateGui
 	{
 		return getMember() != null;
 	}
-	protected boolean isAdmin()
+	protected boolean isArbiter()
 	{
 		return Perms.arbiter(player);
-	}
-	protected boolean isPartyAdmin()
-	{
-		IParty.IMember m = getMember();
-		return m != null && m.getRank() == PartyRank.ADMIN;
-	}
-	protected boolean isPartyMod()
-	{
-		IParty.IMember m = getMember();
-		return m != null && (m.getRank() == PartyRank.ADMIN || m.getRank() == PartyRank.MODERATOR);
 	}
 
 	private final ManageTicketsButton tickets = new ManageTicketsButton();
@@ -390,14 +380,22 @@ public class PartyManageGui extends PartyCreateGui
 			removeButton(TICKETS);
 		}
 
-		if(isAdmin() || isPartyAdmin())
+		if(isArbiter() || Perms.disband(getMember()))
 		{
 			addButton(DISBAND, disband);
-			addButton(TPALL, tpall);
 		}
 		else
 		{
 			removeButton(DISBAND);
+		}
+
+		if(isArbiter() || Perms.tpSummon(getMember()))
+		{
+			addButton(TPALL, tpall);
+		}
+		else
+		{
+			removeButton(TPALL);
 		}
 
 		if(isMember())

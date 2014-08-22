@@ -3,6 +3,7 @@ package com.lb_stuff.kataparty.command;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings;
+import com.lb_stuff.kataparty.api.Perms;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
@@ -49,7 +50,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 	{
 		PardonMeta m = PardonMeta.getFrom(e.getParty());
 		OfflinePlayer offp = inst.getServer().getOfflinePlayer(e.getApplicant().getUuid());
-		if(offp.isOnline() && offp.getPlayer()/**/Perms.blah(p, "admin"))
+		if(offp.isOnline() && Perms.arbiter(offp.getPlayer()))
 		{
 			m.setKickTick(e.getApplicant().getUuid(), null);
 			return;
@@ -107,7 +108,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 		{
 			for(IParty p : inst.getPartySet())
 			{
-				if((sender/**/Perms.blah(p, "admin") || p.isVisible()) && p.getName().startsWith(args[0].toLowerCase()))
+				if((Perms.arbiter(sender) || p.isVisible()) && p.getName().startsWith(args[0].toLowerCase()))
 				{
 					ret.add(p.getName());
 				}
@@ -150,7 +151,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 				else
 				{
 					inst.tellMessage(player, "not-in-party");
-					if(player/**/Perms.blah(p, "admin"))
+					if(Perms.arbiter(player))
 					{
 						return false; //show usage as hint to use second parameter
 					}
@@ -159,7 +160,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 			}
 			else if(args.length == 2)
 			{
-				if(player/**/Perms.blah(p, "admin"))
+				if(Perms.arbiter(player))
 				{
 					IParty p = inst.getPartySet().findParty(args[1]);
 					if(p != null)

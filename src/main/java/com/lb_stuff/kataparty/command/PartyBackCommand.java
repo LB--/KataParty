@@ -72,7 +72,7 @@ public class PartyBackCommand extends TabbablePartyCommand implements Listener
 		long period = 0;
 		for(String perm : ((ConfigurationSection)inst.getConfig().get("back-command-grace-periods")).getValues(false).keySet())
 		{
-			if(Perms.partyRejoinPeriod(p, perm))
+			if(Perms.rejoinPeriod(p, perm))
 			{
 				Long l = inst.getConfig().getLong("back-command-grace-periods."+perm);
 				if(l == -1)

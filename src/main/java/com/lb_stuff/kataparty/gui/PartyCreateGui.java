@@ -73,7 +73,7 @@ public class PartyCreateGui extends PartyGui
 		@Override
 		protected boolean hasRequirements()
 		{
-			return Perms.teleportToggle(player);
+			return Perms.tpToggle(player);
 		}
 		@Override
 		public ItemStack display()
@@ -160,7 +160,7 @@ public class PartyCreateGui extends PartyGui
 		@Override
 		protected boolean hasRequirements()
 		{
-			return Perms.partyHide(player);
+			return Perms.visibilityToggle(player);
 		}
 		@Override
 		public ItemStack display()
@@ -218,7 +218,7 @@ public class PartyCreateGui extends PartyGui
 		@Override
 		protected boolean hasRequirements()
 		{
-			return Perms.partySticky(player);
+			return Perms.stickyToggle(player);
 		}
 		@Override
 		public ItemStack display()

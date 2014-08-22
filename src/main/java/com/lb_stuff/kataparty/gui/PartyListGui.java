@@ -117,7 +117,7 @@ public final class PartyListGui extends PartyGui
 		int buttons = 0;
 		for(final IParty p : inst.getPartySet())
 		{
-			if(p.isVisible() || Perms.partyListHidden(player))
+			if(p.isVisible() || Perms.listHidden(player))
 			{
 				IParty.IMember mem = inst.getPartySet().findMember(player.getUniqueId());
 				final boolean same = (mem != null && p == mem.getParty());
