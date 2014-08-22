@@ -29,7 +29,7 @@ public class PartyManageGui extends PartyCreateGui
 			{
 				if(isMember())
 				{
-					add(inst.getMessage("manage-your-rank", getMember().getRankName()));
+					add(inst.getMessage("manage-your-rank", getMember().getRank().getName(inst)));
 					add(inst.getMessage("manage-leave"));
 				}
 				else

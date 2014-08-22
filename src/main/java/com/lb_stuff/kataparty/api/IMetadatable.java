@@ -28,13 +28,13 @@ public interface IMetadatable extends ConfigurationSerializable
 	 */
 	Map<Class<? extends ConfigurationSerializable>, ConfigurationSerializable> getAll();
 	/**
-	 * Sets all metadata from another {@link IMedatable} instance.
-	 * @param m The other {@link IMedatable} instance.
+	 * Sets all metadata from another {@link IMetadatable} instance.
+	 * @param m The other {@link IMetadatable} instance.
 	 */
 	void setAll(IMetadatable m);
 	/**
 	 * Clones all metadata from another {@link IMetadatable} instance.
-	 * @param m The other {@link IMedatable} instance.
+	 * @param m The other {@link IMetadatable} instance.
 	 */
 	void cloneAll(IMetadatable m);
 }

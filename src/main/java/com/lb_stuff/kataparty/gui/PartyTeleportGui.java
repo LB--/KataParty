@@ -58,7 +58,7 @@ public final class PartyTeleportGui extends PartyGui
 				setName(offp.getName());
 				setLore(new ArrayList<String>(){
 				{
-					add(inst.getMessage("members-rank", tm.getRankName()));
+					add(inst.getMessage("members-rank", tm.getRank().getName(inst)));
 					add(inst.getMessage("members-online", (offp.isOnline() && player.canSee(onp))));
 					add(inst.getMessage("members-teleports", tm.canTp()));
 					if(offp.isOnline() && player.canSee(onp))

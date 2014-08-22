@@ -94,7 +94,7 @@ public final class PartyMembersGui extends PartyGui
 					{
 						add(inst.getMessage("members-yourself"));
 					}
-					add(inst.getMessage("members-rank", m.getRankName()));
+					add(inst.getMessage("members-rank", m.getRank().getName(inst)));
 					switch(m.getRank())
 					{
 						case MEMBER:

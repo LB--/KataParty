@@ -13,6 +13,7 @@ public abstract class CancellableKataPartyEvent extends KataPartyEvent implement
 	}
 	/**
 	 * See {@link org.bukkit.event.Event#Event(boolean)}
+	 * @param isAsync See {@link org.bukkit.event.Event#Event(boolean)}
 	 */
 	public CancellableKataPartyEvent(boolean isAsync)
 	{
@@ -22,6 +23,7 @@ public abstract class CancellableKataPartyEvent extends KataPartyEvent implement
 	private boolean cancelled = false;
 	/**
 	 * See {@link org.bukkit.event.Cancellable#isCancelled()}
+	 * @return See {@link org.bukkit.event.Cancellable#isCancelled()}
 	 */
 	@Override
 	public boolean isCancelled()
@@ -30,6 +32,7 @@ public abstract class CancellableKataPartyEvent extends KataPartyEvent implement
 	}
 	/**
 	 * See {@link org.bukkit.event.Cancellable#setCancelled(boolean)}
+	 * @param c See {@link org.bukkit.event.Cancellable#setCancelled(boolean)}
 	 */
 	@Override
 	public void setCancelled(boolean c)

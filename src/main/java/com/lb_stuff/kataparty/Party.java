@@ -572,17 +572,6 @@ public final class Party extends PartySettings implements IParty
 		super.setHealthShared(enabled);
 	}
 
-	@Override
-	public String rankName(PartyRank r)
-	{
-		switch(r)
-		{
-			case ADMIN: return messenger.getMessage("party-rank-admin");
-			case MODERATOR: return messenger.getMessage("party-rank-moderator");
-			case MEMBER: return messenger.getMessage("party-rank-member");
-			default: throw new IllegalStateException();
-		}
-	}
 	public static class Member extends MemberSettings implements IMember
 	{
 		private IParty p;
@@ -637,15 +626,10 @@ public final class Party extends PartySettings implements IParty
 		}
 
 		@Override
-		public String getRankName()
-		{
-			return p.rankName(getRank());
-		}
-		@Override
 		public void setRank(PartyRank r)
 		{
 			super.setRank(r);
-			informMessage("party-rank-inform", p.rankName(r));
+			informMessage("party-rank-inform", r.getName(getParty().getPartySet().getMessenger()));
 		}
 
 		@Override

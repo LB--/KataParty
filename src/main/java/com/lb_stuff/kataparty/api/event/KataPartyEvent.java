@@ -19,6 +19,7 @@ public abstract class KataPartyEvent extends Event
 	}
 	/**
 	 * See {@link org.bukkit.event.Event#Event(boolean)}
+	 * @param isAsync See {@link org.bukkit.event.Event#Event(boolean)}
 	 */
 	public KataPartyEvent(boolean isAsync)
 	{

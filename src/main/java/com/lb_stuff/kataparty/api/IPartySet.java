@@ -41,7 +41,7 @@ public interface IPartySet extends Iterable<IParty>, ConfigurationSerializable
 	/**
 	 * Register an {@link IMemberFactory} for the given type of
 	 * {@link IMemberSettings} implementor.
-	 * @param clazz The type of {@link ImemberSettings} implementor
+	 * @param clazz The type of {@link IMemberSettings} implementor
 	 * for which to register the {@link IMemberFactory}.
 	 * @param factory The {@link IMemberFactory} to be registered.
 	 * @return The old {@link IMemberFactory} instance, or

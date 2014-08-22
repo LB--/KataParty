@@ -17,7 +17,7 @@ public final class PartyDisbandEvent extends CancellableKataPartyEvent
 	public enum Reason
 	{
 		/**
-		 * A member with {@link com.lb_stuff.kataparty.api.IParty.Rank#ADMIN}
+		 * A member with {@link com.lb_stuff.kataparty.api.PartyRank#ADMIN}
 		 * chose to disband the party.
 		 */
 		PARTY_ADMIN_DISBAND,

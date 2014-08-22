@@ -31,19 +31,19 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings, Invent
 	 * <code>obj</code> may be an {@link IPartySettings} or {@link java.lang.String} for which the name
 	 * is compared to <code>this.</code>{@link IPartySettings#getName()}
 	 * via {@link java.lang.String#equalsIgnoreCase(java.lang.String)}
-	 * @param obj
+	 * @param obj The object to compare to.
 	 * @return Whether this party has the same name as the given {@link IPartySettings} or {@link java.lang.String}
 	 */
 	@Override
 	boolean equals(Object obj);
 
 	/**
-	 * Calls {@link Messenger#tell(org.bukkit.entity.Player, java.lang.String)} for each online member.
+	 * Calls {@link IMessenger#tell(org.bukkit.command.CommandSender, java.lang.String)} for each online member.
 	 * @param message The string to send to each member.
 	 */
 	void informMembers(String message);
 	/**
-	 * Calls {@link Messenger#tellMessage(org.bukkit.entity.Player, java.lang.String, java.lang.Object...)}
+	 * Calls {@link IMessenger#tellMessage(org.bukkit.command.CommandSender, java.lang.String, java.lang.Object...)}
 	 * for each online member.
 	 * @param name The name of the message in the config file.
 	 * @param parameters Zero or more parameters as required by the message.
@@ -93,8 +93,8 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings, Invent
 	 */
 	int numMembers();
 	/**
-	 * Returns the {@linl IMember}s in this {@link IParty}.
-	 * @return The {@linl IMember}s in this {@link IParty}.
+	 * Returns the {@link IMember}s in this {@link IParty}.
+	 * @return The {@link IMember}s in this {@link IParty}.
 	 */
 	Set<IMember> getMembers();
 	/**
@@ -136,6 +136,8 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings, Invent
 	void enableInventory(int rows);
 	/**
 	 * Resizes the party-wide {@link org.bukkit.inventory.Inventory}.
+	 * @param droploc The location to drop the excess items at if the
+	 * inventory becomes smaller.
 	 * @param rows The new number of rows the shared inventory should have.
 	 */
 	void resizeInventory(Location droploc, int rows);
@@ -153,14 +155,6 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings, Invent
 	 */
 	@Override
 	void setInventory(boolean enabled);
-
-	/**
-	 * Retrieves the user-defined name of the given {@link PartyRank} from the config file via
-	 * {@link Messenger#getMessage(java.lang.String, java.lang.Object...)}.
-	 * @param r The {@link PartyRank} to retrieve the user-defined name of.
-	 * @return
-	 */
-	String rankName(PartyRank r);
 
 	/**
 	 * A member of an {@link IParty}.
@@ -194,10 +188,5 @@ public interface IParty extends Iterable<IParty.IMember>, IPartySettings, Invent
 		 * @return The {@link IParty} this is a member of.
 		 */
 		IParty getParty();
-		/**
-		 * Calls {@link IParty#rankName(com.lb_stuff.kataparty.api.IParty.Rank)}.
-		 * @return {@link IParty#rankName(com.lb_stuff.kataparty.api.IParty.Rank)}.
-		 */
-		String getRankName();
 	}
 }
