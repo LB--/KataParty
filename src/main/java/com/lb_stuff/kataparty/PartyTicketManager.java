@@ -3,6 +3,7 @@ package com.lb_stuff.kataparty;
 import com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartyTicketManager;
+import com.lb_stuff.kataparty.api.Perms;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.TicketInventoryEvent;
 
@@ -234,7 +235,7 @@ public class PartyTicketManager implements IPartyTicketManager, Listener
 		if(isTicket(is) && wasTicketGiven(is))
 		{
 			Player p = e.getPlayer();
-			if(p.hasPermission("KataParty.invite.accept"))
+			if(Perms.inviteAccept(p))
 			{
 				inst.tellMessage(p, "ticket-receive-inform", getTicketParty(is).getName());
 			}

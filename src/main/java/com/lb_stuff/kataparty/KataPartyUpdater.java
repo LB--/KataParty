@@ -1,5 +1,7 @@
 package com.lb_stuff.kataparty;
 
+import com.lb_stuff.kataparty.api.Perms;
+
 import net.gravitydevelopment.updater.Updater;
 
 import org.bukkit.event.EventHandler;
@@ -33,7 +35,7 @@ public class KataPartyUpdater extends Updater
 						@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 						public void onJoin(final PlayerJoinEvent e)
 						{
-							if(e.getPlayer().hasPermission("KataParty.update-notify"))
+							if(Perms.updateInform(e.getPlayer()))
 							{
 								inst.getServer().getScheduler().runTask(inst, new Runnable(){@Override public void run()
 								{

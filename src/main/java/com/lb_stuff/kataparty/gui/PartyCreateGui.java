@@ -4,6 +4,7 @@ import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IGuiButton;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings;
+import com.lb_stuff.kataparty.api.Perms;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -28,29 +29,23 @@ public class PartyCreateGui extends PartyGui
 		}
 	}
 
-	protected abstract class PermissionToggleButton implements IGuiButton
+	protected abstract class RequirementToggleButton implements IGuiButton
 	{
-		protected boolean hasExtraRequirements()
-		{
-			return true;
-		}
-
 		protected final GenericGuiButton on;
 		protected final GenericGuiButton off;
-		protected final String perm;
-		public PermissionToggleButton(String permission, Material onmat, Material offmat, String msgname)
+		public RequirementToggleButton(Material onmat, Material offmat, String msgname)
 		{
 			on = new GenericGuiButton(onmat);
 			off = new GenericGuiButton(offmat);
-			perm = "KataParty."+permission;
 			on.setName(inst.getMessage("manage-"+msgname+"-enabled"));
 			off.setName(inst.getMessage("manage-"+msgname+"-disabled"));
 			on.setValue(2);
 		}
+		protected abstract boolean hasRequirements();
 		@Override
 		public ItemStack display()
 		{
-			if(hasExtraRequirements() && (perm == null || player.hasPermission(perm)))
+			if(hasRequirements())
 			{
 				on.setLore(inst.getMessage("manage-click-to-change"));
 				off.setLore(inst.getMessage("manage-click-to-change"));
@@ -65,15 +60,20 @@ public class PartyCreateGui extends PartyGui
 		@Override
 		public boolean onClick(ClickType click)
 		{
-			return hasExtraRequirements() && (perm == null || player.hasPermission(perm));
+			return hasRequirements();
 		}
 	}
 	protected static final int TELEPORTS = 2;
-	protected class TeleportsButton extends PermissionToggleButton
+	protected class TeleportsButton extends RequirementToggleButton
 	{
 		public TeleportsButton()
 		{
-			super("teleport.disable",  Material.ENDER_PEARL, Material.ENDER_PEARL, "teleports");
+			super(Material.ENDER_PEARL, Material.ENDER_PEARL, "teleports");
+		}
+		@Override
+		protected boolean hasRequirements()
+		{
+			return Perms.teleportToggle(player);
 		}
 		@Override
 		public ItemStack display()
@@ -93,11 +93,16 @@ public class PartyCreateGui extends PartyGui
 		}
 	}
 	protected static final int PVP = 3;
-	protected class PvpButton extends PermissionToggleButton
+	protected class PvpButton extends RequirementToggleButton
 	{
 		public PvpButton()
 		{
-			super(null, Material.GOLD_SWORD, Material.STONE_SWORD, "pvp");
+			super(Material.GOLD_SWORD, Material.STONE_SWORD, "pvp");
+		}
+		@Override
+		protected boolean hasRequirements()
+		{
+			return true;
 		}
 		@Override
 		public ItemStack display()
@@ -117,11 +122,16 @@ public class PartyCreateGui extends PartyGui
 		}
 	}
 	protected static final int INVENTORY = 4;
-	protected class InventoryButton extends PermissionToggleButton
+	protected class InventoryButton extends RequirementToggleButton
 	{
 		public InventoryButton()
 		{
-			super("inventory.enable", Material.ENDER_CHEST, Material.CHEST, "inventory");
+			super(Material.ENDER_CHEST, Material.CHEST, "inventory");
+		}
+		@Override
+		protected boolean hasRequirements()
+		{
+			return Perms.inventoryToggle(player);
 		}
 		@Override
 		public ItemStack display()
@@ -141,11 +151,16 @@ public class PartyCreateGui extends PartyGui
 		}
 	}
 	protected static final int VISIBLE = 5;
-	protected class VisibilityButton extends PermissionToggleButton
+	protected class VisibilityButton extends RequirementToggleButton
 	{
 		public VisibilityButton()
 		{
-			super("hide", Material.JACK_O_LANTERN, Material.PUMPKIN, "visibility");
+			super(Material.JACK_O_LANTERN, Material.PUMPKIN, "visibility");
+		}
+		@Override
+		protected boolean hasRequirements()
+		{
+			return Perms.partyHide(player);
 		}
 		@Override
 		public ItemStack display()
@@ -165,11 +180,16 @@ public class PartyCreateGui extends PartyGui
 		}
 	}
 	protected static final int INVITES = 6;
-	protected class InvitesButton extends PermissionToggleButton
+	protected class InvitesButton extends RequirementToggleButton
 	{
 		public InvitesButton()
 		{
-			super("invite.enforce", Material.IRON_DOOR, Material.WOOD_DOOR, "invites");
+			super(Material.IRON_DOOR, Material.WOOD_DOOR, "invites");
+		}
+		@Override
+		protected boolean hasRequirements()
+		{
+			return Perms.inviteToggle(player);
 		}
 		@Override
 		public ItemStack display()
@@ -189,11 +209,16 @@ public class PartyCreateGui extends PartyGui
 		}
 	}
 	protected static final int STICKY = 8;
-	protected class StickyButton extends PermissionToggleButton
+	protected class StickyButton extends RequirementToggleButton
 	{
 		public StickyButton()
 		{
-			super("stick", Material.STICK, Material.STICK, "sticky");
+			super(Material.STICK, Material.STICK, "sticky");
+		}
+		@Override
+		protected boolean hasRequirements()
+		{
+			return Perms.partySticky(player);
 		}
 		@Override
 		public ItemStack display()

@@ -3,6 +3,7 @@ package com.lb_stuff.kataparty.gui;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.PartySettings.MemberSettings;
 import com.lb_stuff.kataparty.api.IParty;
+import com.lb_stuff.kataparty.api.Perms;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 
 import org.bukkit.Material;
@@ -49,11 +50,11 @@ public final class PartyListGui extends PartyGui
 					{
 						add(inst.getMessage("list-member"));
 					}
-					else if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
+					else if(!p.isInviteOnly() || Perms.arbiter(player))
 					{
 						add(inst.getMessage("list-join"));
 					}
-					if(player.hasPermission("KataParty.admin"))
+					if(Perms.arbiter(player))
 					{
 						add(inst.getMessage("list-admin"));
 					}
@@ -89,7 +90,7 @@ public final class PartyListGui extends PartyGui
 					IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 					if(m == null || m.getParty() != p)
 					{
-						if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
+						if(!p.isInviteOnly() || Perms.arbiter(player))
 						{
 							p.newMember(new MemberSettings(player.getUniqueId()), PartyMemberJoinEvent.Reason.VOLUNTARY);
 							hide();
@@ -116,7 +117,7 @@ public final class PartyListGui extends PartyGui
 		int buttons = 0;
 		for(final IParty p : inst.getPartySet())
 		{
-			if(p.isVisible() || player.hasPermission("KataParty.seehidden"))
+			if(p.isVisible() || Perms.partyListHidden(player))
 			{
 				IParty.IMember mem = inst.getPartySet().findMember(player.getUniqueId());
 				final boolean same = (mem != null && p == mem.getParty());

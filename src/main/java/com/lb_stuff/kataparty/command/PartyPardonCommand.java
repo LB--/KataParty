@@ -49,7 +49,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 	{
 		PardonMeta m = PardonMeta.getFrom(e.getParty());
 		OfflinePlayer offp = inst.getServer().getOfflinePlayer(e.getApplicant().getUuid());
-		if(offp.isOnline() && offp.getPlayer().hasPermission("KataParty.admin"))
+		if(offp.isOnline() && offp.getPlayer()/**/Perms.blah(p, "admin"))
 		{
 			m.setKickTick(e.getApplicant().getUuid(), null);
 			return;
@@ -107,7 +107,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 		{
 			for(IParty p : inst.getPartySet())
 			{
-				if((sender.hasPermission("KataParty.admin") || p.isVisible()) && p.getName().startsWith(args[0].toLowerCase()))
+				if((sender/**/Perms.blah(p, "admin") || p.isVisible()) && p.getName().startsWith(args[0].toLowerCase()))
 				{
 					ret.add(p.getName());
 				}
@@ -150,7 +150,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 				else
 				{
 					inst.tellMessage(player, "not-in-party");
-					if(player.hasPermission("KataParty.admin"))
+					if(player/**/Perms.blah(p, "admin"))
 					{
 						return false; //show usage as hint to use second parameter
 					}
@@ -159,7 +159,7 @@ public class PartyPardonCommand extends TabbablePartyCommand implements Listener
 			}
 			else if(args.length == 2)
 			{
-				if(player.hasPermission("KataParty.admin"))
+				if(player/**/Perms.blah(p, "admin"))
 				{
 					IParty p = inst.getPartySet().findParty(args[1]);
 					if(p != null)

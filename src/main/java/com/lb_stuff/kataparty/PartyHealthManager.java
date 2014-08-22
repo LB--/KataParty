@@ -4,6 +4,7 @@ import com.lb_stuff.kataparty.api.IHealthMeta;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings;
 import com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
+import com.lb_stuff.kataparty.api.Perms;
 import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
@@ -49,7 +50,7 @@ public class PartyHealthManager implements Listener
 		if(offp.isOnline())
 		{
 			Player onp = offp.getPlayer();
-			if(onp.hasPermission("KataParty.shared-health.contribute"))
+			if(Perms.healthPartake(onp))
 			{
 				return true;
 			}

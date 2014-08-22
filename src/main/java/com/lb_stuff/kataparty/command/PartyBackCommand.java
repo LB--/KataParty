@@ -5,6 +5,7 @@ import com.lb_stuff.kataparty.api.IMetadatable;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings.IMemberSettings;
 import com.lb_stuff.kataparty.api.KataPartyService;
+import com.lb_stuff.kataparty.api.Perms;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
@@ -71,7 +72,7 @@ public class PartyBackCommand extends TabbablePartyCommand implements Listener
 		long period = 0;
 		for(String perm : ((ConfigurationSection)inst.getConfig().get("back-command-grace-periods")).getValues(false).keySet())
 		{
-			if(p.hasPermission("KataParty.back.grace-periods."+perm))
+			if(Perms.partyRejoinPeriod(p, perm))
 			{
 				Long l = inst.getConfig().getLong("back-command-grace-periods."+perm);
 				if(l == -1)

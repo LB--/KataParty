@@ -3,6 +3,7 @@ package com.lb_stuff.kataparty.gui;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.PartyRank;
+import com.lb_stuff.kataparty.api.Perms;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
 import org.bukkit.Material;
@@ -210,7 +211,7 @@ public final class PartyMembersGui extends PartyGui
 	}
 	private boolean isAdmin()
 	{
-		return player.hasPermission("KataParty.admin");
+		return Perms.arbiter(player);
 	}
 	private boolean isPartyAdmin()
 	{

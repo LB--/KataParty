@@ -54,7 +54,7 @@ public class PartyJoinCommand extends TabbablePartyCommand
 					IParty.IMember m = inst.getPartySet().findMember(player.getUniqueId());
 					if(m == null || m.getParty() != p)
 					{
-						if(!p.isInviteOnly() || player.hasPermission("KataParty.admin"))
+						if(!p.isInviteOnly() || player/**/Perms.blah(p, "admin"))
 						{
 							p.newMember(new MemberSettings(player.getUniqueId()), PartyMemberJoinEvent.Reason.VOLUNTARY);
 						}

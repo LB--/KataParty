@@ -3,6 +3,7 @@ package com.lb_stuff.kataparty.gui;
 import com.lb_stuff.kataparty.KataPartyPlugin;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.PartyRank;
+import com.lb_stuff.kataparty.api.Perms;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberTeleportEvent;
@@ -112,7 +113,7 @@ public class PartyManageGui extends PartyCreateGui
 	protected class ManageTeleportsButton extends TeleportsButton
 	{
 		@Override
-		protected boolean hasExtraRequirements()
+		protected boolean hasRequirements()
 		{
 			return isAdmin() || isPartyMod();
 		}
@@ -120,7 +121,7 @@ public class PartyManageGui extends PartyCreateGui
 	protected class ManagePvpButton extends PvpButton
 	{
 		@Override
-		protected boolean hasExtraRequirements()
+		protected boolean hasRequirements()
 		{
 			return isAdmin() || isPartyMod();
 		}
@@ -128,9 +129,14 @@ public class PartyManageGui extends PartyCreateGui
 	protected class ManageInventoryButton extends InventoryButton
 	{
 		@Override
+		protected boolean hasRequirements()
+		{
+			return super.hasRequirements() && (isAdmin() || isPartyMod());
+		}
+		@Override
 		public boolean onClick(ClickType click)
 		{
-			if((perm == null || player.hasPermission(perm)) && (isAdmin() || isPartyMod()))
+			if(super.onClick(click))
 			{
 				if(party.hasInventory())
 				{
@@ -148,7 +154,7 @@ public class PartyManageGui extends PartyCreateGui
 	protected class ManageVisibilityButton extends VisibilityButton
 	{
 		@Override
-		protected boolean hasExtraRequirements()
+		protected boolean hasRequirements()
 		{
 			return isAdmin() || isPartyAdmin();
 		}
@@ -166,7 +172,7 @@ public class PartyManageGui extends PartyCreateGui
 		{
 			setLore(new ArrayList<String>(){
 			{
-				if(isAdmin() || (player.hasPermission("KataParty.invite.create") && isPartyAdmin()))
+				if(isAdmin() || (Perms.inviteCreate(player) && isPartyAdmin()))
 				{
 					add(inst.getMessage("manage-click-to-use"));
 				}
@@ -180,7 +186,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		public boolean onClick(ClickType click)
 		{
-			if(isAdmin() || (player.hasPermission("KataParty.invite.create") && isPartyAdmin()))
+			if(isAdmin() || (Perms.inviteCreate(player) && isPartyAdmin()))
 			{
 				inst.getTicketManager().removeTickets(player.getInventory());
 				player.getWorld().dropItem(player.getLocation(), inst.getTicketManager().generateTicket(party)).setPickupDelay(0);
@@ -192,7 +198,7 @@ public class PartyManageGui extends PartyCreateGui
 	protected class ManageStickyButton extends StickyButton
 	{
 		@Override
-		protected boolean hasExtraRequirements()
+		protected boolean hasRequirements()
 		{
 			return isAdmin() || isPartyAdmin();
 		}
@@ -210,7 +216,7 @@ public class PartyManageGui extends PartyCreateGui
 		{
 			setLore(new ArrayList<String>(){
 			{
-				if(isAdmin() || (player.hasPermission("KataParty.disband") && isPartyAdmin()))
+				if(isAdmin() || (Perms.partyDisband(player) && isPartyAdmin()))
 				{
 					add(inst.getMessage("manage-click-to-use"));
 				}
@@ -224,7 +230,7 @@ public class PartyManageGui extends PartyCreateGui
 		@Override
 		public boolean onClick(ClickType click)
 		{
-			if(isAdmin() || (player.hasPermission("KataParty.disband") && isPartyAdmin()))
+			if(isAdmin() || (Perms.partyDisband(player) && isPartyAdmin()))
 			{
 				inst.getPartySet().remove(party, PartyDisbandEvent.Reason.PARTY_ADMIN_DISBAND, player);
 				hide();
@@ -246,7 +252,7 @@ public class PartyManageGui extends PartyCreateGui
 		{
 			setLore(new ArrayList<String>(){
 			{
-				if(isAdmin() || (player.hasPermission("KataParty.teleport.do") && isPartyAdmin()))
+				if(isAdmin() || (Perms.teleportDo(player) && isPartyAdmin()))
 				{
 					add(inst.getMessage("manage-click-to-use"));
 				}
@@ -261,7 +267,7 @@ public class PartyManageGui extends PartyCreateGui
 		public boolean onClick(ClickType click)
 		{
 			IParty.IMember tm = getMember();
-			if(isAdmin() || (player.hasPermission("KataParty.teleport.do") && isPartyAdmin()))
+			if(isAdmin() || (Perms.teleportDo(player) && isPartyAdmin()))
 			{
 				for(IParty.IMember mem : party)
 				{
@@ -294,11 +300,16 @@ public class PartyManageGui extends PartyCreateGui
 		}
 	}
 	protected static final int SELFTP = 11;
-	protected class ManageSelfTpButton extends PermissionToggleButton
+	protected class ManageSelfTpButton extends RequirementToggleButton
 	{
 		public ManageSelfTpButton()
 		{
-			super("teleport.disallow", Material.EYE_OF_ENDER, Material.EYE_OF_ENDER, "self-teleports");
+			super(Material.EYE_OF_ENDER, Material.EYE_OF_ENDER, "self-teleports");
+		}
+		@Override
+		protected boolean hasRequirements()
+		{
+			return Perms.teleportPref(player);
 		}
 		@Override
 		public ItemStack display()
@@ -344,7 +355,7 @@ public class PartyManageGui extends PartyCreateGui
 	}
 	protected boolean isAdmin()
 	{
-		return player.hasPermission("KataParty.admin");
+		return Perms.arbiter(player);
 	}
 	protected boolean isPartyAdmin()
 	{

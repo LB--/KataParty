@@ -2,6 +2,7 @@ package com.lb_stuff.kataparty;
 
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.eventfilterservices.PotionFilterService.Splash;
+import com.lb_stuff.kataparty.api.Perms;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -87,12 +88,12 @@ public class PartyPotionFilter implements Listener
 		if(ps instanceof Player && le instanceof Player)
 		{
 			Player psource = (Player)ps;
-			if(!psource.hasPermission("KataParty.smart-splash-potions.contribute"))
+			if(!Perms.potionsContribute(psource))
 			{
 				return;
 			}
 			Player ptarget = (Player)le;
-			if(!ptarget.hasPermission("KataParty.smart-splash-potions.benefit"))
+			if(!Perms.potionsBenefit(ptarget))
 			{
 				return;
 			}

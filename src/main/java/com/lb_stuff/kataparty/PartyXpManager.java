@@ -3,6 +3,7 @@ package com.lb_stuff.kataparty;
 import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.IPartySettings;
 import com.lb_stuff.kataparty.api.KataPartyService;
+import com.lb_stuff.kataparty.api.Perms;
 import com.lb_stuff.kataparty.api.event.PartyCreateEvent;
 import com.lb_stuff.kataparty.api.event.PartyDisbandEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
@@ -34,7 +35,7 @@ public class PartyXpManager implements Listener
 		Set<Player> online = KataPartyService.getOnlinePlayers(p.getMembersOnline());
 		for(Iterator<Player> it = online.iterator(); it.hasNext(); )
 		{
-			if(!it.next().hasPermission("KataParty.shared-xp.benefit"))
+			if(!Perms.xpBenefit(it.next()))
 			{
 				it.remove();
 			}
@@ -64,7 +65,7 @@ public class PartyXpManager implements Listener
 		{
 			return;
 		}
-		if(!e.getPlayer().hasPermission("KataParty.shared-xp.contribute"))
+		if(!Perms.xpContribute(e.getPlayer()))
 		{
 			return;
 		}
