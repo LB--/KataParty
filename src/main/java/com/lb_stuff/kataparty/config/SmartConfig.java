@@ -29,6 +29,10 @@ public final class SmartConfig extends YamlConfiguration
 	private final Map<String, NodeProcessor> procs = new HashMap<>();
 	public NodeProcessor setProcessor(String node, NodeProcessor processor)
 	{
+		if(node == null)
+		{
+			throw new IllegalArgumentException("node cannot be null");
+		}
 		if(processor == null)
 		{
 			return procs.remove(node);
@@ -38,6 +42,10 @@ public final class SmartConfig extends YamlConfiguration
 
 	public void reload(File f) throws IOException, InvalidConfigurationException
 	{
+		if(f == null)
+		{
+			throw new IllegalArgumentException("File cannot be null");
+		}
 		if(!f.exists())
 		{
 			f.createNewFile();
@@ -47,55 +55,55 @@ public final class SmartConfig extends YamlConfiguration
 	private void regenConfig(File f, Configuration current) throws IOException, InvalidConfigurationException
 	{
 		String t = getTemplate();
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		int i1, i2;
 		while((i1 = t.indexOf("[%")) >= 0 && (i2 = t.indexOf("%]")) >= 0)
 		{
-			result += t.substring(0, i1);
-			String value = t.substring(i1+2, i2);
+			result.append(t.substring(0, i1));
+			String node = t.substring(i1+2, i2);
 			t = t.substring(i2+2);
-			YamlConfiguration node = new YamlConfiguration();
-			if(value.startsWith("!") && procs.containsKey(value = value.substring(1)))
+			YamlConfiguration temp = new YamlConfiguration();
+			if(procs.containsKey(node))
 			{
-				node.set("t", procs.get(value).process(current, getDefaultConfig(), value));
+				temp.set("t", procs.get(node).process(current, getDefaultConfig(), node));
 			}
 			else
 			{
-				if(!current.contains(value))
+				if(!current.contains(node))
 				{
-					node.set("t", getDefaultConfig().get(value));
+					temp.set("t", getDefaultConfig().get(node));
 				}
 				else
 				{
-					node.set("t", current.get(value));
+					temp.set("t", current.get(node));
 				}
 			}
 			String replacement;
-			if(node.saveToString().length() < 2)
+			if(temp.saveToString().length() < 2)
 			{
 				replacement = "null";
 			}
 			else
 			{
-				replacement = node.saveToString().substring(2);
+				replacement = temp.saveToString().substring(2);
 			}
 			if(replacement.endsWith("\n"))
 			{
 				replacement = replacement.substring(0, replacement.length()-1);
 			}
-			if(result.endsWith(" "))
+			if(result.toString().endsWith(" "))
 			{
-				result = result.substring(0, result.length()-1);
+				result.deleteCharAt(result.length()-1);
 			}
-			result += replacement;
+			result.append(replacement);
 		}
-		result += t;
+		result.append(t);
 		f.createNewFile();
 		try(PrintWriter pw = new PrintWriter(f))
 		{
 			pw.append(result);
 		}
-		load(new CharArrayReader(result.toCharArray()));
+		load(new CharArrayReader(result.toString().toCharArray()));
 	}
 
 	private static YamlConfiguration defconfig = null;
