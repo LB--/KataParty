@@ -1,4 +1,4 @@
-package com.lb_stuff.command;
+package com.lb_stuff.bukkit.command;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

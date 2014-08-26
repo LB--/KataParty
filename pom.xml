@@ -43,15 +43,20 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>com.lb_stuff.command:PluginInfoCommand</include>
-									<include>com.lb_stuff.command:PluginReloadCommand</include>
+									<include>com.lb_stuff.bukkit.command:PluginInfoCommand</include>
+									<include>com.lb_stuff.bukkit.command:PluginReloadCommand</include>
+									<include>com.lb_stuff.bukkit.config:SmartConfig</include>
 									<include>net.gravitydevelopment.updater:updater</include>
 								</includes>
 							</artifactSet>
 							<relocations>
 								<relocation>
-									<pattern>com.lb_stuff.command</pattern>
+									<pattern>com.lb_stuff.bukkit.command</pattern>
 									<shadedPattern>com.lb_stuff.kataparty.command</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.lb_stuff.bukkit.config</pattern>
+									<shadedPattern>com.lb_stuff.kataparty.config</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>net.gravitydevelopment.updater</pattern>
@@ -86,8 +91,8 @@
 				<filtering>true</filtering>
 				<includes>
 					<include>plugin.yml</include>
-					<include>com/lb_stuff/kataparty/config/config-template.yml</include>
-					<include>com/lb_stuff/kataparty/config/config-defaults.yml</include>
+					<include>com/lb_stuff/kataparty/config-template.yml</include>
+					<include>com/lb_stuff/kataparty/config-defaults.yml</include>
 				</includes>
 			</resource>
 		</resources>

@@ -1,7 +1,7 @@
 package com.lb_stuff.kataparty;
 
-import com.lb_stuff.command.PluginInfoCommand;
-import com.lb_stuff.command.PluginReloadCommand;
+import com.lb_stuff.bukkit.command.PluginInfoCommand;
+import com.lb_stuff.bukkit.command.PluginReloadCommand;
 import com.lb_stuff.eventfilterservices.EventFilterServices;
 import com.lb_stuff.kataparty.PartyFactory.MemberFactory;
 import com.lb_stuff.kataparty.api.IMessenger;
@@ -23,7 +23,7 @@ import com.lb_stuff.kataparty.command.PartyManageCommand;
 import com.lb_stuff.kataparty.command.PartyMembersCommand;
 import com.lb_stuff.kataparty.command.PartyPardonCommand;
 import com.lb_stuff.kataparty.command.PartyTeleportCommand;
-import com.lb_stuff.kataparty.config.SmartConfig;
+import com.lb_stuff.bukkit.config.SmartConfig;
 
 import net.gravitydevelopment.updater.Updater;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -160,7 +160,8 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 		try
 		{
 			getDataFolder().mkdirs();
-			config = new SmartConfig(configFile);
+			config = new SmartConfig(configFile, KataPartyPlugin.class);
+			config.reload();
 		}
 		catch(IOException|InvalidConfigurationException e)
 		{
@@ -336,7 +337,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	{
 		try
 		{
-			config.reload(configFile);
+			config.reload();
 		}
 		catch(IOException|InvalidConfigurationException e)
 		{
