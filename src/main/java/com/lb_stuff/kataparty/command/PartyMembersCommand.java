@@ -5,6 +5,7 @@ import com.lb_stuff.kataparty.api.IParty;
 import com.lb_stuff.kataparty.api.event.PartyMemberJoinEvent;
 import com.lb_stuff.kataparty.api.event.PartyMemberLeaveEvent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -83,12 +84,16 @@ public class PartyMembersCommand extends PartyCommand implements Listener
 			t.cancel();
 		}
 		boards.remove(uuid);
+		ScoreboardMeta.removeFrom(Bukkit.getOfflinePlayer(uuid));
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
-		startFor(e.getPlayer().getUniqueId());
+		if(ScoreboardMeta.getFrom(e.getPlayer()) != null)
+		{
+			startFor(e.getPlayer().getUniqueId());
+		}
 	}
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLeave(PlayerQuitEvent e)
