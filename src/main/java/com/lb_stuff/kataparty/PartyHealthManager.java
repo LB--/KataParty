@@ -163,19 +163,22 @@ public class PartyHealthManager implements Listener
 		if(e.getEntity() instanceof Player)
 		{
 			IParty.IMember m = inst.getPartySet().findMember(e.getEntity().getUniqueId());
-			Set<IParty.IMember> contribs = contributors(m.getParty());
-			if(m != null && contribs.contains(m))
+			if(m != null)
 			{
-				Player p = (Player)e.getEntity();
-				scheduleUpdate(m, p.getHealth());
-				if(nms.canUse())
+				Set<IParty.IMember> contribs = contributors(m.getParty());
+				if(contribs.contains(m))
 				{
-					for(IParty.IMember mem : contribs)
+					Player p = (Player)e.getEntity();
+					scheduleUpdate(m, p.getHealth());
+					if(nms.canUse())
 					{
-						if(mem != m)
+						for(IParty.IMember mem : contribs)
 						{
-							Player mp = Bukkit.getPlayer(mem.getUuid());
-							nms.copyLastDamage(p, mp);
+							if(mem != m)
+							{
+								Player mp = Bukkit.getPlayer(mem.getUuid());
+								nms.copyLastDamage(p, mp);
+							}
 						}
 					}
 				}
