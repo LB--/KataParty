@@ -101,7 +101,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 	private final PartyFactory.MemberFactory mfact = pfact.new MemberFactory();
 	private final PartyPvpManager pvp = new PartyPvpManager(this);
 	private final PartyPotionFilter potions = new PartyPotionFilter(this);
-	private final PartyHealthManager shxp = new PartyHealthManager(this);
+	//private final PartyHealthManager shxp = new PartyHealthManager(this);
 	private final PartyNametagManager nametags = new PartyNametagManager(this);
 	private SmartConfig config;
 	private Updater updater = null;
@@ -151,7 +151,7 @@ public final class KataPartyPlugin extends JavaPlugin implements IMessenger
 
 		getServer().getPluginManager().registerEvents(pvp, this);
 		getServer().getPluginManager().registerEvents(potions, this);
-		getServer().getPluginManager().registerEvents(shxp, this);
+		//getServer().getPluginManager().registerEvents(shxp, this);
 		getServer().getPluginManager().registerEvents(filter, this);
 		getServer().getPluginManager().registerEvents(tickets, this);
 		getServer().getPluginManager().registerEvents(edl, this);
